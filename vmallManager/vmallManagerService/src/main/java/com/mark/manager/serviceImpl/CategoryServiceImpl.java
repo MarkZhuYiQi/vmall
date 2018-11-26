@@ -40,13 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
         return new Result(map);
     }
 
-//    public List<CategoryNode> getCategoriesTree()
-    public Result getCategoriesTree()
-    {
+    public Result getCategoriesTree() {
         List<VproNavbar> list = getCategories();
         List<CategoryNode> navs = new ArrayList<CategoryNode>();
 //        for(VproNavbar v : list)
-        for(int i = list.size() - 1; i >= 0; i--)
+//        for(int i = list.size() - 1; i >= 0; i--)
+        for(int i = 0; i < list.size(); i++)
         {
             // 顶层目录
             if (list.get(i).getNavPid() == 0)
@@ -62,21 +61,20 @@ public class CategoryServiceImpl implements CategoryService {
         return new Result(navs);
     }
     // 给他一个默认参数，如果为空就放一个空List对象。
-    public CategoryNode getSubCategory(CategoryNode categoryNode)
-    {
+    public CategoryNode getSubCategory(CategoryNode categoryNode) {
         List<CategoryNode> subs = new ArrayList<CategoryNode>();
         return getSubCategory(categoryNode, subs);
     }
 
     /**
-     *
+     * 迭代整个目录列表，判断传过来的目录是否
      * @param mainNav 主目录
-     * @param subNavs 传入的ID所指目录的子目录list
+     * @param subNavs 传入的ID所指目录的子目录list()
      * @return 子目录CategoryNode
      */
-    public CategoryNode getSubCategory(CategoryNode mainNav, List<CategoryNode> subNavs)
-    {
-        for(int i = list.size() - 1; i >= 0; i--)
+    public CategoryNode getSubCategory(CategoryNode mainNav, List<CategoryNode> subNavs) {
+//        for(int i = list.size() - 1; i >= 0; i--)
+        for(int i = 0; i < list.size(); i++)
         {
             // 判断次级目录的父目录是否属于传来的目录
             if (list.get(i).getNavPid().equals(mainNav.getNavId()))
@@ -84,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
                 // 次级目录转换格式
                 CategoryNode sub = DtoUtil.vproNavbar2CategoryNode(list.get(i));
                 // 子目录的迭代结果，寻找该目录下是否还有子目录
-                 sub = getSubCategory(sub);
+                 sub = this.getSubCategory(sub);
                 subNavs.add(sub);
                 list.remove(i);
             }
