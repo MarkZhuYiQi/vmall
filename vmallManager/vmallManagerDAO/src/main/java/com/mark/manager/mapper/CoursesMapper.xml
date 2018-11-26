@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mark.manager.mapper.CoursesMapper">
+    <resultMap type="com.mark.manager.dto.Courses" id="coursesResultMap">
+        <id property="courseId" column="course_id" />
+        <result property="courseTitle" column="course_title" />
+        <result property="coursePid" column="course_pid" />
+        <result property="courseAuthor" column="course_author" />
+        <result property="courseCover" column="course_cover" />
+        <result property="courseTime" column="course_time" />
+        <result property="courseStatus" column="course_status" />
+        <result property="coursePrice" column="course_price" />
+        <result property="courseDiscountPrice" column="course_discount_price" />
+        <collection property="vproCoursesCover" ofType="com.mark.manager.pojo.VproCoursesCover">
+            <id property="courseCoverId" column="course_cover_id" />
+            <result property="courseCoverKey" column="course_cover_key" />
+            <result property="courseCoverAddress" column="course_cover_address" />
+            <result property="courseCoverUptime" column="course_cover_uptime" />
+            <result property="courseCoverIsuploaded" column="course_cover_isuploaded" />
+            <result property="courseCoverIsused" column="course_cover_isused" />
+        </collection>
+        <collection property="vproAuth" ofType="com.mark.manager.pojo.VproAuth">
+            <id property="authId" column="auth_id" />
+            <result property="authAppid" column="auth_appid" />
+        </collection>
+    </resultMap>
+
+    <select id="getCoursesByPid" resultMap="coursesResultMap" parameterType="string">
+        SELECT
+            vc.course_id,
+            vc.course_title,
+            vc.course_pid,
+            vc.course_author,
+            vc.course_cover,
+            vc.course_time,
+            vc.course_status,
+            vc.course_price,
+            vc.course_discount_price,
+            vcc.course_cover_id,
+            vcc.course_cover_key,
+            vcc.course_cover_address,
+            vcc.course_cover_uptime,
+            vcc.course_cover_isuploaded,
+            vcc.course_cover_isused,
+            va.auth_id,
+            va.auth_appid
+        FROM
+            vpro_courses vc
+          LEFT JOIN vpro_courses_cover vcc ON vcc.course_cover_id = vc.course_id
+          LEFT JOIN vpro_auth va ON va.auth_id = vc.course_author
+        WHERE
+	      vc.course_pid IN (#{pid})
+    </select>
+
+    <select id="getCourses" resultMap="coursesResultMap" parameterType="map">
+        SELECT
+            vc.course_id,
+            vc.course_title,
+            vc.course_pid,
+            vc.course_author,
+            vc.course_cover,
+            vc.course_time,
+            vc.course_status,
+            vc.course_price,
+            vc.course_discount_price,
+            vcc.course_cover_id,
+            vcc.course_cover_key,
+            vcc.course_cover_address,
+            vcc.course_cover_uptime,
+            vcc.course_cover_isuploaded,
+            vcc.course_cover_isused,
+            va.auth_id,
+            va.auth_appid
+        FROM
+            vpro_courses vc
+          LEFT JOIN vpro_courses_cover vcc ON vcc.course_cover_id = vc.course_id
+          LEFT JOIN vpro_auth va ON va.auth_id = vc.course_author
+        <if test="idRange.courseIdStart != null or idRange.courseIdEnd != null">
+          where
+        </if>
+        <if test="idRange.courseIdStart != null">
+            course_id <![CDATA[>=]]> ${idRange.courseIdStart}
+        </if>
+        <if test="idRange.courseIdEnd != null and idRange.courseIdStart != null">
+          and
+        </if>
+        <if test="idRange.courseIdEnd != null">
+            course_id <![CDATA[<]]> ${idRange.courseIdEnd}
+        </if>
+    </select>
+    <select id="getCoursesCount" resultType="java.lang.Long">
+        SELECT COUNT(course_id) FROM vpro_courses
+    </select>
+    <select id="getCourseId" resultType="java.lang.String">
+      SELECT course_id FROM vpro_courses
+      <if test="courseId != null">
+        where course_id > ${courseId}
+      </if>
+      LIMIT 1 OFFSET ${fragment}
+    </select>
+</mapper>

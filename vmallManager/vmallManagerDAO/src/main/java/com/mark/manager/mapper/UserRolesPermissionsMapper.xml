@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mark.manager.mapper.UserRolesPermissionsMapper">
+    <resultMap type="com.mark.manager.dto.UserRoles" id="userRolesPermissionsResultMap">
+        <id property="auth_id" column="auth_id" />
+        <result property="auth_appid" column="auth_appid" />
+        <result property="auth_appKey" column="auth_appKey" />
+        <result property="auth_time" column="auth_time" />
+        <result property="auth_ip" column="auth_ip" />
+        <result property="auth_roles_id" column="auth_roles_id" />
+        <collection property="roles" ofType="com.mark.manager.dto.Role">
+            <id property="roles_id" column="roles_id" />
+            <result property="roles_name" column="roles_name" />
+            <collection property="rolesPermissions" ofType="com.mark.manager.dto.RolePermissions">
+                <id property="roles_permissions_id" column="roles_permissions_id" />
+                <result property="roles_id" column="roles_id" />
+                <result property="permissions_id" column="permissions_id" />
+                <collection property="permissions" ofType="com.mark.manager.pojo.Permission">
+                    <id property="permissions_id" column="permissions_id" />
+                    <result property="permissions_name" column="permissions_name"/>
+                    <result property="permissions_pid" column="permissions_pid"/>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getUserRolesPermissions" resultMap="userRolesResultMap" parameterType="string">
+        SELECT
+            va.auth_id,
+            va.auth_appid,
+            va.auth_appkey,
+            va.auth_time,
+            va.auth_token
+        FROM
+            vpro_auth va
+        LEFT JOIN vpro_roles vr ON va.auth_roles_id = vr.roles_id
+        LEFT JOIN vpro_roles_permissions vrp ON vrp.roles_id = vr.roles_id
+        LEFT JOIN vpro_permissions vp on vp.permissions_id = vrp.permissions_id
+        WHERE
+	        va.auth_appid = #{appId};
+    </select>
+    <resultMap type="com.mark.manager.dto.UserRoles" id="userRolesResultMap">
+        <id property="authId" column="auth_id" />
+        <result property="authAppid" column="auth_appid" />
+        <result property="authAppkey" column="auth_appkey" />
+        <result property="authTime" column="auth_time" />
+        <result property="authIp" column="auth_ip" />
+        <result property="authRolesId" column="auth_roles_id" />
+        <collection property="role" ofType="com.mark.manager.dto.Role">
+            <id property="roleId" column="roles_id" />
+            <result property="roleName" column="roles_name" />
+        </collection>
+    </resultMap>
+    <select id="getUserRoles" resultMap="userRolesResultMap" parameterType="string">
+        SELECT
+            va.auth_id,
+            va.auth_appid,
+            va.auth_appkey,
+            va.auth_roles_id,
+            vr.roles_id,
+            vr.roles_name
+        FROM
+            vpro_auth va
+        LEFT JOIN vpro_roles vr ON va.auth_roles_id = vr.roles_id
+        WHERE
+	        va.auth_appid = #{appId};
+    </select>
+</mapper>
