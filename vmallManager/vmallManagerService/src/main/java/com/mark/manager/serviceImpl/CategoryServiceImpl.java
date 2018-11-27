@@ -43,18 +43,18 @@ public class CategoryServiceImpl implements CategoryService {
     public Result getCategoriesTree() {
         List<VproNavbar> list = getCategories();
         List<CategoryNode> navs = new ArrayList<CategoryNode>();
-//        for(VproNavbar v : list)
-//        for(int i = list.size() - 1; i >= 0; i--)
         for(int i = 0; i < list.size(); i++)
         {
             // 顶层目录
             if (list.get(i).getNavPid() == 0)
             {
+                System.out.println(list.get(i).toString());
                 // 转换成专属格式
                 CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
+                // 收集该顶层目录下的子目录
                 CategoryNode nav = getSubCategory(categoryNode);
                 navs.add(nav);
-                list.remove(i);
+//                list.remove(i);
             }
         }
 //        return navs;
@@ -73,7 +73,6 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 子目录CategoryNode
      */
     public CategoryNode getSubCategory(CategoryNode mainNav, List<CategoryNode> subNavs) {
-//        for(int i = list.size() - 1; i >= 0; i--)
         for(int i = 0; i < list.size(); i++)
         {
             // 判断次级目录的父目录是否属于传来的目录
@@ -82,10 +81,9 @@ public class CategoryServiceImpl implements CategoryService {
                 // 次级目录转换格式
                 CategoryNode sub = DtoUtil.vproNavbar2CategoryNode(list.get(i));
                 // 子目录的迭代结果，寻找该目录下是否还有子目录
-                 sub = getSubCategory(sub);
-
+                sub = this.getSubCategory(sub);
                 subNavs.add(sub);
-                list.remove(i);
+//                list.remove(i);
             }
         }
         if (subNavs != null)
