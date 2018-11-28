@@ -26,4 +26,5 @@
     <dubbo:reference interface="com.mark.manager.service.CategoryService" id="categoryService" />
     <dubbo:reference interface="com.mark.manager.service.CourseService" id="courseService" />
     <dubbo:reference interface="com.mark.manager.service.SearchService" id="searchService" />
+    <dubbo:reference interface="com.mark.manager.service.LessonService" id="lessonService" />
 </beans>

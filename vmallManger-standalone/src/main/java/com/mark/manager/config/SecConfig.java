@@ -46,7 +46,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new SessionFilter(), TokenFilter.class)
 //                 对登录信息进行验证
                 .addFilterBefore(new TokenFilter(authService), UsernamePasswordAuthenticationFilter.class)
-                // 检测token状态
+                // 检测token状态 暂时无用
 //                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 

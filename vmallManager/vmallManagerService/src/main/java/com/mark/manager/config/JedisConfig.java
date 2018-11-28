@@ -1,5 +1,7 @@
 package com.mark.manager.config;
 
+import com.mark.common.jedis.JedisClient;
+import com.mark.common.jedis.JedisClientPool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,12 @@ public class JedisConfig {
         return new JedisPool(jedisPoolConfig, ip, port, timeout, password, database);
     }
 
+    @Bean
+    public JedisClient genJedisClient() {
+        JedisClient jedisClient = new JedisClientPool();
+        jedisClient.setJedisPool(genJedisPool());
+        return jedisClient;
+    }
 //    public static Jedis getJedis() {
 //        return jedisPool.getResource();
 //    }

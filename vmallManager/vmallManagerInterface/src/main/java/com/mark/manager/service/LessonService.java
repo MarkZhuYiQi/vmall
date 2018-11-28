@@ -6,5 +6,5 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface LessonService {
-    public List<VproCoursesLessonList> getLessonsList();
+    public List<VproCoursesLessonList> getLessonsList(Integer courseId);
 }

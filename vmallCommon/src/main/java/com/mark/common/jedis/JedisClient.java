@@ -1,12 +1,16 @@
 package com.mark.common.jedis;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
 
 import java.util.List;
 import java.util.Set;
 
 public interface JedisClient {
+    JedisPool getJedisPool();
+
+    void setJedisPool(JedisPool jedisPool);
 
     String set(String key, String value);
 

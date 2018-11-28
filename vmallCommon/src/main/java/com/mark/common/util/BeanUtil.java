@@ -11,6 +11,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BeanUtil {
+    public static <T, K, V> T map2bean(Map<K, V> map, Class<T> pojoClass) throws IntrospectionException, IllegalAccessException, InstantiationException {
+        T t = null;
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(pojoClass, Object.class);
+            PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
+            // VproCoursesLessonList
+            t = pojoClass.newInstance();
+            for (PropertyDescriptor propertyDescriptor : descriptors) {
+                String key = propertyDescriptor.getName();
+                if (map.containsKey(key)) {
+                    Object value = map.get(key);
+                    // 内部提供的访问属性的方法
+                    Method setter = propertyDescriptor.getWriteMethod();
+                    setter.invoke(t, value);
+                }
+            }
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return t;
+    }
+
     public static Map<String, String> bean2map(Object rs) throws IntrospectionException {
         BeanInfo beanInfo = Introspector.getBeanInfo(rs.getClass());
         PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();

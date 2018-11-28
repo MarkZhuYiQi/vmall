@@ -5,5 +5,5 @@ import com.mark.manager.pojo.VproCoursesLessonList;
 import java.util.List;
 
 public interface LessonDao{
-    public List<VproCoursesLessonList> getLessonsList();
+    public List<VproCoursesLessonList> getLessonsList(Integer courseId);
 }
