@@ -75,8 +75,11 @@
             vpro_courses vc
           LEFT JOIN vpro_courses_cover vcc ON vcc.course_cover_id = vc.course_id
           LEFT JOIN vpro_auth va ON va.auth_id = vc.course_author
-        <if test="idRange.courseIdStart != null or idRange.courseIdEnd != null">
+        <if test="idRange.courseIdStart != null or idRange.courseIdEnd != null or idRange.courseId != null">
           where
+        </if>
+        <if test="idRange.courseId != null and idRange.courseIdStart == null and idRange.courseIdEnd == null">
+            course_id <![CDATA[=]]> ${idRange.courseId}
         </if>
         <if test="idRange.courseIdStart != null">
             course_id <![CDATA[>=]]> ${idRange.courseIdStart}
@@ -88,9 +91,11 @@
             course_id <![CDATA[<]]> ${idRange.courseIdEnd}
         </if>
     </select>
+
     <select id="getCoursesCount" resultType="java.lang.Long">
         SELECT COUNT(course_id) FROM vpro_courses
     </select>
+
     <select id="getCourseId" resultType="java.lang.String">
       SELECT course_id FROM vpro_courses
       <if test="courseId != null">

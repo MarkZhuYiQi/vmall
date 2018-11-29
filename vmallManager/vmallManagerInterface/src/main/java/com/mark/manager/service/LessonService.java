@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface LessonService {
     public List<VproCoursesLessonList> getLessonsList(Integer courseId);
+    public VproCoursesLessonList getLesson(Integer lessonId);
+
 }

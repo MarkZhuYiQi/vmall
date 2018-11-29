@@ -9,7 +9,9 @@ import com.mark.manager.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -17,6 +19,18 @@ public class CourseServiceImpl implements CourseService {
     VproCoursesMapper vproCoursesMapper;
     @Autowired
     CoursesMapper coursesMapper;
+
+    @Override
+    public Courses getCourse(String courseId) {
+        Map<String, String> idCriteria = new HashMap<String, String>();
+        idCriteria.put("courseId", courseId);
+        List<Courses> course = coursesMapper.getCourses(idCriteria);
+        if (course.size() > 0) {
+            return course.get(0);
+        }
+        return null;
+    }
+
     @Override
     public List<Courses> getCoursesByPid(List<Integer> ids)
     {
@@ -41,5 +55,10 @@ public class CourseServiceImpl implements CourseService {
         List<Courses> courses = coursesMapper.getCoursesByPid(getCoursePidCriteria(ids));
         PageInfo page = new PageInfo(courses);
         return page;
+    }
+
+    @Override
+    public Courses updateCourse() {
+        return null;
     }
 }
