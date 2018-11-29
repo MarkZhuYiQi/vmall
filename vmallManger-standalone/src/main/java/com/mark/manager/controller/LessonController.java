@@ -1,6 +1,6 @@
 package com.mark.manager.controller;
 
-import com.mark.manager.pojo.VproCoursesLessonList;
+import com.mark.manager.bo.Result;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ public class LessonController {
     LessonService lessonService;
 
     @GetMapping("{courseId:\\d+}")
-    public List<VproCoursesLessonList> getCourseLessonsList(@PathVariable Integer courseId) {
-        return lessonService.getLessonsList(courseId);
+    public Result getCourseLessonsList(@PathVariable Integer courseId) {
+        return new Result(lessonService.getLessonsList(courseId));
     }
 }
