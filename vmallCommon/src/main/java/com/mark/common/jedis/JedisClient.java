@@ -5,6 +5,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface JedisClient {
@@ -31,6 +32,8 @@ public interface JedisClient {
     Long hset(String key, String field, String value);
 
     String hget(String key, String field);
+
+    Map<String, String> hgetAll(String key);
 
     Long hdel(String key, String... field);
 

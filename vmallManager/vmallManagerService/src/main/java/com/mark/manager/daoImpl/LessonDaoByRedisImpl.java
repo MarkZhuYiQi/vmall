@@ -83,4 +83,13 @@ public class LessonDaoByRedisImpl implements LessonDao {
 
         return list;
     }
+
+    @Override
+    public VproCoursesLessonList getLesson(Integer lessonId) throws IllegalAccessException, IntrospectionException, InstantiationException {
+        Map<String, String> res = jedisClient.hgetAll(lessonPrefix + String.valueOf(lessonId));
+        if (res != null) {
+            return BeanUtil.map2bean(res, VproCoursesLessonList.class);
+        }
+        return null;
+    }
 }

@@ -5,6 +5,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class JedisClientPool implements JedisClient{
@@ -95,6 +96,14 @@ public class JedisClientPool implements JedisClient{
     public String hget(String key, String field) {
         Jedis jedis = jedisPool.getResource();
         String result = jedis.hget(key, field);
+        jedis.close();
+        return result;
+    }
+
+    @Override
+    public Map<String, String> hgetAll(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Map<String, String> result = jedis.hgetAll(key);
         jedis.close();
         return result;
     }

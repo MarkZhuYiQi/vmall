@@ -21,4 +21,10 @@ public class LessonDaoByDBImpl implements LessonDao {
         System.out.println("db: " + courseId);
         return vproCoursesLessonListMapper.selectByExample(vproCoursesLessonListExample);
     }
+
+    @Override
+    public VproCoursesLessonList getLesson(Integer lessonId) {
+        return vproCoursesLessonListMapper.selectByPrimaryKey(lessonId);
+    }
+
 }
