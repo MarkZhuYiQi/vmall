@@ -21,8 +21,7 @@
 
         <javaClientGenerator targetPackage="com.mark.manager.mapper"  targetProject="./src/main/java" type="XMLMAPPER" />
 
-        <table schema="" tableName="vpro_courses_lesson_list"></table>
-        <table schema="" tableName="vpro_courses_temp_data"></table>
+        <table schema="" tableName="vpro_courses_content"></table>
         <table schema="" tableName="vpro_video"></table>
         <table schema="" tableName="vpro_video_detail"></table>
         <table schema="" tableName="vpro_video_files"></table>

@@ -31,6 +31,23 @@ public class Courses implements Serializable {
     public Courses() {
     }
 
+    @Override
+    public String toString() {
+        return "Courses{" +
+                "courseId='" + courseId + '\'' +
+                ", courseTitle='" + courseTitle + '\'' +
+                ", coursePid=" + coursePid +
+                ", courseAuthor='" + courseAuthor + '\'' +
+                ", courseCover='" + courseCover + '\'' +
+                ", courseTime='" + courseTime + '\'' +
+                ", courseStatus=" + courseStatus +
+                ", coursePrice=" + coursePrice +
+                ", courseDiscountPrice=" + courseDiscountPrice +
+                ", vproCoursesCover=" + vproCoursesCover +
+                ", vproAuth=" + vproAuth +
+                '}';
+    }
+
     public String getCourseId() {
         return courseId;
     }

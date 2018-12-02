@@ -1,11 +1,15 @@
 package com.mark.manager.serviceImpl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mark.common.elasticsearch.ElasticsearchUtil;
+import com.mark.common.jedis.JedisClient;
 import com.mark.common.jedis.JedisClientPool;
 import com.mark.common.pojo.ESQuery;
 import com.mark.manager.config.ElasticRestClientPool;
 import com.mark.manager.config.ElasticsearchPool;
+import com.mark.manager.dao.CourseDao;
+import com.mark.manager.daoImpl.CourseDaoByRedisImpl;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import com.mark.manager.mapper.VproAuthMapper;
@@ -13,6 +17,7 @@ import com.mark.manager.mapper.VproCoursesMapper;
 import com.mark.manager.mapper.VproRolesMapper;
 import com.mark.manager.pojo.*;
 import com.mark.manager.service.CategoryService;
+import com.mark.manager.service.CourseService;
 import com.mark.manager.service.InitService;
 import com.mark.manager.threads.CourseOutput;
 import com.mark.manager.threads.ElasticSearchImport;
@@ -51,10 +56,14 @@ public class InitServiceImpl implements InitService {
     private String rolePrefix;
     @Value("${authPrefix}")
     private String authPrefix;
+    @Value("${coursePrefix}")
+    private String coursePrefix;
     @Autowired
     private JedisPool jedisPool;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CourseService courseService;
     @Autowired
     private VproRolesMapper vproRolesMapper;
     @Autowired
@@ -63,11 +72,8 @@ public class InitServiceImpl implements InitService {
     private CoursesMapper coursesMapper;
     @Autowired
     private VproCoursesMapper vproCoursesMapper;
-
-    private JedisClientPool jedisClientPool;
-    {
-        JedisClientPool jedisClientPool = new JedisClientPool();
-    }
+    @Autowired
+    private JedisClient jedisClient;
 
     @Override
 //    @PostConstruct
@@ -175,7 +181,7 @@ public class InitServiceImpl implements InitService {
             for(Map<String, String> idRange : idList)
             {
                 // 批量添加创建json文件任务
-                taskList.add(new CourseOutput(idRange, coursesMapper));
+                taskList.add(new CourseOutput(idRange, coursesMapper, jedisClient, coursePrefix));
             }
             // 结果存放列表
             List<Future<String>> resultList = new ArrayList<Future<String>>();

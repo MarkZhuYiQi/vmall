@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import com.mark.manager.mapper.VproCoursesMapper;
+import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

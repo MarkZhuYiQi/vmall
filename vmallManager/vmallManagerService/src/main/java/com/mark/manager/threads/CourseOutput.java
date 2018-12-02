@@ -2,6 +2,7 @@ package com.mark.manager.threads;
 
 import com.alibaba.fastjson.JSON;
 import com.mark.common.elasticsearch.ElasticsearchUtil;
+import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
@@ -20,11 +21,15 @@ import java.util.concurrent.Callable;
 public class CourseOutput implements Callable<String> {
 
     private CoursesMapper coursesMapper;
+    private JedisClient jedisClient;
     private Map<String, String> idRange;
+    private String coursePrefix;
 
-    public CourseOutput(Map<String, String> idRange, CoursesMapper coursesMapper) {
+    public CourseOutput(Map<String, String> idRange, CoursesMapper coursesMapper, JedisClient jedisClient, String coursePrefix) {
         this.idRange = idRange;
         this.coursesMapper = coursesMapper;
+        this.jedisClient = jedisClient;
+        this.coursePrefix = coursePrefix;
     }
 
     @Override
@@ -51,9 +56,11 @@ public class CourseOutput implements Callable<String> {
                     }
                     course.remove("vproAuth");
                     course.remove("vproCoursesCover");
-                    bfw.write(JSON.toJSONString(course));
+                    String json = BeanUtil.parseObjToJson(course);
+                    bfw.write(json);
                     bfw.newLine();
                     bfw.flush();
+                    jedisClient.set(coursePrefix, json);
                 }
             }
         } catch (IOException | IntrospectionException e) {

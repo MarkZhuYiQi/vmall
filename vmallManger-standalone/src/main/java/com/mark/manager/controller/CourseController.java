@@ -19,7 +19,7 @@ public class CourseController {
     @Autowired
     CategoryService categoryService;
 
-    @GetMapping("{navId:\\d+}")
+    @GetMapping("nav/{navId:\\d+}")
     public Result getCoursesByPid(
             @PathVariable("navId") Integer navId,
             @RequestParam(name = "p", defaultValue = "1") Integer currentPage,
@@ -33,4 +33,8 @@ public class CourseController {
 
         return new Result(courses);
     }
+//    @GetMapping("{courseId:\\d+}")
+//    public Result getCourseById(@PathVariable("courseId") Long navId) {
+//
+//    }
 }
