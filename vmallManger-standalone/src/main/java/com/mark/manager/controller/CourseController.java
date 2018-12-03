@@ -35,13 +35,13 @@ public class CourseController {
         return new Result(courses);
     }
     @GetMapping("{courseId:\\d+}")
-    public Result getCourseById(@PathVariable("courseId") Long courseId) {
-        Courses courses = courseService.getCourse(String.valueOf(courseId));
+    public Result getCourseById(@PathVariable("courseId") Integer courseId) {
+        Courses courses = courseService.getCourse(courseId);
         return new Result(courses);
     }
     @PostMapping("")
     public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
-        courseService.updateCourse(courseUpdate);
-        return null;
+        Courses courses = courseService.updateCourse(courseUpdate);
+        if (courses != null) return new Result(courses);
     }
 }

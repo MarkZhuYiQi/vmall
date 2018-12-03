@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class CourseUpdate implements Serializable {
-    private Long courseId;
-    private Long coursePid;
+    private Integer courseId;
+    private Integer coursePid;
     private String courseTitle;
     private BigDecimal coursePrice;
     private BigDecimal courseDiscountPrice;
@@ -52,20 +52,21 @@ public class CourseUpdate implements Serializable {
         this.courseContent = courseContent;
     }
 
-    public Long getCoursePid() {
-        return coursePid;
-    }
 
-    public void setCoursePid(Long coursePid) {
-        this.coursePid = coursePid;
-    }
-
-    public Long getCourseId() {
+    public Integer getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(Long courseId) {
+    public void setCourseId(Integer courseId) {
         this.courseId = courseId;
+    }
+
+    public Integer getCoursePid() {
+        return coursePid;
+    }
+
+    public void setCoursePid(Integer coursePid) {
+        this.coursePid = coursePid;
     }
 
     public CourseUpdate() {

@@ -42,8 +42,10 @@ public class DtoUtil {
      */
     public static VproCourses courseUpdate2VproCoueses(CourseUpdate courseUpdate) {
         VproCourses vproCourses = new VproCourses();
+        vproCourses.setCourseId(courseUpdate.getCourseId());
         if (!courseUpdate.getCourseTitle().equals("")) vproCourses.setCourseTitle(courseUpdate.getCourseTitle());
         if (!courseUpdate.getCoursePrice().equals("")) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
+        if (!courseUpdate.getCourseStatus().equals("")) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         if (!courseUpdate.getCourseDiscountPrice().equals("") || !courseUpdate.getCourseDiscountPrice().equals("-1")) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         return vproCourses;
     }
