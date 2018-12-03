@@ -1,6 +1,7 @@
 package com.mark.manager.dto;
 
 import com.mark.manager.pojo.VproAuth;
+import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesCover;
 
 import java.io.Serializable;
@@ -27,6 +28,16 @@ public class Courses implements Serializable {
     private VproCoursesCover vproCoursesCover;
 
     private VproAuth vproAuth;
+
+    private VproCoursesContent vproCoursesContent;
+
+    public VproCoursesContent getVproCoursesContent() {
+        return vproCoursesContent;
+    }
+
+    public void setVproCoursesContent(VproCoursesContent vproCoursesContent) {
+        this.vproCoursesContent = vproCoursesContent;
+    }
 
     public Courses() {
     }

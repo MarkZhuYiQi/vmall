@@ -6,6 +6,7 @@ import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
+import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesCover;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -32,6 +33,13 @@ public class CourseOutput implements Callable<String> {
         this.coursePrefix = coursePrefix;
     }
 
+    public void vproCoursesContentSet(VproCoursesContent vproCoursesContent) {
+        if (vproCoursesContent != null) {
+            String content = vproCoursesContent.getCourseContent().toString();
+            jedisClient.set(coursePrefix + "Content" + vproCoursesContent.getCourseId(), content);
+        }
+    }
+
     @Override
     public String call() throws Exception {
         System.out.println(idRange);
@@ -54,8 +62,10 @@ public class CourseOutput implements Callable<String> {
                     } else {
                         course.putAll(BeanUtil.bean2map(courses.getVproCoursesCover()));
                     }
+                    vproCoursesContentSet(courses.getVproCoursesContent());
                     course.remove("vproAuth");
                     course.remove("vproCoursesCover");
+                    course.remove("vproCoursesContent");
                     String json = BeanUtil.parseObjToJson(course);
                     bfw.write(json);
                     bfw.newLine();

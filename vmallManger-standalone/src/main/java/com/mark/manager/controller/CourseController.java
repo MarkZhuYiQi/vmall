@@ -2,6 +2,7 @@ package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mark.manager.bo.Result;
+import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
@@ -33,8 +34,14 @@ public class CourseController {
 
         return new Result(courses);
     }
-//    @GetMapping("{courseId:\\d+}")
-//    public Result getCourseById(@PathVariable("courseId") Long navId) {
-//
-//    }
+    @GetMapping("{courseId:\\d+}")
+    public Result getCourseById(@PathVariable("courseId") Long courseId) {
+        Courses courses = courseService.getCourse(String.valueOf(courseId));
+        return new Result(courses);
+    }
+    @PostMapping("")
+    public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
+        courseService.updateCourse(courseUpdate);
+        return null;
+    }
 }

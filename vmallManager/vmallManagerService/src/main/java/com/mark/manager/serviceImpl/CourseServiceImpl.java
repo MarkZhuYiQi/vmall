@@ -2,6 +2,8 @@ package com.mark.manager.serviceImpl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mark.common.util.BeanUtil;
+import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import com.mark.manager.mapper.VproCoursesMapper;
@@ -10,6 +12,7 @@ import com.mark.manager.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.beans.IntrospectionException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +62,19 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Courses updateCourse() {
-        return null;
+    public Courses updateCourse(CourseUpdate courseUpdate) {
+        try {
+            Map<String, String> map = BeanUtil.bean2map(courseUpdate);
+            Integer flag = 0;
+            for(Map.Entry<String, String> m : map.entrySet()) {
+                if (!m.getValue().equals("") && !m.getValue().equals("-1")) flag = 1;
+            }
+            if (flag != 0) {
+
+            }
+
+        } catch (IntrospectionException e) {
+            e.printStackTrace();
+        }
     }
 }

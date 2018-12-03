@@ -23,6 +23,10 @@
             <id property="authId" column="auth_id" />
             <result property="authAppid" column="auth_appid" />
         </collection>
+        <collection property="vproCoursesContent" ofType="com.mark.manager.pojo.VproCoursesContent">
+            <id property="detailId" column="detail_id" />
+            <result property="courseContent" column="course_content" />
+        </collection>
     </resultMap>
 
     <select id="getCoursesByPid" resultMap="coursesResultMap" parameterType="string">
@@ -48,6 +52,7 @@
             vpro_courses vc
           LEFT JOIN vpro_courses_cover vcc ON vcc.course_cover_id = vc.course_id
           LEFT JOIN vpro_auth va ON va.auth_id = vc.course_author
+          LEFT JOIN vpro_courses_content vct on vct.course_id = vc.course_id
         WHERE
 	      vc.course_pid IN (#{pid})
     </select>
@@ -75,6 +80,7 @@
             vpro_courses vc
           LEFT JOIN vpro_courses_cover vcc ON vcc.course_cover_id = vc.course_id
           LEFT JOIN vpro_auth va ON va.auth_id = vc.course_author
+          LEFT JOIN vpro_courses_content vct on vct.course_id = vc.course_id
         <if test="idRange.courseIdStart != null or idRange.courseIdEnd != null or idRange.courseId != null">
           where
         </if>
