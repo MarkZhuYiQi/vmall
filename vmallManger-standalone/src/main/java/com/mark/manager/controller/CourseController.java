@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mark.common.constant.ResultConstant.RES_NULL;
+
 @RestController
 @RequestMapping("course")
 public class CourseController {
@@ -43,5 +45,6 @@ public class CourseController {
     public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
         Courses courses = courseService.updateCourse(courseUpdate);
         if (courses != null) return new Result(courses);
+        return new Result(null, RES_NULL);
     }
 }
