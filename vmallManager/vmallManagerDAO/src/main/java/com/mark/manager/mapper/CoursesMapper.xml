@@ -85,16 +85,16 @@
           where
         </if>
         <if test="idRange.courseId != null and idRange.courseIdStart == null and idRange.courseIdEnd == null">
-            course_id <![CDATA[=]]> ${idRange.courseId}
+            vc.course_id <![CDATA[=]]> ${idRange.courseId}
         </if>
         <if test="idRange.courseIdStart != null">
-            course_id <![CDATA[>=]]> ${idRange.courseIdStart}
+            vc.course_id <![CDATA[>=]]> ${idRange.courseIdStart}
         </if>
         <if test="idRange.courseIdEnd != null and idRange.courseIdStart != null">
           and
         </if>
         <if test="idRange.courseIdEnd != null">
-            course_id <![CDATA[<]]> ${idRange.courseIdEnd}
+            vc.course_id <![CDATA[<]]> ${idRange.courseIdEnd}
         </if>
     </select>
 

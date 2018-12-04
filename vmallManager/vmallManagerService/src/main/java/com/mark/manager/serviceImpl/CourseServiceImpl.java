@@ -81,13 +81,13 @@ public class CourseServiceImpl implements CourseService {
             Integer res = 0;
             if (flag != 0) {
                 VproCourses vproCourses = DtoUtil.courseUpdate2VproCoueses(courseUpdate);
-                res = vproCoursesMapper.updateByPrimaryKey(vproCourses);
+                res = vproCoursesMapper.updateByPrimaryKeySelective(vproCourses);
                 if (res == 0) {
                     logger.warn("课程信息更新失败");
                 }
                 logger.info("课程信息更新成功");
                 res = 0;
-                if (!courseUpdate.getCourseContent().toString().equals("")) {
+                if (courseUpdate.getCourseContent() != null && courseUpdate.getCourseContent().length() != 0 ) {
                     // 构建详细描述对象
                     VproCoursesContent vproCoursesContent = new VproCoursesContent();
                     vproCoursesContent.setCourseId(courseUpdate.getCourseId());

@@ -41,7 +41,7 @@ public class CourseController {
         Courses courses = courseService.getCourse(courseId);
         return new Result(courses);
     }
-    @PostMapping("")
+    @PutMapping("")
     public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
         Courses courses = courseService.updateCourse(courseUpdate);
         if (courses != null) return new Result(courses);
