@@ -59,9 +59,16 @@
         <elasticsearch.version>6.4.2</elasticsearch.version>
         <fastjson.version>1.2.51</fastjson.version>
         <common-pool.version>2.6.0</common-pool.version>
+        <qcloud-api.version>2.0.7</qcloud-api.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!-- https://mvnrepository.com/artifact/com.qcloud/qcloud-java-sdk -->
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>qcloud-java-sdk</artifactId>
+                <version>${qcloud-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>

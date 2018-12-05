@@ -19,7 +19,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("search")
-public class SearchController {
+public class
+SearchController {
     private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
     @Autowired

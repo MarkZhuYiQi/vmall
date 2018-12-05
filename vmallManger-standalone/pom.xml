@@ -20,6 +20,11 @@
     </properties>
 
     <dependencies>
+        <!--tencent-cloud-secret-api-->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>qcloud-java-sdk</artifactId>
+        </dependency>
         <!--jwt-->
         <dependency>
             <groupId>com.auth0</groupId>

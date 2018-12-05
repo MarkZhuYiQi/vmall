@@ -15,6 +15,11 @@
     <packaging>war</packaging>
 
     <dependencies>
+        <!--tencent-cloud-secret-api-->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>qcloud-java-sdk</artifactId>
+        </dependency>
         <!-- 日志处理 -->
         <dependency>
             <groupId>org.slf4j</groupId>
