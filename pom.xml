@@ -60,10 +60,18 @@
         <fastjson.version>1.2.51</fastjson.version>
         <common-pool.version>2.6.0</common-pool.version>
         <qcloud-api.version>2.0.7</qcloud-api.version>
+        <qcloud-version>5.4.6</qcloud-version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!--腾讯云对象存储-->
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>${qcloud-version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/com.qcloud/qcloud-java-sdk -->
+            <!--qcloud-java-tencent 腾讯云密钥api-->
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>qcloud-java-sdk</artifactId>

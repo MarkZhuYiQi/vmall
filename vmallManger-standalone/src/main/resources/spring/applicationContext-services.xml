@@ -28,4 +28,5 @@
     <dubbo:reference interface="com.mark.manager.service.SearchService" id="searchService" />
     <dubbo:reference interface="com.mark.manager.service.LessonService" id="lessonService" />
     <dubbo:reference interface="com.mark.manager.service.TencentService" id="tencentService" />
+    <dubbo:reference interface="com.mark.manager.service.QcloudService" id="qcloudService" />
 </beans>

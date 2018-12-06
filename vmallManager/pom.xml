@@ -20,6 +20,7 @@
         <module>vmallManagerPOJO</module>
         <module>vmallManagerDAO</module>
         <module>vmallManagerInterface</module>
+        <module>cloudResourceManager</module>
     </modules>
 
     <properties>

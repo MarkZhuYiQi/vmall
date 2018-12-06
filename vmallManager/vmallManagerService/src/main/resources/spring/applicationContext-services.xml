@@ -25,4 +25,5 @@
     <dubbo:service interface="com.mark.manager.service.SearchService" ref="searchServiceImpl" timeout="10000" />
     <dubbo:service interface="com.mark.manager.service.LessonService" ref="lessonServiceImpl" timeout="10000" />
     <dubbo:service interface="com.mark.manager.service.TencentService" ref="tencentServiceImpl" timeout="10000" />
+    <dubbo:service interface="com.mark.manager.service.QcloudService" ref="qcloudServiceImpl" timeout="10000" />
 </beans>
