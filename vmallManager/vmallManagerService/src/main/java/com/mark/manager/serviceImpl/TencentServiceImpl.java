@@ -2,12 +2,17 @@ package com.mark.manager.serviceImpl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.mark.common.constant.TencentConstant;
+import com.mark.common.util.EncryptUtil;
 import com.mark.manager.service.TencentService;
 import com.qcloud.Module.Sts;
 import com.qcloud.QcloudApiModuleCenter;
 import com.qcloud.Utilities.Json.JSONObject;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 @Service
@@ -32,10 +37,10 @@ public class TencentServiceImpl implements TencentService {
         params.put("policy", policy);
 
         /* 在这里指定所要用的签名算法，不指定默认为 HmacSHA1*/
-        params.put("SignatureMethod", "HmacSHA256");
+//        params.put("SignatureMethod", "HmacSHA256");
 
         /* generateUrl 方法生成请求串, 可用于调试使用 */
-//        System.out.println(module.generateUrl("GetFederationToken", params));
+        System.out.println(module.generateUrl("GetFederationToken", params));
         String result = null;
         try {
             /* call 方法正式向指定的接口名发送请求，并把请求参数 params 传入，返回即是接口的请求结果。 */
@@ -47,5 +52,35 @@ public class TencentServiceImpl implements TencentService {
             System.out.println("error..." + e.getMessage());
         }
         return null;
+    }
+
+    @PostConstruct
+    public Map<String, String> sign() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("q-sign-algorithm", "sha1");
+        map.put("q-ak", TencentConstant.secretId);
+        Long currentTimestamp = System.currentTimeMillis() / 1000;
+        DateTime dt = new DateTime();
+        Long fTimestamp = dt.plusMinutes(15).getMillis() / 1000;
+        System.out.println(currentTimestamp);
+        System.out.println(fTimestamp);
+        String time = String.valueOf(currentTimestamp) + ";" + String.valueOf(String.valueOf(fTimestamp));
+        map.put("q-sign-time", time);
+        map.put("q-key-time", time);
+//        map.put("q-header-list", "host;x-cos-content-sha1;x-cos-storage-class");
+        map.put("q-header-list", "host");
+        map.put("q-url-param-list", "");
+        map.put("q-signature", authorize(time));
+        System.out.println(map);
+        return map;
+    }
+    public String authorize(String time) {
+        String signKey = EncryptUtil.genHMAC(time, TencentConstant.secretKey);
+//        HttpString = [HttpMethod]\n[HttpURI]\n[HttpParameters]\n[HttpHeaders]\n
+//        StringToSign = [q-sign-algorithm]\n[q-sign-time]\nSHA1-HASH(HttpString)\n
+        String httpString = "put\n\n\nhost=vpro-1258194404.cos.ap-shanghai.myqcloud.com";
+        String sha1HttpString = EncryptUtil.sha1(httpString);
+        String stringToSign = "sha1\ntime\n" + sha1HttpString + "\n";
+        return EncryptUtil.genHMAC(stringToSign, signKey);
     }
 }

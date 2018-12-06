@@ -31,26 +31,4 @@ public class TencentController {
         json = "{\"code\":200, \"data\":" + json + "}";
         return json;
     }
-
-    @Autowired
-    QcloudService qcloudService;
-    @PostConstruct
-    public void filesUpload() {
-        String path = "D:\\study163";
-        File dir = new File(path);
-        File[] fs = dir.listFiles();
-        for (File f : fs) {
-            if (!f.isDirectory()) {
-                FileOutputStream outputStream = null;
-                FileInputStream inputStream = null;
-                try {
-                    FileSystemResource resource = new FileSystemResource(f.getPath());
-                    File file = resource.getFile();
-                    qcloudService.upload(file);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

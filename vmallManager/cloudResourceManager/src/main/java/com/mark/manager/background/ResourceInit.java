@@ -26,7 +26,7 @@ public class ResourceInit {
      * 创建文件list
      * @return
      */
-    @PostConstruct
+//    @PostConstruct
     public List<String> getResourceList() {
         File listFile = new File(filePath);
         List<String> list = new ArrayList<String>();
