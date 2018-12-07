@@ -18,15 +18,15 @@ import java.util.List;
 @Controller
 public class ResourceInit {
     private String filePath = "D:\\wamp\\www\\vmall\\vmallparent\\vmallManager\\cloudResourceManager\\filelist.txt";
+    private String recordPath = "D:\\wamp\\www\\vmall\\vmallparent\\vmallManager\\cloudResourceManager\\record.txt";
     private String dirPath = "D:\\study163";
     private String bucketName = "vpro-1258194404";
     private static COSClient client = null;
 
     /**
-     * 创建文件list
+     * 获得文件列表list
      * @return
      */
-//    @PostConstruct
     public List<String> getResourceList() {
         File listFile = new File(filePath);
         List<String> list = new ArrayList<String>();
@@ -54,12 +54,15 @@ public class ResourceInit {
         }
         return list;
     }
+
+    /**
+     * 创建文件列表
+     * @param list
+     */
     public void genFileList(List<String> list) {
         try {
             File file = new File(filePath);
             FileOutputStream fileOutputStream = new FileOutputStream(file);
-            byte[] bt = new byte[2048];
-            int realByte = 0;
             for(String s : list) {
                 s += "\n";
                 byte[] sb = s.getBytes();
@@ -72,10 +75,17 @@ public class ResourceInit {
             e.printStackTrace();
         }
     }
-    public void put2Qcloud(File file) {
+
+    /**
+     * 上传
+     * @param file
+     * @return
+     */
+    public String put2Qcloud(File file) {
         COSClient cosClient = getCosClient();
         // 方法2 从输入流上传(需提前告知输入流的长度, 否则可能导致 oom)
         FileInputStream fileInputStream = null;
+        String etag = null;
         try {
             fileInputStream = new FileInputStream(file);
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -85,18 +95,24 @@ public class ResourceInit {
 //        objectMetadata.setContentType("application/pdf");
 
             PutObjectResult putObjectResult = cosClient.putObject(bucketName, file.getName(), fileInputStream, objectMetadata);
-            String etag = putObjectResult.getETag();
+            etag = putObjectResult.getETag();
 // 关闭输入流...
             fileInputStream.close();
             System.out.println(etag);
+            if (etag != null) return file.getName();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
 
     }
 
+    /**
+     * 获得客户端对象
+     * @return
+     */
     public COSClient getCosClient() {
         if (client == null) {
             // 1 初始化用户身份信息(secretId, secretKey)
@@ -109,11 +125,37 @@ public class ResourceInit {
         }
         return client;
     }
+
+    /**
+     * 迭代文件列表
+     */
+    @PostConstruct
     public void iterFileList() {
         List<String> list = getResourceList();
         for(String s : list) {
             File file = new File(s);
-            put2Qcloud(file);
+            String name = put2Qcloud(file);
+            if (name != null) {
+                record(name);
+            }
+        }
+    }
+
+    /**
+     * 记录成功文件
+     * @param name
+     */
+    public void record(String name) {
+        File file = new File(recordPath);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+            byte[] nb = (name + "\n").getBytes();
+            fileOutputStream.write(nb);
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

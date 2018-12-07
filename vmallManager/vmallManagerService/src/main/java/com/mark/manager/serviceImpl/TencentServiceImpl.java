@@ -3,6 +3,7 @@ package com.mark.manager.serviceImpl;
 import com.alibaba.fastjson.JSONArray;
 import com.mark.common.constant.TencentConstant;
 import com.mark.common.util.EncryptUtil;
+import com.mark.manager.dto.SignatureBody;
 import com.mark.manager.service.TencentService;
 import com.qcloud.Module.Sts;
 import com.qcloud.QcloudApiModuleCenter;
@@ -11,6 +12,9 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,33 +58,56 @@ public class TencentServiceImpl implements TencentService {
         return null;
     }
 
-    @PostConstruct
-    public Map<String, String> sign() {
-        Map<String, String> map = new HashMap<String, String>();
+    /**
+     * 生成Authorization PUT请求签名
+     * @return String
+     */
+    public String sign(SignatureBody signatureBody) {
+        Map<String, String> map = new TreeMap<>();
         map.put("q-sign-algorithm", "sha1");
         map.put("q-ak", TencentConstant.secretId);
         Long currentTimestamp = System.currentTimeMillis() / 1000;
         DateTime dt = new DateTime();
         Long fTimestamp = dt.plusMinutes(15).getMillis() / 1000;
-        System.out.println(currentTimestamp);
-        System.out.println(fTimestamp);
         String time = String.valueOf(currentTimestamp) + ";" + String.valueOf(String.valueOf(fTimestamp));
         map.put("q-sign-time", time);
         map.put("q-key-time", time);
 //        map.put("q-header-list", "host;x-cos-content-sha1;x-cos-storage-class");
         map.put("q-header-list", "host");
         map.put("q-url-param-list", "");
-        map.put("q-signature", authorize(time));
-        System.out.println(map);
-        return map;
+        map.put("q-signature", authorize(signatureBody, time));
+        String res = "";
+        for(Map.Entry<String, String> m : map.entrySet()) {
+            if (res != "") res += "&";
+            res += m.getKey() + "="+m.getValue();
+        }
+        System.out.println(res);
+        return res;
     }
-    public String authorize(String time) {
-        String signKey = EncryptUtil.genHMAC(time, TencentConstant.secretKey);
+
+    /**
+     * 请求签名Signature字符串生成成功！nm的
+     * @return
+     */
+    private String authorize(SignatureBody signatureBody, String time) {
+        String signKey = null;
+        try {
+            signKey = EncryptUtil.calculateRFC2104HMAC(time, TencentConstant.secretKey);
 //        HttpString = [HttpMethod]\n[HttpURI]\n[HttpParameters]\n[HttpHeaders]\n
 //        StringToSign = [q-sign-algorithm]\n[q-sign-time]\nSHA1-HASH(HttpString)\n
-        String httpString = "put\n\n\nhost=vpro-1258194404.cos.ap-shanghai.myqcloud.com";
-        String sha1HttpString = EncryptUtil.sha1(httpString);
-        String stringToSign = "sha1\ntime\n" + sha1HttpString + "\n";
-        return EncryptUtil.genHMAC(stringToSign, signKey);
+            String httpString = "put\n/" + signatureBody.getName() + "\n\nhost=" + signatureBody.getHost() + "\n";
+            System.out.println(httpString);
+            String sha1HttpString = EncryptUtil.sha1(httpString);
+            String stringToSign = "sha1\n" + time + "\n" + sha1HttpString + "\n";
+            System.out.println(stringToSign);
+            return EncryptUtil.calculateRFC2104HMAC(stringToSign, signKey);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
