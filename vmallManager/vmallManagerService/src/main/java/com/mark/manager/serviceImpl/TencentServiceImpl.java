@@ -37,7 +37,7 @@ public class TencentServiceImpl implements TencentService {
         /* 将需要输入的参数都放入 params 里面，必选参数是必填的。 */
         /* DescribeInstances 接口的部分可选参数如下 */
         params.put("name", "mark");
-        String policy = "{\"statement\": [{\"action\": [\"name/cos:GetObject\",\"name/cos:PutObject\"],\"effect\": \"allow\",\"resource\":[\"qcs::cos:ap-shanghai:uid/1258194404:vpro-1258194404/*\"]}],\"version\": \"2.0\"}";
+        String policy = "{\"statement\": [{\"action\": \"cos:*\",\"effect\": \"allow\",\"resource\":\"*\"}],\"version\": \"2.0\"}";
         params.put("policy", policy);
 
         /* 在这里指定所要用的签名算法，不指定默认为 HmacSHA1*/
