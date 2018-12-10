@@ -46,6 +46,14 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public String getSet(String key, String value) {
+        Jedis jedis = jedisPool.getResource();
+        String res = jedis.getSet(key, value);
+        jedis.close();
+        return res;
+    }
+
+    @Override
     public String get(String key)
     {
         Jedis jedis = jedisPool.getResource();

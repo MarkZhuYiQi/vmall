@@ -24,8 +24,8 @@ public class TestController {
 
     @PostMapping("buy")
     public Result purchase() {
-        Map<String, String> data = shoppingService.decreaseStock();
+        Map<String, String> data = null;
+        data = shoppingService.decreaseStock2();
         return new Result(data);
     }
-
 }

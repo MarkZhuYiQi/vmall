@@ -20,6 +20,8 @@ public interface JedisClient {
 
     String setex(String key, Integer seconds, String value);
 
+    String getSet(String key, String value);
+
     String get(String key);
 
     Long zadd(String key, Double score, String member);
