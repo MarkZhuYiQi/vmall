@@ -30,4 +30,5 @@
     <dubbo:reference interface="com.mark.manager.service.TencentService" id="tencentService" />
     <dubbo:reference interface="com.mark.manager.service.QcloudService" id="qcloudService" />
     <dubbo:reference interface="com.mark.manager.service.ImageService" id="imageService" />
+    <dubbo:reference interface="com.mark.manager.service.ShoppingService" id="shoppingService" />
 </beans>

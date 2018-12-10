@@ -3,6 +3,7 @@ package com.mark.common.jedis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,23 @@ public class JedisClientPool implements JedisClient{
         jedis.close();
         return result;
     }
+
+    @Override
+    public Long setnx(String key, String value) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.setnx(key, value);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public String setex(String key, Integer seconds, String value) {
+        Jedis jedis = jedisPool.getResource();
+        String res = jedis.setex(key, seconds, value);
+        jedis.close();
+        return res;
+    }
+
     @Override
     public String get(String key)
     {
@@ -48,6 +66,14 @@ public class JedisClientPool implements JedisClient{
     {
         Jedis jedis = jedisPool.getResource();
         Double score = jedis.zscore(key, member);
+        jedis.close();
+        return score;
+    }
+
+    @Override
+    public Double zIncrBy(String key, Double increment, String member) {
+        Jedis jedis = jedisPool.getResource();
+        Double score = jedis.zincrby(key, increment, member);
         jedis.close();
         return score;
     }
@@ -151,6 +177,45 @@ public class JedisClientPool implements JedisClient{
         Set<String> result = jedis.keys(pattern);
         jedis.close();
         return result;
+    }
+
+    @Override
+    public String lpop(String str) {
+        Jedis jedis = jedisPool.getResource();
+        String result = jedis.lpop(str);
+        jedis.close();
+        return result;
+    }
+
+    @Override
+    public Long rpush(String key, String... values) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.rpush(key, values);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Long llen(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.llen(key);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public String watch(String... keys) {
+        Jedis jedis = jedisPool.getResource();
+        String status = jedis.watch(keys);
+        jedis.close();
+        return status;
+    }
+
+    @Override
+    public Transaction multi() {
+        Jedis jedis = jedisPool.getResource();
+        Transaction transaction = jedis.multi();
+        return transaction;
     }
 
 }

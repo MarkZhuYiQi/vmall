@@ -3,6 +3,7 @@ package com.mark.common.jedis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,17 @@ public interface JedisClient {
 
     String set(String key, String value);
 
+    Long setnx(String key, String value);
+
+    String setex(String key, Integer seconds, String value);
+
     String get(String key);
 
     Long zadd(String key, Double score, String member);
 
     Double zscore(String key, String member);
+
+    Double zIncrBy(String key, Double increment, String member);
 
     Boolean exists(String key);
 
@@ -47,4 +54,13 @@ public interface JedisClient {
 
     Set<String> keys(String pattern);
 
+    String lpop(String str);
+
+    Long rpush(String key, String... values);
+
+    Long llen(String key);
+
+    String watch(String... keys);
+
+    Transaction multi();
 }
