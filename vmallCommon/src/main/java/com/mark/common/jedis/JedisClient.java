@@ -1,5 +1,6 @@
 package com.mark.common.jedis;
 
+import com.mark.common.exception.RedisException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
@@ -30,7 +31,7 @@ public interface JedisClient {
 
     Double zIncrBy(String key, Double increment, String member);
 
-    Boolean exists(String key);
+    Boolean exists(String key) throws RedisException;
 
     Long expire(String key, int seconds);
 

@@ -1,9 +1,11 @@
 package com.mark.common.jedis;
 
+import com.mark.common.exception.RedisException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,17 @@ public class JedisClientPool implements JedisClient{
 
     public void setJedisPool(JedisPool jedisPool) {
         this.jedisPool = jedisPool;
+    }
+
+    // 获得redis操作句柄
+    public Jedis getResource() throws RedisException {
+        Jedis jedis = null;
+        try{
+            jedis = jedisPool.getResource();
+            return jedis;
+        } catch(JedisException e) {
+            throw new RedisException("未能得到redis操作句柄", e);
+        }
     }
 
     @Override
@@ -87,8 +100,8 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
-    public Boolean exists(String key) {
-        Jedis jedis = jedisPool.getResource();
+    public Boolean exists(String key) throws RedisException{
+        Jedis jedis = getResource();
         Boolean result = jedis.exists(key);
         jedis.close();
         return result;

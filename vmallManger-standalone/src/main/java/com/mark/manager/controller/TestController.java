@@ -3,11 +3,10 @@ package com.mark.manager.controller;
 import com.mark.manager.bo.Result;
 import com.mark.manager.service.ShoppingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 @RestController
@@ -22,10 +21,20 @@ public class TestController {
         return "finished";
     }
 
-    @PostMapping("buy")
-    public Result purchase() {
+    @PostMapping("buy/{id:\\d+}")
+    public Result purchase(@PathVariable("id") Integer id) {
         Map<String, String> data = null;
-        data = shoppingService.decreaseStock2();
+        switch (id) {
+            case 1:
+                data = shoppingService.decreaseStock1();
+                break;
+            case 2:
+                data = shoppingService.decreaseStock2();
+                break;
+            case 3:
+                data = shoppingService.decreaseStock3();
+                break;
+        }
         return new Result(data);
     }
 }
