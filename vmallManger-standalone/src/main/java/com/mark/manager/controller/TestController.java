@@ -22,7 +22,7 @@ public class TestController {
     }
 
     @PostMapping("buy/{id:\\d+}")
-    public Result purchase(@PathVariable("id") Integer id) {
+    public Result purchase(@PathVariable("id") Integer id, @RequestParam("name")String name) {
         Map<String, String> data = null;
         switch (id) {
             case 1:
@@ -32,7 +32,7 @@ public class TestController {
                 data = shoppingService.decreaseStock2();
                 break;
             case 3:
-                data = shoppingService.decreaseStock3();
+                data = shoppingService.decreaseStock3(name);
                 break;
         }
         return new Result(data);

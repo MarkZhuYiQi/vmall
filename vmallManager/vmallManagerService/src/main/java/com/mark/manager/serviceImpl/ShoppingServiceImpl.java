@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisException;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -147,47 +148,52 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
         return data;
     }
-    public Map<String, String> decreaseStock3() {
+    public Map<String, String> decreaseStock3(String name) {
         Map<String, String> map = new HashMap<String, String>();
         JedisPool jedisPool = jedisClient.getJedisPool();
         RedisLockUtil redisLockUtil = null;
         Jedis jedis = null;
-        Long time = System.currentTimeMillis() + 100;
-        try{
+        Long time = System.currentTimeMillis() + 1000;
+        try {
             jedis = jedisPool.getResource();
             redisLockUtil = new RedisLockUtil(jedis);
             Double stock = jedis.zscore(key, member);
             if (stock <= 0) {
                 map.put("stock", "已经被抢完啦！早没了");
+                System.out.println("已经被抢完啦！早没了");
                 return map;
             }
             Boolean lockNow = redisLockUtil.lock(lock, String.valueOf(time));
             if (!lockNow) {
                 map.put("stock", "活动火爆，稍后再试（锁没放开）");
+                System.out.println("活动火爆，稍后再试（锁没放开）");
                 return map;
             }
-            Double restStock = jedis.zscore(key, member);
-            if (restStock <= 0) {
-                map.put("stock", "上了锁被抢完了，已经被抢完啦！");
-            } else {
+            if (jedis.zscore(key, member) > 0) {
                 jedis.zincrby(key, Double.valueOf("-1"), member);
-                Long affect = jedis.sadd("member", String.valueOf(System.currentTimeMillis()));
-                if (affect == 0) {
-                    map.put("stock", "不可以重复抢购");
-                }
-                map.put("stock", "抢购成功，剩余库存：" + jedis.zscore(key, member));
-                System.out.println(jedis.zscore(key, member));
+            } else {
+                map.put("stock", "已经抢完了");
+                System.out.println("已经抢完了");
+                return map;
             }
+            Long affect = jedis.sadd("member", name);
+            if (affect == 0) {
+                jedis.zincrby(key, Double.valueOf("1"), member);
+                map.put("stock", "不可以重复抢购");
+                System.out.println("不可以重复抢购");
+                return map;
+            }
+            map.put("stock", "抢购成功，剩余库存：" + jedis.zscore(key, member));
+            System.out.println("抢购成功，剩余库存：" + jedis.zscore(key, member));
             return map;
-        } catch (RedisException e) {
-            System.out.println(e.getMsg());
-            redisLockUtil.unlock(key, String.valueOf(time));
-            map.put("stock", e.getMsg());
+        } catch (JedisException e) {
+            System.out.println("获取连接超时");
+            map.put("stock", "获取连接超时");
             return map;
         } finally {
             System.out.println("关闭jedis句柄");
-            if (jedis != null) jedis.close();
             if (redisLockUtil != null) redisLockUtil.unlock(lock, String.valueOf(time));
+            if (jedis != null) jedis.close();
         }
     }
 }

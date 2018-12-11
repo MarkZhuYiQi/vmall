@@ -14,19 +14,20 @@ public class RedisLockUtil {
      */
     public boolean lock(String key,String value){
 
-        //setIfAbsent对应redis中的setnx，key存在的话返回false，不存在返回true
+        //setnx，成功设置直接返回true，否则继续
         if ( jedis.setnx(key,value) == 1){
             return true;
         }
         //两个问题，Q1超时时间
+        // 先尝试获取锁的时间戳
         String currentValue = jedis.get(key);
-        // 判断字符串不为空并且锁的时间已经过期
+        // 判断时间戳不为空并且是否已经过期，如果锁的时间戳小于当前时间说明已过期，锁已经失效了，可以重设
         if (currentValue != null && !currentValue.equals("") && !currentValue.isEmpty() && Long.parseLong(currentValue) < System.currentTimeMillis()){
             //Q2 在线程超时的时候，多个线程争抢锁的问题
-            // 抢到资源立马改锁值（时间戳）
+            // 尝试争抢锁
             String oldValue = jedis.getSet(key, value);
-            // 如果之前设定的值不为空，并且和当前的锁值（时间）相同，说明是当前线程设置的值
-            if (oldValue != null && !oldValue.equals("") && !oldValue.isEmpty() && oldValue.equals(currentValue)){
+            // 拿到时间戳如果仍然是超时的，说明拿到锁了，说明在设置这个锁之前没有其他线程争抢到
+            if (oldValue != null && !oldValue.equals("") && !oldValue.isEmpty() && Long.parseLong(oldValue) < System.currentTimeMillis()){
                 return true;
             }
         }
