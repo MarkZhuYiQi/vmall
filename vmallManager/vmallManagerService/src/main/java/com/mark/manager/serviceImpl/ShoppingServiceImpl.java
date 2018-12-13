@@ -40,9 +40,9 @@ public class ShoppingServiceImpl implements ShoppingService {
     }
 
     /**
+     * 基于redis单机版的数据控制
      * 使用lock锁并配置过期时间1秒
      * watch监控lock键，如果发现lock被改变，本次减库存失效
-     *
      * @return
      */
     public Map<String, String> decreaseStock1() {
@@ -148,6 +148,12 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
         return data;
     }
+
+    /**
+     * 不限于redis是否为单机版的并发控制，通过控制锁来控制污染数据
+     * @param name
+     * @return
+     */
     public Map<String, String> decreaseStock3(String name) {
         Map<String, String> map = new HashMap<String, String>();
         JedisPool jedisPool = jedisClient.getJedisPool();

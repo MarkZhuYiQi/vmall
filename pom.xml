@@ -11,6 +11,7 @@
         <module>vmallManager</module>
         <module>vmallManger-standalone</module>
         <module>Generator</module>
+        <module>demo</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -272,13 +273,6 @@
                 <version>${servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>4.0.1</version>
-                <scope>provided</scope>
-            </dependency>
             <!-- 文件上传组件 -->
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -328,12 +322,6 @@
                 <groupId>com.qiniu</groupId>
                 <artifactId>qiniu-java-sdk</artifactId>
                 <version>${qiniu.version}</version>
-            </dependency>
-            <!-- Elasticsearch -->
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>transport</artifactId>
-                <version>${elasticsearch.version}</version>
             </dependency>
             <!-- Shiro是一个强大灵活的开源安全框架,提供身份验证、授权、会话管理、密码体系 -->
             <dependency>
