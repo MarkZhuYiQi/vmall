@@ -1,7 +1,11 @@
 package com.mark.manager.serviceImpl;
 import com.mark.manager.daoImpl.LessonDaoByDBImpl;
 import com.mark.manager.daoImpl.LessonDaoByRedisImpl;
+import com.mark.manager.dto.LessonsOps;
+import com.mark.manager.mapper.VproCoursesLessonListMapper;
+import com.mark.manager.pojo.VproCoursesCoverExample;
 import com.mark.manager.pojo.VproCoursesLessonList;
+import com.mark.manager.pojo.VproCoursesLessonListExample;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +19,8 @@ public class LessonServiceImpl implements LessonService {
     LessonDaoByDBImpl lessonDaoByDB;
     @Autowired
     LessonDaoByRedisImpl lessonDaoByRedis;
+    @Autowired
+    VproCoursesLessonListMapper vproCoursesLessonListMapper;
 
     private static final String lessonPrefix = "lesson";
     @Override
@@ -56,5 +62,44 @@ public class LessonServiceImpl implements LessonService {
             e.printStackTrace();
         }
         return vproCoursesLessonList;
+    }
+
+    @Override
+    public VproCoursesLessonList insertLessonToLocationSpecified() {
+        return null;
+    }
+
+    @Override
+    public VproCoursesLessonList updateLessonToLocationSpecified(LessonsOps lessonsOps) {
+        // 修改课程的序列到目的地
+        VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
+        vproCoursesLessonList.setLessonLid(lessonsOps.getDestination().getLessonLid());
+
+        VproCoursesLessonListExample vproCoursesLessonListExample= new VproCoursesLessonListExample();
+        vproCoursesLessonListExample.createCriteria().andLessonIdEqualTo(Integer.parseInt(lessonsOps.getDestination().getLessonId()));
+        if (vproCoursesLessonListMapper.updateByExampleSelective(vproCoursesLessonList, vproCoursesLessonListExample) != 1) {
+            throw new LessonException();
+        }
+        return getLesson(Integer.parseInt(lessonsOps.getOriginal().getLessonId()));
+    }
+
+    @Override
+    public List<VproCoursesLessonList> checkIfHasLessonsUnderSubTitle() {
+        return null;
+    }
+
+    @Override
+    public VproCoursesLessonList insertSubTitle() {
+        return null;
+    }
+
+    @Override
+    public VproCoursesLessonList updateSubTitle() {
+        return null;
+    }
+
+    @Override
+    public boolean removeLesson() {
+        return false;
     }
 }
