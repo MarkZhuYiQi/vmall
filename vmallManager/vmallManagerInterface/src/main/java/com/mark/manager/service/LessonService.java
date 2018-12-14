@@ -10,10 +10,13 @@ public interface LessonService {
     List<VproCoursesLessonList> getLessonsList(Integer courseId);
     VproCoursesLessonList getLesson(Integer lessonId);
     VproCoursesLessonList insertLessonToLocationSpecified();
-    VproCoursesLessonList updateLessonToLocationSpecified(LessonsOps lessonsOps);
+    VproCoursesLessonList updateLessonToLocationSpecified(VproCoursesLessonList original, VproCoursesLessonList destination);
+    boolean adjestLessonSequence(List<Integer> lessonIds, Byte type, Integer offset, Integer courseId, Integer lessonPid);
     List<VproCoursesLessonList> checkIfHasLessonsUnderSubTitle();
     VproCoursesLessonList insertSubTitle();
     VproCoursesLessonList updateSubTitle();
+    boolean moveLessonInnerTitle(LessonsOps lessonsOps);
+    boolean moveLessonOuterTitle(LessonsOps lessonsOps);
     boolean removeLesson();
 
 }

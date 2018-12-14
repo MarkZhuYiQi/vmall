@@ -5,11 +5,29 @@ import com.mark.manager.pojo.VproCoursesLessonList;
 import java.io.Serializable;
 
 public class LessonsOps implements Serializable {
+    /**
+     * 课程id
+     */
     private Integer courseId;
+    /**
+     * 上移还是下移
+     */
     private byte type;
+    /**
+     * 具体的操作类型
+     */
     private Integer ops;
+    /**
+     * 是否是对标题的控制
+     */
     private byte isTitle;
+    /**
+     * 源位置，即被调整的lesson
+     */
     private VproCoursesLessonList original;
+    /**
+     * 目标位置，被替换的目标位置lesson
+     */
     private VproCoursesLessonList destination;
 
     public LessonsOps() {
@@ -61,5 +79,17 @@ public class LessonsOps implements Serializable {
 
     public void setDestination(VproCoursesLessonList destination) {
         this.destination = destination;
+    }
+
+    @Override
+    public String toString() {
+        return "LessonsOps{" +
+                "courseId=" + courseId +
+                ", type=" + type +
+                ", ops=" + ops +
+                ", isTitle=" + isTitle +
+                ", original=" + original +
+                ", destination=" + destination +
+                '}';
     }
 }
