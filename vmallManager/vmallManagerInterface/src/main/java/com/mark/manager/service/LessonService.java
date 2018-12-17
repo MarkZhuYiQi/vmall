@@ -9,14 +9,12 @@ import java.util.List;
 public interface LessonService {
     List<VproCoursesLessonList> getLessonsList(Integer courseId);
     VproCoursesLessonList getLesson(Integer lessonId);
+    List<Integer> getLessonsNeedReLocation(LessonsOps lessonsOps);
     VproCoursesLessonList insertLessonToLocationSpecified();
     VproCoursesLessonList updateLessonToLocationSpecified(VproCoursesLessonList original, VproCoursesLessonList destination);
-    boolean adjestLessonSequence(List<Integer> lessonIds, Byte type, Integer offset, Integer courseId, Integer lessonPid);
-    List<VproCoursesLessonList> checkIfHasLessonsUnderSubTitle();
-    VproCoursesLessonList insertSubTitle();
-    VproCoursesLessonList updateSubTitle();
-    boolean moveLessonInnerTitle(LessonsOps lessonsOps);
-    boolean moveLessonOuterTitle(LessonsOps lessonsOps);
-    boolean removeLesson();
-
+    boolean adjustLessonSequence(List<Integer> lessonIds, Integer type, Integer offset, Integer courseId, Integer lessonPid, Integer isTitle);
+    boolean removeLesson(LessonsOps lessonsOps);
+    VproCoursesLessonList addLesson(LessonsOps lessonsOps);
+    boolean moveLesson(LessonsOps lessonsOps);
+    boolean moveSubTitle(LessonsOps lessonsOps);
 }

@@ -14,10 +14,14 @@
                     #{id}
                 </foreach>
             </trim>
+            <if test="lessonPid != null">
+                and lesson_pid = #{lessonPid}
+            </if>
             and lesson_course_id = #{courseId}
-            and lesson_pid = #{lessonPid}
+            and lesson_is_chapter_head = #{isTitle}
         </where>
     </sql>
+
     <update id="updateLessonsSequence">
         <!--
           WARNING - @mbg.generated
@@ -27,24 +31,117 @@
         update vpro_courses_lesson_list
         <set>
             lesson_lid = `lesson_lid`
-            <if test="type != 0">
-              +
-            </if>
+            <choose>
+                <when test="type == 1 or type == 3">
+                    <![CDATA[ + ]]>
+                </when>
+                <when test="type == 2">
+                    <![CDATA[ - ]]>
+                </when>
+            </choose>
             #{offset,jdbcType=INTEGER}
         </set>
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause" />
         </if>
     </update>
-    <!--标题内部上移-->
+
+    <!--在根据课程移动的目标位置，整体移动腾出空间-->
     <select id="getLessonsNeedReLocation">
       SELECT
-        lesson_id
+         lesson_id
       from
         vpro_courses_lesson_list
       WHERE
-        lesson_lid <![CDATA[>=]]> #{start,jdbcType=INTEGER}
-        AND lesson_lid <![CDATA[<]]> #{end,jdbcType=INTEGER}
-        AND lesson_course_id <![CDATA[=]]> #{courseId,jdbcType=INTEGER}
+        <trim prefixOverrides="and">
+            and lesson_lid
+            <if test="type != 3">
+                <choose>
+                    <when test="type == 1">
+                        <![CDATA[ >= ]]>
+                    </when>
+                    <when test="type == 2">
+                        <![CDATA[ > ]]>
+                    </when>
+                </choose>
+                #{start,jdbcType=INTEGER}
+                AND
+                lesson_lid
+                <choose>
+                    <when test="type == 1">
+                        <![CDATA[ < ]]>
+                    </when>
+                    <when test="type == 2">
+                        <![CDATA[ <= ]]>
+                    </when>
+                </choose>
+                #{end,jdbcType=INTEGER}
+            </if>
+            <if test="type == 3">
+                and lesson_lid <![CDATA[ >= ]]> #{start,jdbcType=INTEGER} and lesson_lid <![CDATA[ <= ]]> #{end,jdbcType=INTEGER}
+            </if>
+            AND lesson_course_id <![CDATA[=]]> #{courseId,jdbcType=INTEGER}
+            AND lesson_is_chapter_head <![CDATA[=]]> #{isTitle}
+        </trim>
+    </select>
+
+    <!--获得副标题下的第一个或这最后一个lid-->
+    <select id="getLessonLidSpecified" resultType="java.lang.Integer">
+        SELECT
+        <choose>
+            <when test="type == 1">
+                MIN(lesson_pid)
+            </when>
+            <when test="type == 2">
+                MAX(lesson_pid)
+            </when>
+        </choose>
+        FROM
+          vpro_courses_lesson_list
+        WHERE
+          lesson_course_id = #{courseId}
+          AND lesson_pid = #{lessonPid}
+    </select>
+    
+    <select id="getSubTitleLessonIdByLessonLid" resultType="java.lang.Integer">
+        SELECT
+          lesson_pid
+        FROM
+          vpro_courses_lesson_list
+        WHERE
+          lesson_lid = #{lessonLid}
+          AND lesson_is_chapter_head = 1
+    </select>
+    
+    <select id="getLessonsInnerTitle">
+        SELECT
+          lesson_id
+        FROM
+          vpro_courses_lesson_list
+        WHERE
+          <choose>
+              <when test="lessonIds != null">
+                  <trim prefix="(" prefixOverrides="and" suffix=")">
+                      and lesson_pid IN
+                      <foreach close=")" collection="lessonIds" item="id" open="(" separator=",">
+                          #{id}
+                      </foreach>
+                  </trim>
+              </when>
+              <when test=""></when>
+          </choose>
+          AND lesson_course_id = #{courseId}
+    </select>
+
+    <select id="getLastLessonLid">
+      SELECT
+        MAX(lesson_lid)
+      FROM
+        vpro_courses_lesson_list
+      where
+        lesson_course_id = #{courseId}
+        <if test="lessonPid != null">
+            AND lesson_pid = #{lessonPid}
+        </if>
     </select>
 </mapper>
