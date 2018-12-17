@@ -12,15 +12,23 @@ public class LessonsOps implements Serializable {
     /**
      * 上移还是下移
      */
-    private byte type;
+    private Integer type;
     /**
      * 具体的操作类型
+     * 	ops: {
+     * 		101: "add lesson",
+     * 		102: "move lesson",
+     * 		103: "delete lesson",
+     * 		201: "add subtitle",
+     * 		202: "move subtitle",
+     * 		203: "delete subtitle",
+     *        },
      */
     private Integer ops;
     /**
      * 是否是对标题的控制
      */
-    private byte isTitle;
+    private Integer isTitle;
     /**
      * 源位置，即被调整的lesson
      */
@@ -41,11 +49,11 @@ public class LessonsOps implements Serializable {
         this.courseId = courseId;
     }
 
-    public byte getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(byte type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
@@ -57,11 +65,11 @@ public class LessonsOps implements Serializable {
         this.ops = ops;
     }
 
-    public byte getIsTitle() {
+    public Integer getIsTitle() {
         return isTitle;
     }
 
-    public void setIsTitle(byte isTitle) {
+    public void setIsTitle(Integer isTitle) {
         this.isTitle = isTitle;
     }
 
