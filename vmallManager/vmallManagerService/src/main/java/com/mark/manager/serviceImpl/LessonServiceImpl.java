@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 @Repository
 public class LessonServiceImpl implements LessonService {
-
     @Autowired
     LessonDaoByDBImpl lessonDaoByDB;
     @Autowired
@@ -34,17 +33,6 @@ public class LessonServiceImpl implements LessonService {
             list = lessonDaoByDB.getLessonsList(courseId);
         }
         return list;
-        /*List<VproCoursesLessonList> list = lessonDaoByRedis.getLessonsList();
-        if (list.size() == 0) {
-            try {
-                lessonDaoByRedis.cacheLessonsList(lessonDaoByDB.getLessonsList());
-            } catch (IntrospectionException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println(list);
-        }
-        return list;*/
     }
 
     @Override
@@ -159,6 +147,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public VproCoursesLessonList addLesson(LessonsOps lessonsOps) {
+        Integer primaryId = 0;
         if (lessonsOps.getOriginal() != null && lessonsOps.getDestination() == null) {
             // 只是顺序插入一个lesson，跟在最后
             Integer maxLessonLid = lessonsMapper.getLastLessonLid(
@@ -167,12 +156,14 @@ public class LessonServiceImpl implements LessonService {
                     Integer.parseInt(lessonsOps.getOriginal().getLessonPid())
             );
             lessonsOps.getOriginal().setLessonLid(String.valueOf(maxLessonLid + 1));
-            if (vproCoursesLessonListMapper.insert(lessonsOps.getOriginal()) == 0) {
+            primaryId = vproCoursesLessonListMapper.insert(lessonsOps.getOriginal());
+            if (primaryId == 0) {
                 throw new LessonException("插入新lesson失败，dto信息：" + lessonsOps.toString());
             }
+            return getLesson(primaryId);
         } else if (lessonsOps .getOriginal() != null && lessonsOps.getDestination() != null) {
-            Integer affectedRows = vproCoursesLessonListMapper.insert(lessonsOps.getOriginal());
-            if (affectedRows == 0) {
+            primaryId = vproCoursesLessonListMapper.insert(lessonsOps.getOriginal());
+            if (primaryId == 0) {
                 throw new LessonException("插入新lesson失败，dto信息：" + lessonsOps.toString());
             }
             Integer maxLessonLid = lessonsMapper.getLastLessonLid(
@@ -187,8 +178,10 @@ public class LessonServiceImpl implements LessonService {
                     3,
                     lessonsOps.getIsTitle()
             );
-            adjustLessonSequence(lessonIds, 3, affectedRows, lessonsOps.getCourseId(), null, lessonsOps.getIsTitle());
+            adjustLessonSequence(lessonIds, 3, 1, lessonsOps.getCourseId(), null, lessonsOps.getIsTitle());
+            return getLesson(primaryId);
         }
+        return null;
     }
 
     /**
@@ -308,7 +301,6 @@ public class LessonServiceImpl implements LessonService {
                 null,
                 lessonsOps.getIsTitle()
         );
-
+        return true;
     }
-
 }

@@ -27,13 +27,13 @@ public class LessonController {
                 lessonService.addLesson(lessonsOps);
                 break;
             case 102:
-                boolean res = lessonService.moveLesson(lessonsOps);
+                lessonService.moveLesson(lessonsOps);
                 break;
             case 103:
-                boolean res = lessonService.removeLesson(lessonsOps);
+                lessonService.removeLesson(lessonsOps);
                 break;
             case 201:
-                boolean res = lessonService.addSubTitle(lessonsOps);
+                lessonService.addSubTitle(lessonsOps);
                 break;
             case 202:
                 lessonService.moveSubTitle(lessonsOps);
@@ -45,3 +45,31 @@ public class LessonController {
         return new Result();
     }
 }
+
+
+
+/*
+{
+    "courseId": "1414550568",
+    "type": "1",
+    "ops": "102",
+    "isTitle": "0",
+    "original": {
+        "lessonId": "95246",
+        "lessonLid": "2",
+        "lessonPid": "95241",
+        "lessonTitle": "测试课时2-2",
+        "lessonIsChapterHead": "0",
+        "lessonCourseId": "1414550568",
+        "lessonIsDeleted": "0"
+    },
+    "destination": {
+        "lessonId": "95240",
+        "lessonLid": "0",
+        "lessonPid": "95240",
+        "lessonTitle": "测试课时1-1",
+        "lessonIsChapterHead": "0",
+        "lessonCourseId": "1414550568",
+        "lessonIsDeleted": "0"
+    }
+}*/
