@@ -2,9 +2,8 @@ package com.mark.manager.mapper;
 
 import com.mark.manager.pojo.VproCoursesLessonList;
 import com.mark.manager.pojo.VproCoursesLessonListExample;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface VproCoursesLessonListMapper {
     /**
