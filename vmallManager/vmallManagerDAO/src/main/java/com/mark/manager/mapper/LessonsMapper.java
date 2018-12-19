@@ -36,6 +36,7 @@ public interface LessonsMapper {
     );
     Integer getLastLessonLid(
             @Param("courseId") Integer courseId,
+            @Param("lessonIsChapterHead") Integer lessonIsChapterHead,
             @Param("lessonPid") Integer lessonPid
     );
 }
