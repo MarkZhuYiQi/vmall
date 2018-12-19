@@ -140,6 +140,7 @@
         vpro_courses_lesson_list
       where
         lesson_course_id = #{courseId}
+        AND lesson_is_chapter_head = #{lessonIsChapterHead}
         <if test="lessonPid != null">
             AND lesson_pid = #{lessonPid}
         </if>
