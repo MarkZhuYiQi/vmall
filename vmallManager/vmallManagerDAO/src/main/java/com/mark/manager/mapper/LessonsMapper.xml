@@ -47,7 +47,7 @@
     </update>
 
     <!--在根据课程移动的目标位置，整体移动腾出空间-->
-    <select id="getLessonsNeedReLocation">
+    <select id="getLessonsNeedReLocation" resultType="java.lang.Integer">
       SELECT
          lesson_id
       from
@@ -90,10 +90,10 @@
         SELECT
         <choose>
             <when test="type == 1">
-                MIN(lesson_pid)
+                MIN(lesson_lid)
             </when>
             <when test="type == 2">
-                MAX(lesson_pid)
+                MAX(lesson_lid)
             </when>
         </choose>
         FROM
@@ -113,7 +113,7 @@
           AND lesson_is_chapter_head = 1
     </select>
     
-    <select id="getLessonsInnerTitle">
+    <select id="getLessonsInnerTitle" resultType="Integer">
         SELECT
           lesson_id
         FROM

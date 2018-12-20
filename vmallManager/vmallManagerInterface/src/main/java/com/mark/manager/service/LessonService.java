@@ -18,4 +18,5 @@ public interface LessonService {
     boolean moveLesson(LessonsOps lessonsOps);
     VproCoursesLessonList addSubTitle(LessonsOps lessonsOps);
     boolean moveSubTitle(LessonsOps lessonsOps);
+    boolean removeSubTitle(LessonsOps lessonsOps);
 }

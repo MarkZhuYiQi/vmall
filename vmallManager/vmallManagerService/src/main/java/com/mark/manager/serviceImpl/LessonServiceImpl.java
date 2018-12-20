@@ -6,6 +6,7 @@ import com.mark.manager.dto.LessonsOps;
 import com.mark.manager.mapper.LessonsMapper;
 import com.mark.manager.mapper.VproCoursesLessonListMapper;
 import com.mark.manager.pojo.VproCoursesLessonList;
+import com.mark.manager.pojo.VproCoursesLessonListExample;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -105,11 +106,12 @@ public class LessonServiceImpl implements LessonService {
         VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
         vproCoursesLessonList.setLessonLid(destination.getLessonLid());
         // 筛选条件
-        vproCoursesLessonList.setLessonId(destination.getLessonId());
+        vproCoursesLessonList.setLessonId(original.getLessonId());
         if (Integer.parseInt(original.getLessonPid()) != Integer.parseInt(destination.getLessonPid())) {
             // 如果pid不同则说明是跨标题的移动，需要修改lesson的pid
             vproCoursesLessonList.setLessonPid(destination.getLessonPid());
         }
+        System.out.println("准备修改的lesson" + vproCoursesLessonList.toString());
         if (vproCoursesLessonListMapper.updateByPrimaryKeySelective(vproCoursesLessonList) != 1) {
             throw new LessonException("lesson/subtitle移动到目标位置失败，被更新lesson信息：" + original.toString() + ", 目的地lesson/subtitle信息：" + destination.toString());
         }
@@ -194,14 +196,16 @@ public class LessonServiceImpl implements LessonService {
     public boolean moveLesson(LessonsOps lessonsOps) {
         // 获得搬迁lessonsIds区间（或者需要移动的所有副标题id）
         List<Integer> list = getLessonsNeedReLocation(lessonsOps);
+        System.out.println("需要搬迁的ids" + list.toString());
         // 将需要移动的lesson/subtitle转移到目标位置
         VproCoursesLessonList targetLocationLesson = updateLessonToLocationSpecified(lessonsOps.getOriginal(), lessonsOps.getDestination());
+        System.out.println(targetLocationLesson.toString());
         // 将其他指定范围内的lessons/subtitle搬迁，移动位置保证顺序一致。
         adjustLessonSequence(list,
                 lessonsOps.getType(),
-                list.size(),
+                1,
                 lessonsOps.getCourseId(),
-                Integer.valueOf(lessonsOps.getDestination().getLessonPid()),
+                null,
                 lessonsOps.getIsTitle()
         );
         return true;
@@ -239,24 +243,32 @@ public class LessonServiceImpl implements LessonService {
         Integer relocateEnd = null;
         // 根据上移还是下移得到需要移动的数据范围
         if (lessonsOps.getType() == 1) {
-            relocateStart = lessonsMapper.getLessonLidSpecified(
+             relocateStart = lessonsMapper.getLessonLidSpecified(
                     lessonsOps.getType(),
                     lessonsOps.getCourseId(),
-                    Integer.parseInt(lessonsOps.getDestination().getLessonLid())
+                    Integer.parseInt(lessonsOps.getDestination().getLessonId())
             );
             relocateEnd = lessonsMapper.getLessonLidSpecified(
                     lessonsOps.getType(),
                     lessonsOps.getCourseId(),
-                    Integer.parseInt(lessonsOps.getOriginal().getLessonLid())
+                    Integer.parseInt(lessonsOps.getOriginal().getLessonId())
             );
         } else if (lessonsOps.getType() == 2) {
-            relocateStart = lessonsMapper.getLessonLidSpecified(lessonsOps.getType(), lessonsOps.getCourseId(), Integer.parseInt(lessonsOps.getOriginal().getLessonLid()));
-            relocateEnd = lessonsMapper.getLessonLidSpecified(lessonsOps.getType(), lessonsOps.getCourseId(), Integer.parseInt(lessonsOps.getDestination().getLessonLid()));
+            relocateStart = lessonsMapper.getLessonLidSpecified(
+                    lessonsOps.getType(),
+                    lessonsOps.getCourseId(),
+                    Integer.parseInt(lessonsOps.getOriginal().getLessonPid())
+            );
+            relocateEnd = lessonsMapper.getLessonLidSpecified(
+                    lessonsOps.getType(),
+                    lessonsOps.getCourseId(),
+                    Integer.parseInt(lessonsOps.getDestination().getLessonPid())
+            );
         }
         if (relocateEnd == null || relocateStart == null || relocateEnd <= relocateStart)
             throw new LessonException("移动副标题时，搬迁lessons失败，搬迁范围:(" + relocateStart + "~" + relocateEnd + "], DTO信息：" + lessonsOps.toString());
         // 需要搬迁的数据id范围
-        return lessonsMapper.getLessonsNeedReLocation(relocateStart, relocateEnd, lessonsOps.getCourseId(), lessonsOps.getType(), lessonsOps.getIsTitle());
+        return lessonsMapper.getLessonsNeedReLocation(relocateStart, relocateEnd, lessonsOps.getCourseId(), lessonsOps.getType(), 0);
 
     }
     @Override
@@ -282,25 +294,49 @@ public class LessonServiceImpl implements LessonService {
         // 得到被转移的标题旗下的所有lessons
         List<Integer> subTitleIds = new ArrayList<Integer>();
         subTitleIds.add(Integer.parseInt(lessonsOps.getOriginal().getLessonId()));
+        // 标题下的所有lesson在此
         List<Integer> lessonsInnerSubTitle = lessonsMapper.getLessonsInnerTitle(subTitleIds, lessonsOps.getCourseId());
         // 移动到目标位置，跟随副标题
-        lessonsMapper.updateLessonsSequence(
-                lessonsInnerSubTitle,
-                (lessonsOps.getType() == 1 ? 0 : 1),
-                lessonIdsNeedMove.size(),
-                lessonsOps.getCourseId(),
-                Integer.valueOf(lessonsOps.getDestination().getLessonPid()),
-                lessonsOps.getIsTitle()
-        );
+        System.out.println("type: (决定是加号还是减号):" + String.valueOf(lessonsOps.getType() == 1 ? 0 : 1) );
+        // 标题转移后，标题下的lesson全部转移到新位置的下方
+        if (lessonsInnerSubTitle.size() > 0) {
+            Integer lessonInnerTitleTransfer = lessonsMapper.updateLessonsSequence(
+                    lessonsInnerSubTitle,
+                    (lessonsOps.getType() == 1 ? 2 : 1),
+                    lessonIdsNeedMove.size(),
+                    lessonsOps.getCourseId(),
+                    Integer.valueOf(lessonsOps.getOriginal().getLessonId()),
+                    0
+            );
+            if (lessonInnerTitleTransfer == 0 ) throw new LessonException("转移标题后，标题内部的lesson跟随转移顺序失败，需要转移的lessons: " + lessonsInnerSubTitle.toString());
+        }
         // 其余lessons搬迁，继续按照顺序排列。
-        lessonsMapper.updateLessonsSequence(
-                lessonIdsNeedMove,
-                lessonsOps.getType(),
-                lessonsInnerSubTitle.size(),
-                lessonsOps.getCourseId(),
-                null,
-                lessonsOps.getIsTitle()
-        );
+        if (lessonIdsNeedMove.size() > 0) {
+            Integer lessonAffectedByTitleTransfer = lessonsMapper.updateLessonsSequence(
+                    lessonIdsNeedMove,
+                    lessonsOps.getType(),
+                    lessonsInnerSubTitle.size(),
+                    lessonsOps.getCourseId(),
+                    null,
+                    0
+            );
+            if (lessonAffectedByTitleTransfer == 0 ) throw new LessonException("被转移标题影响的其他lessons转移顺序失败，需要转移的lessons: " + lessonAffectedByTitleTransfer.toString());
+        }
         return true;
+    }
+
+    @Override
+    public boolean removeSubTitle(LessonsOps lessonsOps) {
+        VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
+        vproCoursesLessonList.setLessonIsDeleted("1");
+        removeLesson(lessonsOps);
+        VproCoursesLessonListExample vproCoursesLessonListExample = new VproCoursesLessonListExample();
+        vproCoursesLessonListExample.createCriteria()
+                .andLessonPidEqualTo(Integer.parseInt(lessonsOps.getOriginal().getLessonId()))
+                .andLessonCourseIdEqualTo(lessonsOps.getCourseId());
+        if (vproCoursesLessonListMapper.updateByExampleSelective(vproCoursesLessonList, vproCoursesLessonListExample) > 0) {
+            return true;
+        }
+        return false;
     }
 }

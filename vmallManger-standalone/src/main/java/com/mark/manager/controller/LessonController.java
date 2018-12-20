@@ -39,7 +39,7 @@ public class LessonController {
                 lessonService.moveSubTitle(lessonsOps);
                 break;
             case 203:
-                lessonService.removeLesson(lessonsOps);
+                lessonService.removeSubTitle(lessonsOps);
 
         }
         return new Result();
@@ -73,3 +73,29 @@ public class LessonController {
         "lessonIsDeleted": "0"
     }
 }*/
+/*
+{
+	"courseId": "1414550568",
+	"type": "1",
+	"ops": "202",
+	"isTitle": "1",
+	"original": {
+		"lessonId": "95248",
+		"lessonLid": "2",
+		"lessonPid": "71",
+		"lessonTitle": "测试章节3",
+		"lessonIsChapterHead": "1",
+		"lessonCourseId": "1414550568",
+		"lessonIsDeleted": "0"
+	},
+	"destination": {
+		"lessonId": "95241",
+		"lessonLid": "1",
+		"lessonPid": "71",
+		"lessonTitle": "测试章节2",
+		"lessonIsChapterHead": "1",
+		"lessonCourseId": "1414550568",
+		"lessonIsDeleted": "0"
+	}
+}
+*/
