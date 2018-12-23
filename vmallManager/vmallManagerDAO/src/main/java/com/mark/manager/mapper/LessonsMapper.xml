@@ -48,7 +48,7 @@
 
     <!--在根据课程移动的目标位置，整体移动腾出空间-->
     <!--这里的opsType是 向上向下移动标记 + 处于节点上方还是下方位置的标记 的 总和-->
-    <select id="getLessonsNeedReLocation">
+    <select id="getLessonsNeedReLocation" resultType="java.lang.Integer">
       SELECT
          lesson_id
       from
@@ -56,28 +56,26 @@
       WHERE
         <trim prefixOverrides="and">
             and lesson_lid
-            <if test="type != 3">
-                <choose>
-                    <when test="opsType == 2">
-                        <![CDATA[ >= ]]>
-                    </when>
-                    <when test="opsType == 3 or opsType == 4">
-                        <![CDATA[ > ]]>
-                    </when>
-                </choose>
-                #{start,jdbcType=INTEGER}
-                AND
-                lesson_lid
-                <choose>
-                    <when test="opsType == 2 or opsType == 3">
-                        <![CDATA[ < ]]>
-                    </when>
-                    <when test="opsType == 4">
-                        <![CDATA[ <= ]]>
-                    </when>
-                </choose>
-                #{end,jdbcType=INTEGER}
-            </if>
+            <choose>
+                <when test="opsType == 2">
+                    <![CDATA[ >= ]]>
+                </when>
+                <when test="opsType == 3 or opsType == 4">
+                    <![CDATA[ > ]]>
+                </when>
+            </choose>
+            #{start,jdbcType=INTEGER}
+            AND
+            lesson_lid
+            <choose>
+                <when test="opsType == 2 or opsType == 3">
+                    <![CDATA[ < ]]>
+                </when>
+                <when test="opsType == 4">
+                    <![CDATA[ <= ]]>
+                </when>
+            </choose>
+            #{end,jdbcType=INTEGER}
             <!--<if test="type == 3">-->
                 <!--and lesson_lid <![CDATA[ >= ]]> #{start,jdbcType=INTEGER} and lesson_lid <![CDATA[ <= ]]> #{end,jdbcType=INTEGER}-->
             <!--</if>-->
@@ -114,7 +112,7 @@
           AND lesson_is_chapter_head = 1
     </select>
     
-    <select id="getLessonsInnerTitle">
+    <select id="getLessonsInnerTitle" resultType="java.lang.Integer">
         SELECT
           lesson_id
         FROM
@@ -134,7 +132,7 @@
           AND lesson_course_id = #{courseId}
     </select>
 
-    <select id="getLastLessonLid">
+    <select id="getLastLessonLid" resultType="java.lang.Integer">
       SELECT
         MAX(lesson_lid)
       FROM
