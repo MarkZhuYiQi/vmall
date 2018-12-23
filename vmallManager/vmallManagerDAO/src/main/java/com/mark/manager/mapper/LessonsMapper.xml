@@ -47,6 +47,7 @@
     </update>
 
     <!--在根据课程移动的目标位置，整体移动腾出空间-->
+    <!--这里的opsType是 向上向下移动标记 + 处于节点上方还是下方位置的标记 的 总和-->
     <select id="getLessonsNeedReLocation">
       SELECT
          lesson_id
@@ -57,10 +58,10 @@
             and lesson_lid
             <if test="type != 3">
                 <choose>
-                    <when test="type == 1">
+                    <when test="opsType == 2">
                         <![CDATA[ >= ]]>
                     </when>
-                    <when test="type == 2">
+                    <when test="opsType == 3 or opsType == 4">
                         <![CDATA[ > ]]>
                     </when>
                 </choose>
@@ -68,18 +69,18 @@
                 AND
                 lesson_lid
                 <choose>
-                    <when test="type == 1">
+                    <when test="opsType == 2 or opsType == 3">
                         <![CDATA[ < ]]>
                     </when>
-                    <when test="type == 2">
+                    <when test="opsType == 4">
                         <![CDATA[ <= ]]>
                     </when>
                 </choose>
                 #{end,jdbcType=INTEGER}
             </if>
-            <if test="type == 3">
-                and lesson_lid <![CDATA[ >= ]]> #{start,jdbcType=INTEGER} and lesson_lid <![CDATA[ <= ]]> #{end,jdbcType=INTEGER}
-            </if>
+            <!--<if test="type == 3">-->
+                <!--and lesson_lid <![CDATA[ >= ]]> #{start,jdbcType=INTEGER} and lesson_lid <![CDATA[ <= ]]> #{end,jdbcType=INTEGER}-->
+            <!--</if>-->
             AND lesson_course_id <![CDATA[=]]> #{courseId,jdbcType=INTEGER}
             AND lesson_is_chapter_head <![CDATA[=]]> #{isTitle}
         </trim>

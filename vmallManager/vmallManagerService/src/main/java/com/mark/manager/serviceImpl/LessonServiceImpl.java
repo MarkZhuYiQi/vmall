@@ -63,6 +63,11 @@ public class LessonServiceImpl implements LessonService {
 
     /**
      * 得到需要搬迁的lessonsId
+     * 除了区分是上移还是下移，还要区分是放置到目标位置的上方还是下方（before，after，inner）
+     * up before: x >= start x < end 1 + 1
+     * up after: x > start x < end 1 + 2
+     * down before: x > start x < end 2 + 1
+     * down after: x > start x <= end 2 + 2
      * @param lessonsOps DTO
      * @return List<Integer> id集合
      */
@@ -87,7 +92,13 @@ public class LessonServiceImpl implements LessonService {
             throw new LessonException("操作对象dto的type非法，dto信息：" + lessonsOps.toString());
         }
         // 这里有个参数是isTitle，表明是否为
-        list = lessonsMapper.getLessonsNeedReLocation(start, end, lessonsOps.getCourseId(), lessonsOps.getType(), lessonsOps.getIsTitle());
+        list = lessonsMapper.getLessonsNeedReLocation(
+                start,
+                end,
+                lessonsOps.getCourseId(),
+                lessonsOps.getType() + lessonsOps.getDropType(),
+                lessonsOps.getIsTitle()
+        );
         if (list.size() == 0) throw new LessonException("获得的搬迁lessons为空，dto信息：" + lessonsOps.toString());
         return list;
     }
@@ -162,6 +173,7 @@ public class LessonServiceImpl implements LessonService {
             }
             return getLesson(primaryId);
         } else if (lessonsOps .getOriginal() != null && lessonsOps.getDestination() != null) {
+            // 在原有基础中间插入一个课程
             primaryId = vproCoursesLessonListMapper.insert(lessonsOps.getOriginal());
             if (primaryId == 0) {
                 throw new LessonException("插入新lesson失败，dto信息：" + lessonsOps.toString());
@@ -171,6 +183,9 @@ public class LessonServiceImpl implements LessonService {
                     Integer.valueOf(lessonsOps.getOriginal().getLessonIsChapterHead()),
                     null
             );
+            /**
+             * wait change, 操作type有问题，需要更改，这里涉及插入口的调整
+             */
             List<Integer> lessonIds = lessonsMapper.getLessonsNeedReLocation(
                     Integer.valueOf(lessonsOps.getDestination().getLessonLid()),
                     maxLessonLid,
@@ -192,8 +207,14 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public boolean moveLesson(LessonsOps lessonsOps) {
-        // 获得搬迁lessonsIds区间（或者需要移动的所有副标题id）
-        List<Integer> list = getLessonsNeedReLocation(lessonsOps);
+        List<Integer> list = new ArrayList<Integer>();
+        if(lessonsOps.getDropType() == 1) {
+            // 获得搬迁lessonsIds区间（或者需要移动的所有副标题id）
+            list = getLessonsNeedReLocation(lessonsOps);
+        } else if (lessonsOps.getDropType() == 2) {
+            // after
+
+        }
         // 将需要移动的lesson/subtitle转移到目标位置
         VproCoursesLessonList targetLocationLesson = updateLessonToLocationSpecified(lessonsOps.getOriginal(), lessonsOps.getDestination());
         // 将其他指定范围内的lessons/subtitle搬迁，移动位置保证顺序一致。
@@ -256,7 +277,13 @@ public class LessonServiceImpl implements LessonService {
         if (relocateEnd == null || relocateStart == null || relocateEnd <= relocateStart)
             throw new LessonException("移动副标题时，搬迁lessons失败，搬迁范围:(" + relocateStart + "~" + relocateEnd + "], DTO信息：" + lessonsOps.toString());
         // 需要搬迁的数据id范围
-        return lessonsMapper.getLessonsNeedReLocation(relocateStart, relocateEnd, lessonsOps.getCourseId(), lessonsOps.getType(), lessonsOps.getIsTitle());
+        return lessonsMapper.getLessonsNeedReLocation(
+                relocateStart,
+                relocateEnd,
+                lessonsOps.getCourseId(),
+                lessonsOps.getType() + lessonsOps.getDropType(),
+                lessonsOps.getIsTitle()
+        );
 
     }
     @Override

@@ -55,6 +55,7 @@
           LEFT JOIN vpro_courses_content vct on vct.course_id = vc.course_id
         WHERE
 	      vc.course_pid IN (#{pid})
+	      order by vc.course_id desc
     </select>
 
     <select id="getCourses" resultMap="coursesResultMap" parameterType="map">

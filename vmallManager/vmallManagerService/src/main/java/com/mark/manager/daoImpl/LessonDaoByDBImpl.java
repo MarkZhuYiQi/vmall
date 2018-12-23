@@ -17,6 +17,7 @@ public class LessonDaoByDBImpl implements LessonDao {
     @Override
     public List<VproCoursesLessonList> getLessonsList(Integer courseId) {
         VproCoursesLessonListExample vproCoursesLessonListExample = new VproCoursesLessonListExample();
+        vproCoursesLessonListExample.setOrderByClause("lesson_lid");
         vproCoursesLessonListExample.createCriteria().andLessonCourseIdEqualTo(courseId);
         System.out.println("db: " + courseId);
         return vproCoursesLessonListMapper.selectByExample(vproCoursesLessonListExample);

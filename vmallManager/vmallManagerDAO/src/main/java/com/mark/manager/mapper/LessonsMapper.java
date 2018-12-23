@@ -19,7 +19,8 @@ public interface LessonsMapper {
             @Param("start") Integer start,
             @Param("end") Integer end,
             @Param("courseId") Integer courseId,
-            @Param("type") Integer type,
+            // direction type + location type(up + before = 2, down + after = 3)
+            @Param("opsType") Integer opsType,
             @Param("isTitle") Integer isTitle
     );
     Integer getLessonLidSpecified(

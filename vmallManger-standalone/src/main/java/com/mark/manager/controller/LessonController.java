@@ -2,6 +2,7 @@ package com.mark.manager.controller;
 
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.LessonsOps;
+import com.mark.manager.dto.LessonsOpsList;
 import com.mark.manager.pojo.VproCoursesLessonList;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +22,28 @@ public class LessonController {
     }
 
     @PostMapping("")
-    public Result reLocateLesson(@RequestBody LessonsOps lessonsOps) {
-        switch(lessonsOps.getOps()) {
-            case 101:
-                lessonService.addLesson(lessonsOps);
-                break;
-            case 102:
-                lessonService.moveLesson(lessonsOps);
-                break;
-            case 103:
-                lessonService.removeLesson(lessonsOps);
-                break;
-            case 201:
-                lessonService.addSubTitle(lessonsOps);
-                break;
-            case 202:
-                lessonService.moveSubTitle(lessonsOps);
-                break;
-            case 203:
-                lessonService.removeLesson(lessonsOps);
+    public Result reLocateLesson(@RequestBody LessonsOpsList lessonsOpsList) {
+        for(LessonsOps l : lessonsOpsList.getLessonsOpsList()) {
+            switch(l.getOps()) {
+                case 101:
+                    lessonService.addLesson(l);
+                    break;
+                case 102:
+                    lessonService.moveLesson(l);
+                    break;
+                case 103:
+                    lessonService.removeLesson(l);
+                    break;
+                case 201:
+                    lessonService.addSubTitle(l);
+                    break;
+                case 202:
+                    lessonService.moveSubTitle(l);
+                    break;
+                case 203:
+                    lessonService.removeLesson(l);
 
+            }
         }
         return new Result();
     }
