@@ -89,10 +89,10 @@
         SELECT
         <choose>
             <when test="type == 1">
-                MIN(lesson_pid)
+                MIN(lesson_lid)
             </when>
             <when test="type == 2">
-                MAX(lesson_pid)
+                MAX(lesson_lid)
             </when>
         </choose>
         FROM

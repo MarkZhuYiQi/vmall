@@ -26,7 +26,7 @@ public interface LessonsMapper {
     Integer getLessonLidSpecified(
             @Param("type") Integer type,
             @Param("courseId") Integer courseId,
-            @Param("courseLid") Integer courseLid
+            @Param("lessonPid") Integer lessonPid
     );
     Integer getSubTitleLessonIdByLessonLid(
             @Param("lessonLid") Integer lessonLid

@@ -1,5 +1,6 @@
 package com.mark.manager.controller;
 
+import com.mark.common.constant.LessonsConstant;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.LessonsOps;
 import com.mark.manager.dto.LessonsOpsList;
@@ -22,30 +23,12 @@ public class LessonController {
     }
 
     @PostMapping("")
-    public Result reLocateLesson(@RequestBody LessonsOpsList lessonsOpsList) {
-        for(LessonsOps l : lessonsOpsList.getLessonsOpsList()) {
-            switch(l.getOps()) {
-                case 101:
-                    lessonService.addLesson(l);
-                    break;
-                case 102:
-                    lessonService.moveLesson(l);
-                    break;
-                case 103:
-                    lessonService.removeLesson(l);
-                    break;
-                case 201:
-                    lessonService.addSubTitle(l);
-                    break;
-                case 202:
-                    lessonService.moveSubTitle(l);
-                    break;
-                case 203:
-                    lessonService.removeLesson(l);
-
-            }
+    public Result editLessonsList(@RequestBody LessonsOpsList lessonsOpsList) {
+        if (lessonsOpsList.getLessonsOpsList().size() > 0) {
+            Boolean res = lessonService.manageEdit(lessonsOpsList);
+            return new Result(res);
         }
-        return new Result();
+        return new Result("对lessons的修改失败", LessonsConstant.LESSONS_EDIT_FAILED);
     }
 }
 
@@ -76,3 +59,29 @@ public class LessonController {
         "lessonIsDeleted": "0"
     }
 }*/
+/*
+{
+	"courseId": "1414550568",
+	"type": "1",
+	"ops": "202",
+	"isTitle": "1",
+	"original": {
+		"lessonId": "95248",
+		"lessonLid": "2",
+		"lessonPid": "71",
+		"lessonTitle": "测试章节3",
+		"lessonIsChapterHead": "1",
+		"lessonCourseId": "1414550568",
+		"lessonIsDeleted": "0"
+	},
+	"destination": {
+		"lessonId": "95241",
+		"lessonLid": "1",
+		"lessonPid": "71",
+		"lessonTitle": "测试章节2",
+		"lessonIsChapterHead": "1",
+		"lessonCourseId": "1414550568",
+		"lessonIsDeleted": "0"
+	}
+}
+*/
