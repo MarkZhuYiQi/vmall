@@ -120,12 +120,13 @@ public class LessonServiceImpl implements LessonService {
         VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
         if (
                 Math.abs(Integer.parseInt(original.getLessonLid()) - Integer.parseInt(destination.getLessonLid())) <= 1 &&
-                        original.getLessonPid().equals(destination.getLessonPid())
+                        !original.getLessonPid().equals(destination.getLessonPid())
         ) {
             // 此情况为：lessons只是在上一个标题的最后一个位置移动到下一个标题的第一个位置，不涉及其他内容
             vproCoursesLessonList.setLessonLid(original.getLessonLid());
+        } else {
+            vproCoursesLessonList.setLessonLid(destination.getLessonLid());
         }
-        vproCoursesLessonList.setLessonLid(destination.getLessonLid());
         // 筛选条件, 修改的是被移动的节点
         vproCoursesLessonList.setLessonId(original.getLessonId());
         if (Integer.parseInt(original.getLessonPid()) != Integer.parseInt(destination.getLessonPid())) {
