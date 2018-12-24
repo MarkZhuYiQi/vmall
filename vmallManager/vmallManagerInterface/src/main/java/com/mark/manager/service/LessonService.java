@@ -1,6 +1,7 @@
 package com.mark.manager.service;
 
 import com.mark.manager.dto.LessonsOps;
+import com.mark.manager.dto.LessonsOpsList;
 import com.mark.manager.pojo.VproCoursesLessonList;
 
 import java.io.Serializable;
@@ -19,4 +20,5 @@ public interface LessonService {
     VproCoursesLessonList addSubTitle(LessonsOps lessonsOps);
     boolean moveSubTitle(LessonsOps lessonsOps);
     boolean removeSubTitle(LessonsOps lessonsOps);
+    boolean manageEdit(LessonsOpsList lessonsOpsList);
 }

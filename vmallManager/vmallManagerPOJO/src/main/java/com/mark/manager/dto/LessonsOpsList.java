@@ -1,8 +1,9 @@
 package com.mark.manager.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LessonsOpsList {
+public class LessonsOpsList implements Serializable {
     private List<LessonsOps> lessonsOpsList;
 
     public LessonsOpsList() {
