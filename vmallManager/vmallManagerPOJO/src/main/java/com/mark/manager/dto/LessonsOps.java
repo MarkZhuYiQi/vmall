@@ -11,8 +11,17 @@ public class LessonsOps implements Serializable {
     private Integer courseId;
     /**
      * 上移还是下移
+     * up: 1
+     * down: 2
      */
     private Integer type;
+    /**
+     * 放置位置类型
+     * 1： before，在该对象的上面
+     * 2： after, 在该对象下面
+     * 3： inner，在该对象的里面（追加到对象children的尾部）
+     */
+    private Integer dropType;
     /**
      * 具体的操作类型
      * 	ops: {
@@ -55,6 +64,14 @@ public class LessonsOps implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getDropType() {
+        return dropType;
+    }
+
+    public void setDropType(Integer dropType) {
+        this.dropType = dropType;
     }
 
     public Integer getOps() {
