@@ -11,6 +11,7 @@ import com.mark.manager.pojo.VproCoursesLessonListExample;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.IntrospectionException;
@@ -94,7 +95,7 @@ public class LessonServiceImpl implements LessonService {
             throw new LessonException("操作对象dto的type非法，dto信息：" + lessonsOps.toString());
         }
         // 如果只是从第三个标题的第一个位置移动到第二个标题的最后一个位置，实际上只是更改了pid所以不涉及其他内容
-        if (end - start <= 1) return null;
+        if (end - start <= 1 && (!lessonsOps.getOriginal().getLessonPid().equals(lessonsOps.getDestination().getLessonPid()))) return null;
         // 这里有个参数是isTitle，表明是否为标题
         list = lessonsMapper.getLessonsNeedReLocation(
                 start,
@@ -287,18 +288,18 @@ public class LessonServiceImpl implements LessonService {
             relocateStart = lessonsMapper.getLessonLidSpecified(
                     lessonsOps.getType(),
                     lessonsOps.getCourseId(),
-                    Integer.parseInt(lessonsOps.getOriginal().getLessonPid())
+                    Integer.parseInt(lessonsOps.getOriginal().getLessonId())
             );
             relocateEnd = lessonsMapper.getLessonLidSpecified(
                     lessonsOps.getType(),
                     lessonsOps.getCourseId(),
-                    Integer.parseInt(lessonsOps.getDestination().getLessonPid())
+                    Integer.parseInt(lessonsOps.getDestination().getLessonId())
             );
         }
         if (relocateEnd == null || relocateStart == null || relocateEnd <= relocateStart)
             throw new LessonException("移动副标题时，搬迁lessons失败，搬迁范围:(" + relocateStart + "~" + relocateEnd + "], DTO信息：" + lessonsOps.toString());
         // 需要搬迁的数据id范围
-        return lessonsMapper.getLessonsNeedReLocation(relocateStart, relocateEnd, lessonsOps.getCourseId(), lessonsOps.getType(), 0);
+        return lessonsMapper.getLessonsNeedReLocation(relocateStart, relocateEnd, lessonsOps.getCourseId(), lessonsOps.getType() + lessonsOps.getDropType(), 0);
 
     }
     @Override
@@ -371,6 +372,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean manageEdit(LessonsOpsList lessonsOpsList) {
         boolean res = false;
         VproCoursesLessonList vproCoursesLessonList = null;
