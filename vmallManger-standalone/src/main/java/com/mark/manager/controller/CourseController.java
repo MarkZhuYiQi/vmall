@@ -6,6 +6,7 @@ import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
+import com.mark.manager.validator.ValidateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.mark.common.constant.CourseConstant.COURSE_VALIDATE_ERROR;
 import static com.mark.common.constant.ResultConstant.RES_NULL;
 
 @RestController
@@ -56,15 +58,12 @@ public class CourseController {
     @PutMapping("")
     public Result createCourse(@RequestBody Courses courses) {
         System.out.println(courses.toString());
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<Courses>> constraintViolationSet = validator.validate(courses);
-        Iterator<ConstraintViolation<Courses>> it = constraintViolationSet.iterator();
-        System.out.println(constraintViolationSet.size())
-;        while(it.hasNext()) {
-            String mes = it.next().getMessage();
-            System.out.println(mes);
+        ValidateDTO<Courses> validateDTO = new ValidateDTO<Courses>(courses);
+        String errMessage = validateDTO.proceedValidate();
+        if (errMessage != null) {
+            return new Result(errMessage, COURSE_VALIDATE_ERROR);
         }
+
         return new Result();
     }
 

@@ -5,17 +5,19 @@ import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesCover;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 public class Courses implements Serializable {
 
     private String courseId;
-    @NotNull(message = "课程名称为空")
+    @NotBlank(message = "课程名称为空")
     private String courseTitle;
-    @NotNull(message = "课程归属不能为空")
+    @NotBlank(message = "课程归属不能为空")
     private Integer coursePid;
-    @NotNull(message = "课程作者不能为空")
+    @NotBlank(message = "课程作者不能为空")
     private String courseAuthor;
 
     private String courseCover;
