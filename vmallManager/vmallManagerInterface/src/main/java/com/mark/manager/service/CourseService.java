@@ -11,4 +11,5 @@ public interface CourseService {
     public List<Courses> getCoursesByPid(List<Integer> ids);
     public PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
     public Courses updateCourse(CourseUpdate courseUpdate);
+
 }

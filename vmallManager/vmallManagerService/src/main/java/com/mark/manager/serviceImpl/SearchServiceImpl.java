@@ -6,7 +6,6 @@ import com.mark.common.pojo.SearchResult;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dto.Search;
 import com.mark.manager.pojo.VproNavbar;
-import com.mark.manager.service.AuthService;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.SearchService;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -17,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 @Service

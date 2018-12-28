@@ -9,8 +9,14 @@ import com.mark.manager.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.mark.common.constant.ResultConstant.RES_NULL;
 
@@ -41,10 +47,25 @@ public class CourseController {
         Courses courses = courseService.getCourse(courseId);
         return new Result(courses);
     }
-    @PutMapping("")
+    @PostMapping("")
     public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
         Courses courses = courseService.updateCourse(courseUpdate);
         if (courses != null) return new Result(courses);
         return new Result(null, RES_NULL);
     }
+    @PutMapping("")
+    public Result createCourse(@RequestBody Courses courses) {
+        System.out.println(courses.toString());
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Set<ConstraintViolation<Courses>> constraintViolationSet = validator.validate(courses);
+        Iterator<ConstraintViolation<Courses>> it = constraintViolationSet.iterator();
+        System.out.println(constraintViolationSet.size())
+;        while(it.hasNext()) {
+            String mes = it.next().getMessage();
+            System.out.println(mes);
+        }
+        return new Result();
+    }
+
 }
