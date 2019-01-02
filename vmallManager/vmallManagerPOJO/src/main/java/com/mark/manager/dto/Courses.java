@@ -3,6 +3,8 @@ package com.mark.manager.dto;
 import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesCover;
+import com.mark.manager.validateGroup.CreateCourse;
+import com.mark.manager.validateGroup.InsertCourseItems;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
@@ -11,13 +13,13 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 public class Courses implements Serializable {
-
+    @NotBlank(message = "课程位置错误（id）", groups = {InsertCourseItems.class})
     private String courseId;
-    @NotBlank(message = "课程名称为空")
+    @NotBlank(message = "课程名称为空", groups = {CreateCourse.class, InsertCourseItems.class})
     private String courseTitle;
-    @NotBlank(message = "课程归属不能为空")
+    @NotBlank(message = "课程归属不能为空", groups = {CreateCourse.class, InsertCourseItems.class})
     private Integer coursePid;
-    @NotBlank(message = "课程作者不能为空")
+    @NotBlank(message = "课程作者不能为空", groups = {CreateCourse.class, InsertCourseItems.class})
     private String courseAuthor;
 
     private String courseCover;

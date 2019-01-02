@@ -62,6 +62,6 @@ public class DtoUtil {
 
 
         vproCourses.setCourseTime(String.valueOf(System.currentTimeMillis() / 1000));
-
+        return vproCourses;
     }
 }

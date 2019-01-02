@@ -1,14 +1,22 @@
 package com.mark.manager.validator;
 
 import com.mark.manager.dto.Courses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.Validator;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class ValidateDTO<T> {
+    @Autowired
+    Validator validator;
     private T dto;
 
     public ValidateDTO(T dto) {
@@ -25,6 +33,15 @@ public class ValidateDTO<T> {
             System.out.println(mes);
             return mes;
         }
+        return null;
+    }
+    public String validatePojo() {
+        DataBinder binder = new DataBinder(dto);
+        binder.setValidator(validator);
+        binder.validate();
+        BindingResult results = binder.getBindingResult();
+        List<ObjectError> list = results.getAllErrors();
+        System.out.println(list.toString());
         return null;
     }
 }

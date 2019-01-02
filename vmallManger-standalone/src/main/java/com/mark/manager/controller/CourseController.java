@@ -59,7 +59,8 @@ public class CourseController {
     public Result createCourse(@RequestBody Courses courses) {
         System.out.println(courses.toString());
         ValidateDTO<Courses> validateDTO = new ValidateDTO<Courses>(courses);
-        String errMessage = validateDTO.proceedValidate();
+//        String errMessage = validateDTO.proceedValidate();
+        String errMessage = validateDTO.validatePojo();
         if (errMessage != null) {
             return new Result(errMessage, COURSE_VALIDATE_ERROR);
         }
