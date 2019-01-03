@@ -1,5 +1,6 @@
 package com.mark.manager.validator;
 
+import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.dto.Courses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -25,7 +26,7 @@ public class ValidateDTO<T> {
     public String proceedValidate() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         javax.validation.Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<T>> constraintViolationSet = validator.validate(dto);
+        Set<ConstraintViolation<T>> constraintViolationSet = validator.validate(dto, CreateCourse.class);
         Iterator<ConstraintViolation<T>> it = constraintViolationSet.iterator();
         System.out.println(constraintViolationSet.size());
         while(it.hasNext()) {
@@ -40,6 +41,7 @@ public class ValidateDTO<T> {
         binder.setValidator(validator);
         binder.validate();
         BindingResult results = binder.getBindingResult();
+        System.out.println(results.hasErrors());
         List<ObjectError> list = results.getAllErrors();
         System.out.println(list.toString());
         return null;

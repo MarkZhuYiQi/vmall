@@ -1,6 +1,7 @@
 package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
@@ -8,6 +9,7 @@ import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
 import com.mark.manager.validator.ValidateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
@@ -56,7 +58,9 @@ public class CourseController {
         return new Result(null, RES_NULL);
     }
     @PutMapping("")
-    public Result createCourse(@RequestBody Courses courses) {
+    public Result createCourse(
+//            @Validated({CreateCourse.class})
+            @RequestBody Courses courses) {
         System.out.println(courses.toString());
         ValidateDTO<Courses> validateDTO = new ValidateDTO<Courses>(courses);
 //        String errMessage = validateDTO.proceedValidate();

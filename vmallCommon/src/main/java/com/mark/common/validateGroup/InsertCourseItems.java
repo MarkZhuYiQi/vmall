@@ -1,4 +1,4 @@
-package com.mark.manager.validateGroup;
+package com.mark.common.validateGroup;
 
 public interface InsertCourseItems {
 }
