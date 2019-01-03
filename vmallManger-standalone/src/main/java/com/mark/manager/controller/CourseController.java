@@ -1,27 +1,20 @@
 package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
-import com.mark.manager.validator.ValidateDTO;
+import com.mark.manager.validator.ValidateDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import static com.mark.common.constant.CourseConstant.COURSE_VALIDATE_ERROR;
+import static com.mark.common.constant.CourseConstant.CREATE_COURSE_VALIDATE_ERROR;
 import static com.mark.common.constant.ResultConstant.RES_NULL;
 
 @RestController
@@ -31,7 +24,8 @@ public class CourseController {
     CourseService courseService;
     @Autowired
     CategoryService categoryService;
-
+    @Autowired
+    Validator localValidator;
     @GetMapping("nav/{navId:\\d+}")
     public Result getCoursesByPid(
             @PathVariable("navId") Integer navId,
@@ -58,18 +52,13 @@ public class CourseController {
         return new Result(null, RES_NULL);
     }
     @PutMapping("")
-    public Result createCourse(
-//            @Validated({CreateCourse.class})
-            @RequestBody Courses courses) {
-        System.out.println(courses.toString());
-        ValidateDTO<Courses> validateDTO = new ValidateDTO<Courses>(courses);
-//        String errMessage = validateDTO.proceedValidate();
-        String errMessage = validateDTO.validatePojo();
-        if (errMessage != null) {
-            return new Result(errMessage, COURSE_VALIDATE_ERROR);
+    public Result createCourse(@RequestBody Courses courses) {
+        ValidateDto<Courses> validateDto = new ValidateDto<Courses>(localValidator, courses);
+        List<String> errList = validateDto.validate();
+        if (errList.size() != 0) {
+            return new Result(errList, CREATE_COURSE_VALIDATE_ERROR);
         }
 
         return new Result();
     }
-
 }

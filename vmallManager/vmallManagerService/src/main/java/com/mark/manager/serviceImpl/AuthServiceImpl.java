@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     VproAuthMapper vproAuthMapper;
     @Autowired
-    Validator validator;
+    Validator localValidator;
     @Autowired
     UserRolesPermissionsMapper userRolesPermissionsMapper;
 
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
     public String verifyLogin(Login login)
     {
         DataBinder dataBinder = new DataBinder(login);
-        dataBinder.setValidator(validator);
+        dataBinder.setValidator(localValidator);
         dataBinder.validate();
         BindingResult bindingResult = dataBinder.getBindingResult();
         String errMessage = null;
