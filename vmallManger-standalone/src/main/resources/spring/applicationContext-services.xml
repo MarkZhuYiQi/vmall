@@ -15,7 +15,8 @@
     <bean class="org.springframework.http.converter.StringHttpMessageConverter" id="stringHttpMessageConverter">
         <constructor-arg name="defaultCharset" value="utf-8"/>
     </bean>
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+    <!--写到javaConfig去了-->
+    <bean id="localValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
     <!-- 引用dubbo服务 -->
     <dubbo:application name="vmallManager" />

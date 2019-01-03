@@ -1,4 +1,4 @@
 package com.mark.manager.validateGroup;
 
-public interface CreateCourse {
+public interface CreateCourse{
 }

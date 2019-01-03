@@ -12,6 +12,7 @@
         <module>vmallManger-standalone</module>
         <module>Generator</module>
         <module>demo</module>
+        <module>test</module>
     </modules>
     <packaging>pom</packaging>
 
