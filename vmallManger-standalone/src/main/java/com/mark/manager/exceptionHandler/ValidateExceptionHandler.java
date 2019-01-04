@@ -1,25 +1,36 @@
 package com.mark.manager.exceptionHandler;
 
+import com.mark.manager.bo.Result;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
 
-@ControllerAdvice
+@ResponseBody
+@ControllerAdvice("com.mark.manager.controller")
 @Component
 public class ValidateExceptionHandler {
-    @ExceptionHandler
-    public String handle(ConstraintViolationException exception, HttpServletRequest request) {
-        Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public Result handle(
+            MethodArgumentNotValidException exception,
+            HttpServletResponse response) {
+        BindingResult result  = exception.getBindingResult();
         StringBuffer errInfo = new StringBuffer();
-        for(ConstraintViolation<?> item : violations) {
-            errInfo.append(item.getMessage());
-            errInfo.append(",");
+        if (result.hasErrors()) {
+            for(ObjectError e : result.getAllErrors()) {
+                errInfo.append(e.getDefaultMessage());
+                errInfo.append(",");
+            }
         }
-        return "失败: " + errInfo.toString();
+        return new Result(errInfo.toString(), 801);
     }
 }
