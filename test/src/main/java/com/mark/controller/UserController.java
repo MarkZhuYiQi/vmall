@@ -18,12 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
     @Autowired
     Validator localValidator;
-    @Autowired
-    Result result;
     @PostMapping("")
     public @ResponseBody Result userTest(@RequestBody User user) {
-        System.out.println(result.toString());
-        System.out.println(user.toString());
         DataBinder dataBinder = new DataBinder(user);
         dataBinder.setValidator(localValidator);
         dataBinder.validate();

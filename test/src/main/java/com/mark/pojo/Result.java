@@ -4,7 +4,20 @@ public class Result {
     private String data;
     private String code;
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "data='" + data + '\'' +
+                ", code='" + code + '\'' +
+                '}';
+    }
+
     public Result() {
+    }
+
+    public Result(String data, String code) {
+        this.data = data;
+        this.code = code;
     }
 
     public String getData() {

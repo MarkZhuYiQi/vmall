@@ -15,10 +15,4 @@ public class ValidatorConfig {
     public Validator localValidator() {
         return new LocalValidatorFactoryBean();
     }
-    @Bean
-    public Result test() {
-        Result result = new Result();
-        result.setData("fuck");
-        return result;
-    }
 }

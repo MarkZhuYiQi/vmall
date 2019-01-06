@@ -1,6 +1,7 @@
 package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
@@ -52,7 +53,8 @@ public class CourseController {
         return new Result(null, RES_NULL);
     }
     @PutMapping("")
-    public Result createCourse(@RequestBody Courses courses) {
+    public Result createCourse(@Validated({CreateCourse.class}) @RequestBody Courses courses) {
+        System.out.println(courses.toString());
         ValidateDto<Courses> validateDto = new ValidateDto<Courses>(localValidator, courses);
         List<String> errList = validateDto.validate();
         if (errList.size() != 0) {
