@@ -10,6 +10,7 @@ import com.mark.manager.service.CourseService;
 import com.mark.manager.validator.ValidateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
