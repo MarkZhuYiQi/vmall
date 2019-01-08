@@ -201,7 +201,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="courseId != null">
-        #{courseId, jdbc=INTEGER}
+        #{courseId,jdbcType=INTEGER},
       </if>
       <if test="courseTitle != null">
         #{courseTitle,jdbcType=VARCHAR},
