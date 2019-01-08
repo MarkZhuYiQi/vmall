@@ -19,6 +19,7 @@ import com.mark.manager.pojo.*;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
 import com.mark.manager.service.InitService;
+import com.mark.manager.task.RoutineTask;
 import com.mark.manager.threads.CourseOutput;
 import com.mark.manager.threads.ElasticSearchImport;
 import com.mark.manager.threads.NameThreadFactory;
@@ -250,4 +251,11 @@ public class InitServiceImpl implements InitService {
         GenericObjectPool<RestHighLevelClient> clientPool = new GenericObjectPool<RestHighLevelClient>(elasticRestClientPool, poolConfig);
         return clientPool;
     }
+    @PostConstruct
+    public void setUid() {
+        Long current = System.currentTimeMillis();
+        long todayAtZero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
+        jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
+    }
+
 }

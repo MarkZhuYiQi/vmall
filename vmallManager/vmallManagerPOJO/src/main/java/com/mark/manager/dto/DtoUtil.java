@@ -6,8 +6,10 @@ import com.mark.common.util.BeanUtil;
 import com.mark.manager.pojo.VproCourses;
 import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproNavbar;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.beans.IntrospectionException;
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class DtoUtil {
@@ -59,7 +61,10 @@ public class DtoUtil {
         if (courses.getCoursePid() != null) vproCourses.setCoursePid(courses.getCoursePid());
         if (courses.getCourseTitle() != null) vproCourses.setCourseTitle(courses.getCourseTitle());
         if (courses.getCourseAuthor() != null) vproCourses.setCourseAuthor(courses.getCourseAuthor());
-
+        if (courses.getCourseCover() != null) vproCourses.setCourseCover(courses.getCourseCover());
+        if (courses.getCourseStatus() != null) vproCourses.setCourseStatus(Boolean.valueOf(String.valueOf(courses.getCourseStatus())));
+        if (courses.getCoursePrice() != null) vproCourses.setCoursePrice(new BigDecimal(courses.getCoursePrice()));
+        if (courses.getCourseDiscountPrice() != null) vproCourses.setCourseDiscountPrice(new BigDecimal(courses.getCourseDiscountPrice()));
 
         vproCourses.setCourseTime(String.valueOf(System.currentTimeMillis() / 1000));
         return vproCourses;

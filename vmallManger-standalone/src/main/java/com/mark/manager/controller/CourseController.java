@@ -55,13 +55,8 @@ public class CourseController {
     }
     @PutMapping("")
     public Result createCourse(@Validated({CreateCourse.class}) @RequestBody Courses courses) {
-        System.out.println(courses.toString());
-        ValidateDto<Courses> validateDto = new ValidateDto<Courses>(localValidator, courses);
-        List<String> errList = validateDto.validate();
-        if (errList.size() != 0) {
-            return new Result(errList, CREATE_COURSE_VALIDATE_ERROR);
-        }
-
+        Courses course = courseService.createCourse(courses);
+        System.out.println(course.toString());
         return new Result();
     }
 }

@@ -23,6 +23,7 @@ public class ValidateExceptionHandler {
     public Result handle(
             MethodArgumentNotValidException exception,
             HttpServletResponse response) {
+        System.out.println("开始验证");
         BindingResult result  = exception.getBindingResult();
         StringBuffer errInfo = new StringBuffer();
         if (result.hasErrors()) {

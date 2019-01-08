@@ -21,8 +21,10 @@
 
         <javaClientGenerator targetPackage="com.mark.manager.mapper"  targetProject="./src/main/java" type="XMLMAPPER" />
 
-        <table schema="" tableName="vpro_courses_lesson_list">
-            <generatedKey column="lesson_id" sqlStatement="Mysql" identity="true" />
+        <table schema="" tableName="vpro_courses">
+            <generatedKey column="course_id" sqlStatement="Mysql" identity="true" />
         </table>
+
+
     </context>
 </generatorConfiguration>

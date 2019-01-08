@@ -2,7 +2,9 @@ package com.mark.manager.serviceImpl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
+import com.mark.common.util.UidUtil;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.DtoUtil;
@@ -32,6 +34,8 @@ public class CourseServiceImpl implements CourseService {
     CoursesMapper coursesMapper;
     @Autowired
     VproCoursesContentMapper vproCoursesContentMapper;
+    @Autowired
+    JedisClient jedisClient;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -121,6 +125,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Courses createCourse(Courses courses) {
-        return null;
+        VproCourses vproCourses = new VproCourses();
+        vproCourses = DtoUtil.courses2VproCourses(courses);
+        Integer courseId = Integer.parseInt(String.valueOf(UidUtil.getUid(jedisClient)));
+        System.out.println(courseId);
+        vproCourses.setCourseId(courseId);
+        System.out.println(vproCourses.getCourseId());
+        Integer id = vproCoursesMapper.insertSelective(vproCourses);
+        Courses c = getCourse(id);
+        System.out.println(c.toString());
+        return c;
     }
 }
