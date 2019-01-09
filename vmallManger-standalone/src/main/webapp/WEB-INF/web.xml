@@ -16,8 +16,7 @@
     <param-value>classpath:spring/applicationContext-*.xml</param-value>
   </context-param>
 
-<!--
-  &lt;!&ndash;一个标准servlet Filter的代理,代理实现了Filter接口的spring管理的Bean, springSecurity&ndash;&gt;
+  <!--一个标准servlet Filter的代理,代理实现了Filter接口的spring管理的Bean, springSecurity-->
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -27,7 +26,6 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
--->
 
   <!-- 解决POST乱码 -->
   <filter>
