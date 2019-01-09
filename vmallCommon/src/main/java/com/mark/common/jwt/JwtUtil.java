@@ -20,7 +20,7 @@ public class JwtUtil {
     {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, EXPIRE_TIME);
-        System.out.println(user.toString());
+        System.out.println("JwtUtil.genToken: " + user.toString());
         return JWT.create()
                 .withIssuer("Mark")
                 .withExpiresAt(calendar.getTime())

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.BadPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
@@ -38,17 +39,21 @@ public class AuthController {
     @PostMapping("")
     public Result login(@RequestBody Login login)
     {
-        logger.info("开始");
-        login = authService.decrypt(login);
-        String errMessage = authService.verifyLogin(login);
-        if (errMessage == null)
-        {
+        try{
+            logger.info("开始");
+            // 1. 检测得到的数据是否可以成功解密
+            login = authService.decrypt(login);
+            String errMessage = authService.verifyLogin(login);
+            // 2. 如果传来的信息不合法，抛错返回
+            if (errMessage != null) return new Result("user or password mismatch", LoginConstant.LOGIN_INFO_ILLEGAL);
+            // 3. 生成token
             Result result = authService.genToken(login);
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            System.out.println(principal);
+            System.out.println("AuthController.login: " + principal);
             return result;
+        } catch(Exception e) {
+            return new Result("user or password error", LoginConstant.PASS_MISMATCH);
         }
-        return new Result(new TokenResult("", ""), LoginConstant.PASS_MISMATCH);
     }
 
     @GetMapping("testauth")
