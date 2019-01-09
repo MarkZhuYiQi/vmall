@@ -70,4 +70,17 @@ public class UserRoles implements Serializable {
 
     public UserRoles() {
     }
+
+    @Override
+    public String toString() {
+        return "UserRoles{" +
+                "authId=" + authId +
+                ", authAppid='" + authAppid + '\'' +
+                ", authAppkey='" + authAppkey + '\'' +
+                ", authTime='" + authTime + '\'' +
+                ", authIp='" + authIp + '\'' +
+                ", authRolesId=" + authRolesId +
+                ", role=" + role +
+                '}';
+    }
 }

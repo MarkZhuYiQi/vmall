@@ -126,11 +126,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Courses createCourse(Courses courses) {
         VproCourses vproCourses = new VproCourses();
+
         vproCourses = DtoUtil.courses2VproCourses(courses);
         Integer courseId = Integer.parseInt(String.valueOf(UidUtil.getUid(jedisClient)));
-        System.out.println(courseId);
         vproCourses.setCourseId(courseId);
-        System.out.println(vproCourses.getCourseId());
         Integer id = vproCoursesMapper.insertSelective(vproCourses);
         Courses c = getCourse(id);
         System.out.println(c.toString());

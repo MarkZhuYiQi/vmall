@@ -44,7 +44,7 @@ public class TokenFilter extends UsernamePasswordAuthenticationFilter {
             Map<String, Claim> claims = jwt.getClaims();
             for(Map.Entry<String, Claim> c : claims.entrySet())
             {
-//                System.out.println("key = " + c.getKey() + " and value = " + c.getValue());
+                System.out.println("key = " + c.getKey() + " and value = " + c.getValue());
             }
             String appId = claims.get("appid").asString();
             logger.info("jwt中的用户名获取：" + appId);
@@ -52,6 +52,7 @@ public class TokenFilter extends UsernamePasswordAuthenticationFilter {
 //            String rolesName = authService.getRoleByNameInRedis(appId);
             logger.info("拿到用户角色名：" + rolesName);
             // 这里的角色权限应该从数据库获得。
+            // UsernamePasswordAuthenticationToken第一个参数是object，所以可以放对象的。
             SecurityContextHolder.getContext().setAuthentication(
                     new UsernamePasswordAuthenticationToken(appId, "", AuthorityUtils.commaSeparatedStringToAuthorityList(rolesName)));
         }

@@ -6,6 +6,7 @@ import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result getCategoriesTree()
     {
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return categoryService.getCategoriesTree();
     }
     @PreAuthorize("hasRole('admin')")
