@@ -9,11 +9,13 @@ import com.mark.common.validateGroup.InsertCourseItems;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import java.io.Serializable;
 
 public class Courses implements Serializable {
     @NotBlank(message = "课程位置错误（id）", groups = {InsertCourseItems.class})
+    @Pattern(regexp = "^[0-9]+$", groups = {InsertCourseItems.class})
     private String courseId;
     @NotBlank(message = "课程名称为空", groups = {CreateCourse.class, InsertCourseItems.class})
     private String courseTitle;
