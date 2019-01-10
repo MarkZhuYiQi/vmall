@@ -19,7 +19,7 @@ public class AopProxyTest {
         Subject sub = (Subject) proxyHandler.bind(new RealSubject());
         sub.doSomeThing();
     }
-}gadd .class
+}
 interface Subject{
     public void doSomeThing();
 }

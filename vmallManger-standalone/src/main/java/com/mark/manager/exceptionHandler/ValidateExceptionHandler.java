@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ValidateExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result handle(
             MethodArgumentNotValidException exception,
             HttpServletResponse response) {

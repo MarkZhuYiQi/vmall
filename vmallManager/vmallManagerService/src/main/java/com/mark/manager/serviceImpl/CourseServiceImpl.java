@@ -131,8 +131,8 @@ public class CourseServiceImpl implements CourseService {
         Integer courseId = Integer.parseInt(String.valueOf(UidUtil.getUid(jedisClient)));
         vproCourses.setCourseId(courseId);
         Integer id = vproCoursesMapper.insertSelective(vproCourses);
+        System.out.println(id);
         Courses c = getCourse(id);
-        System.out.println(c.toString());
         return c;
     }
 }
