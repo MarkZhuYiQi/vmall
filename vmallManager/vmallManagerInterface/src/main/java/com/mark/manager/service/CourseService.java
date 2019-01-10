@@ -1,6 +1,7 @@
 package com.mark.manager.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mark.common.exception.CourseException;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 
@@ -11,5 +12,5 @@ public interface CourseService {
     public List<Courses> getCoursesByPid(List<Integer> ids);
     public PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
     public Courses updateCourse(CourseUpdate courseUpdate);
-    public Courses createCourse(Courses courses);
+    public Courses createCourse(Courses courses) throws CourseException;
 }

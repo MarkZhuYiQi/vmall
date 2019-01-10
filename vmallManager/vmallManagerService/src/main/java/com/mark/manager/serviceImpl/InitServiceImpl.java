@@ -255,7 +255,10 @@ public class InitServiceImpl implements InitService {
     public void setUid() {
         Long current = System.currentTimeMillis();
         long todayAtZero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
-        jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
+        String dataInRedis = jedisClient.get("uid");
+        if (dataInRedis == null || (Long.parseLong(dataInRedis) < todayAtZero)) {
+            jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
+        }
     }
 
 }

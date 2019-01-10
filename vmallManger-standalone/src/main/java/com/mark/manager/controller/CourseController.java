@@ -2,6 +2,7 @@ package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
+import com.mark.common.exception.CourseException;
 import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.CourseUpdate;
@@ -63,16 +64,18 @@ public class CourseController {
     public Result createCourse(@Validated({CreateCourse.class}) @RequestBody Courses courses) {
         // 从security中获取用户信息，实际上可以存对象，默认Object
         String appAuthId = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // 从redis获得用户信息
         Map<String, String> list = authService.getAuthByAuthIdFromRedis(appAuthId);
-        System.out.println("CourseController.createCourse_authFromRedis: " + list.toString());
-        if (list.size() == 0 || list == null) return new Result("author could not be found", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
-        System.out.println("CourseController.createCourse_author: " + list.get("authAppid"));
-        System.out.println("CourseController.createCourse_author: " + courses.getCourseAuthor());
+        if (list.size() == 0) return new Result("author could not be found", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
+        // 后端前端比对，如果不一样说明作者有问题
         if (!list.get("authAppid").equals(courses.getCourseAuthor())) return new Result("author mismatch", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
-        System.out.println("CourseController.createCourse: " + list.get("authAppid") + ": " + list.get("authId"));
         courses.setCourseAuthor(list.get("authId"));
-        Courses course = courseService.createCourse(courses);
-        System.out.println(course.toString());
-        return new Result(course);
+        try {
+            Courses course = courseService.createCourse(courses);
+            System.out.println(course.toString());
+            return new Result(course);
+        } catch (CourseException e) {
+            return new Result(e.getCode(), e.getMessage());
+        }
     }
 }

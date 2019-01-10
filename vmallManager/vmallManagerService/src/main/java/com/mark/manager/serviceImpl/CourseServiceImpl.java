@@ -2,6 +2,8 @@ package com.mark.manager.serviceImpl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mark.common.constant.CourseConstant;
+import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.UidUtil;
@@ -124,15 +126,16 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Courses createCourse(Courses courses) {
+    public Courses createCourse(Courses courses) throws CourseException {
         VproCourses vproCourses = new VproCourses();
-
         vproCourses = DtoUtil.courses2VproCourses(courses);
         Integer courseId = Integer.parseInt(String.valueOf(UidUtil.getUid(jedisClient)));
         vproCourses.setCourseId(courseId);
-        Integer id = vproCoursesMapper.insertSelective(vproCourses);
-        System.out.println(id);
-        Courses c = getCourse(id);
-        return c;
+        Integer res = vproCoursesMapper.insertSelective(vproCourses);
+        if (res > 0) {
+            return getCourse(courseId);
+        } else {
+            throw new CourseException("create course failed", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
+        }
     }
 }

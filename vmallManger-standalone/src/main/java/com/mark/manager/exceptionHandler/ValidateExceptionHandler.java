@@ -32,6 +32,6 @@ public class ValidateExceptionHandler {
                 errInfo.append(",");
             }
         }
-        return new Result(errInfo.toString(), 801);
+        return new Result(801, errInfo.toString());
     }
 }
