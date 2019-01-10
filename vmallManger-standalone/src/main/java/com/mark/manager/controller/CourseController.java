@@ -64,7 +64,7 @@ public class CourseController {
         // 从security中获取用户信息，实际上可以存对象，默认Object
         String appAuthId = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Map<String, String> list = authService.getAuthByAuthIdFromRedis(appAuthId);
-        if (list.size() == 0 || list == null) return new Result("author could not be found", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
+        if (list.size() == 0) return new Result("author could not be found", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
         if (!list.get("authId").equals(courses.getCourseAuthor())) return new Result("author mismatch", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
         courses.setCourseAuthor(list.get("authId"));
         Courses course = courseService.createCourse(courses);
