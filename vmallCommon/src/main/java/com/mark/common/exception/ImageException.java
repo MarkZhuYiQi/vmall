@@ -6,11 +6,12 @@ public class ImageException extends RuntimeException {
 
     public ImageException(String msg) {
         super(msg);
+        this.setMsg(msg);
     }
 
-    public ImageException(String msg, Integer code) {
-        super(msg);
-        this.msg = msg;
+    public ImageException(String message, Integer code) {
+        super(message);
+        this.msg = message;
         this.code = code;
     }
 
@@ -34,4 +35,5 @@ public class ImageException extends RuntimeException {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
 }

@@ -4,4 +4,8 @@ public class CourseConstant {
     public static final Integer CREATE_COURSE_VALIDATE_ERROR = 801;
     public static final Integer INSERT_COURSE_VALIDATE_ERROR = 802;
     public static final Integer INSERT_COURSE_AUTHOR_FAILURE = 803;
+    public static final Integer UPDATE_COURSE_WITHOUT_AFFECTED_ROWS = 804;
+    public static final Integer INSERT_COURSE_CONTENT_FAILURE = 805;
+    public static final Integer UPDATE_COURSE_CONTENT_FAILURE = 806;
+    public static final Integer UPDATE_COURSE_WITHOUT_INFO = 807;
 }

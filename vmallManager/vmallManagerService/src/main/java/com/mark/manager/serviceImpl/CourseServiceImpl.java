@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CourseException;
+import com.mark.common.exception.TestException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.UidUtil;
@@ -77,22 +78,27 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Courses updateCourse(CourseUpdate courseUpdate) {
+    public Courses updateCourse(CourseUpdate courseUpdate) throws CourseException {
         try {
             Map<String, String> map = BeanUtil.bean2map(courseUpdate);
             Integer flag = 0;
+            // 判断是否有需要更新的信息
             for(Map.Entry<String, String> m : map.entrySet()) {
                 if (!m.getValue().equals("") && !m.getValue().equals("-1")) flag = 1;
+                break;
             }
             Integer res = 0;
             if (flag != 0) {
+                // 开始更新
                 VproCourses vproCourses = DtoUtil.courseUpdate2VproCoueses(courseUpdate);
                 res = vproCoursesMapper.updateByPrimaryKeySelective(vproCourses);
                 if (res == 0) {
                     logger.warn("课程信息更新失败");
+                    throw new CourseException("课程信息更新失败", CourseConstant.UPDATE_COURSE_WITHOUT_AFFECTED_ROWS);
                 }
                 logger.info("课程信息更新成功");
                 res = 0;
+                // 以下是更新课程的概述
                 if (courseUpdate.getCourseContent() != null && courseUpdate.getCourseContent().length() != 0 ) {
                     // 构建详细描述对象
                     VproCoursesContent vproCoursesContent = new VproCoursesContent();
@@ -103,13 +109,21 @@ public class CourseServiceImpl implements CourseService {
                     Long count = vproCoursesContentMapper.countByExample(vproCoursesContentExample);
 
                     if (count > 0) {
+                        // 找到这个课程的概述，就给她更新
                         res = vproCoursesContentMapper.updateByPrimaryKey(vproCoursesContent);
-                        if (res > 0) logger.info("课程详细描述更新成功");
-                        logger.info("课程详细描述更新失败");
+                        if (res > 0) {
+                            logger.warn("课程详细描述更新失败");
+                            throw new CourseException("课程详细描述更新失败", CourseConstant.UPDATE_COURSE_CONTENT_FAILURE);
+                        }
+                        logger.info("课程详细描述更新成功");
                         res = 0;
                     } else {
+                        // 没找到就给他新增
                         res = vproCoursesContentMapper.insert(vproCoursesContent);
-                        if (res > 0) logger.info("课程详细描述插入成功");
+                        if (res == 0) {
+                            logger.warn("课程详细描述插入失败");
+                            throw new CourseException("课程详细描述插入失败", CourseConstant.INSERT_COURSE_CONTENT_FAILURE);
+                        }
                         logger.info("课程详细描述插入成功");
                     }
                 }
@@ -117,12 +131,12 @@ public class CourseServiceImpl implements CourseService {
                 return getCourse(courseUpdate.getCourseId());
             } else {
                 logger.warn("课程更新内容为空，失败");
+                throw new CourseException("课程更新内容为空", CourseConstant.UPDATE_COURSE_WITHOUT_INFO);
             }
-            return null;
         } catch (IntrospectionException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     @Override
