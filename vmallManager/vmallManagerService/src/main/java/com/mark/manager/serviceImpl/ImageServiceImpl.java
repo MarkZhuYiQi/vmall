@@ -1,5 +1,6 @@
 package com.mark.manager.serviceImpl;
 
+import com.mark.common.constant.ImageConstant;
 import com.mark.common.exception.ImageException;
 import com.mark.manager.mapper.VproCoursesCoverMapper;
 import com.mark.manager.pojo.VproCoursesCover;
@@ -31,7 +32,7 @@ public class ImageServiceImpl implements ImageService {
         System.out.println(vproCoursesCover.getCourseCoverUptime());
         Integer res = vproCoursesCoverMapper.insertSelective(vproCoursesCover);
         if (res != 1) {
-            throw new ImageException("插入封面失败，检查日志");
+            throw new ImageException("插入封面失败，检查日志", ImageConstant.SET_IMAGE_FAILURE);
         }
         return getCoverById(vproCoursesCover.getCourseCoverId());
     }

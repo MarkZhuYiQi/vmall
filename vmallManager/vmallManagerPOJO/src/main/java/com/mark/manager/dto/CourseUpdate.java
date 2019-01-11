@@ -1,9 +1,13 @@
 package com.mark.manager.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class CourseUpdate implements Serializable {
+    @NotNull
+    @Pattern(regexp = "^[0-9]+$")
     private Integer courseId;
     private Integer coursePid;
     private String courseTitle;

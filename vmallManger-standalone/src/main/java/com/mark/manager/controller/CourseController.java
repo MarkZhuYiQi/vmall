@@ -10,7 +10,6 @@ import com.mark.manager.dto.Courses;
 import com.mark.manager.service.AuthService;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
-import com.mark.manager.validator.ValidateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Validator;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.mark.common.constant.CourseConstant.CREATE_COURSE_VALIDATE_ERROR;
 import static com.mark.common.constant.ResultConstant.RES_NULL;
 
 @RestController
@@ -55,10 +53,14 @@ public class CourseController {
         return new Result(courses);
     }
     @PostMapping("")
-    public Result updateCourse(@RequestBody CourseUpdate courseUpdate) {
-        Courses courses = courseService.updateCourse(courseUpdate);
-        if (courses != null) return new Result(courses);
-        return new Result(null, RES_NULL);
+    public Result updateCourse(@Validated @RequestBody CourseUpdate courseUpdate) {
+        try{
+            Courses courses = courseService.updateCourse(courseUpdate);
+            if (courses != null) return new Result(courses);
+        } catch (CourseException e) {
+            return new Result(e.getCode(), e.getMessage());
+        }
+        return new Result(RES_NULL, "更新失败");
     }
     @PutMapping("")
     public Result createCourse(@Validated({CreateCourse.class}) @RequestBody Courses courses) {

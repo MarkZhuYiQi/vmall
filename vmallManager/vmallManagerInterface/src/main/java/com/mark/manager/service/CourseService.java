@@ -11,6 +11,6 @@ public interface CourseService {
     public Courses getCourse(Integer courseId);
     public List<Courses> getCoursesByPid(List<Integer> ids);
     public PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
-    public Courses updateCourse(CourseUpdate courseUpdate);
+    public Courses updateCourse(CourseUpdate courseUpdate) throws CourseException;
     public Courses createCourse(Courses courses) throws CourseException;
 }
