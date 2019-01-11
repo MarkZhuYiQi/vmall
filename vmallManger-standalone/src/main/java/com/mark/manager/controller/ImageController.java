@@ -1,5 +1,6 @@
 package com.mark.manager.controller;
 
+import com.mark.common.constant.ImageConstant;
 import com.mark.common.exception.ImageException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.pojo.VproCoursesCover;
@@ -20,11 +21,12 @@ public class ImageController {
         VproCoursesCover cover = new VproCoursesCover();
         try {
             if (vproCoursesCover.getCourseCoverId() == null || vproCoursesCover.getCourseCoverAddress() == null || vproCoursesCover.getCourseCoverKey() == null) {
-                throw new ImageException("封面信息更新不完整");
+                return new Result(ImageConstant.IMAGE_UPDATE_INFO_DAMAGED, "封面信息更新不完整");
             }
             cover = imageService.updateCover(vproCoursesCover);
         } catch(ImageException e) {
             logger.error(e.getMsg());
+            return new Result(e.getCode(), e.getMessage());
         }
         return new Result(cover);
     }
