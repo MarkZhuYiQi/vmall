@@ -24,7 +24,9 @@
 <!--        <table schema="" tableName="vpro_courses_cover">
             <generatedKey column="course_cover_id" sqlStatement="Mysql" identity="true" />
         </table>-->
-        <table schema="" tableName="vpro_courses_cover" />
-
+        <!--<table schema="" tableName="vpro_courses_cover" />-->
+        <table schema="" tableName="vpro_courses_image">
+            <generatedKey column="image_id" sqlStatement="Mysql" identity="true" />
+        </table>
     </context>
 </generatorConfiguration>
