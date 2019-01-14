@@ -5,6 +5,7 @@ import com.mark.common.pojo.User;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.pojo.VproCourses;
 import com.mark.manager.pojo.VproCoursesContent;
+import com.mark.manager.pojo.VproCoursesImage;
 import com.mark.manager.pojo.VproNavbar;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
@@ -48,6 +49,7 @@ public class DtoUtil {
         if (courseUpdate.getCourseTitle() != null && !courseUpdate.getCourseTitle().equals("")) vproCourses.setCourseTitle(courseUpdate.getCourseTitle());
         if (courseUpdate.getCoursePrice() != null) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         if (courseUpdate.getCourseStatus() != null) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
+        if (courseUpdate.getCourseCover() != null) vproCourses.setCourseCover(String.valueOf(courseUpdate.getCourseCover()));
         if (courseUpdate.getCourseDiscountPrice() != null && !courseUpdate.getCourseDiscountPrice().toString().equals("-1")) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         return vproCourses;
     }
@@ -68,5 +70,14 @@ public class DtoUtil {
 
         vproCourses.setCourseTime(String.valueOf(System.currentTimeMillis() / 1000));
         return vproCourses;
+    }
+
+    public static VproCoursesImage detailImage2VproCoursesImage(DetailImage detailImage) {
+        VproCoursesImage vproCoursesImage = new VproCoursesImage();
+        if (detailImage.getImageId() != null) vproCoursesImage.setImageId(detailImage.getImageId());
+        if (detailImage.getImgUrl() != null) vproCoursesImage.setImageUrl(detailImage.getImgUrl());
+        if (detailImage.getImageAuthor() != null) vproCoursesImage.setImageAuthor(detailImage.getImageAuthor());
+        if (detailImage.getImageUsedLocation() != null) vproCoursesImage.setImageUsedLocation(String.valueOf(detailImage.getImageUsedLocation()));
+        return vproCoursesImage;
     }
 }

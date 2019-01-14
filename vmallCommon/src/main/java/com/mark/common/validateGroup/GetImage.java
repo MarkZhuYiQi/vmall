@@ -1,4 +1,4 @@
 package com.mark.common.validateGroup;
 
-public class GetImage {
+public interface GetImage {
 }

@@ -2,8 +2,9 @@ package com.mark.manager.mapper;
 
 import com.mark.manager.pojo.VproCoursesImage;
 import com.mark.manager.pojo.VproCoursesImageExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface VproCoursesImageMapper {
     /**

@@ -81,53 +81,32 @@ public class CourseServiceImpl implements CourseService {
     public Courses updateCourse(CourseUpdate courseUpdate) throws CourseException {
         try {
             Map<String, String> map = BeanUtil.bean2map(courseUpdate);
+            System.out.println(map);
+            Boolean result = updateCourseContent(courseUpdate);
             Integer flag = 0;
             // 判断是否有需要更新的信息
             for(Map.Entry<String, String> m : map.entrySet()) {
-                if (!m.getValue().equals("") && !m.getValue().equals("-1")) flag = 1;
-                break;
+                if (!m.getValue().equals("") && !m.getValue().equals("-1") && !m.getKey().equals("courseId") && !m.getKey().equals("courseContent") ) {
+                    flag = 1;
+                    break;
+                }
             }
             Integer res = 0;
             if (flag != 0) {
+                System.out.println("updateCourse_coursesUpdate: " + courseUpdate.toString());
                 // 开始更新
                 VproCourses vproCourses = DtoUtil.courseUpdate2VproCoueses(courseUpdate);
+                System.out.println("updateCourse_vproCourses: " + vproCourses.toString());
                 res = vproCoursesMapper.updateByPrimaryKeySelective(vproCourses);
                 if (res == 0) {
                     logger.warn("课程信息更新失败");
                     throw new CourseException("课程信息更新失败", CourseConstant.UPDATE_COURSE_WITHOUT_AFFECTED_ROWS);
                 }
                 logger.info("课程信息更新成功");
-                res = 0;
-                // 以下是更新课程的概述
-                if (courseUpdate.getCourseContent() != null && courseUpdate.getCourseContent().length() != 0 ) {
-                    // 构建详细描述对象
-                    VproCoursesContent vproCoursesContent = new VproCoursesContent();
-                    vproCoursesContent.setCourseId(courseUpdate.getCourseId());
-                    // 查询数据库有没有这个对象
-                    VproCoursesContentExample vproCoursesContentExample = new VproCoursesContentExample();
-                    vproCoursesContentExample.createCriteria().andCourseIdEqualTo(courseUpdate.getCourseId());
-                    Long count = vproCoursesContentMapper.countByExample(vproCoursesContentExample);
-
-                    if (count > 0) {
-                        // 找到这个课程的概述，就给她更新
-                        res = vproCoursesContentMapper.updateByPrimaryKey(vproCoursesContent);
-                        if (res > 0) {
-                            logger.warn("课程详细描述更新失败");
-                            throw new CourseException("课程详细描述更新失败", CourseConstant.UPDATE_COURSE_CONTENT_FAILURE);
-                        }
-                        logger.info("课程详细描述更新成功");
-                        res = 0;
-                    } else {
-                        // 没找到就给他新增
-                        res = vproCoursesContentMapper.insert(vproCoursesContent);
-                        if (res == 0) {
-                            logger.warn("课程详细描述插入失败");
-                            throw new CourseException("课程详细描述插入失败", CourseConstant.INSERT_COURSE_CONTENT_FAILURE);
-                        }
-                        logger.info("课程详细描述插入成功");
-                    }
-                }
                 // 这里应该发送一个更新信号给消息队列或者程序，去处理缓存
+            }
+            // 主内容或者content更新后返回新内容
+            if (res > 0 || result) {
                 return getCourse(courseUpdate.getCourseId());
             } else {
                 logger.warn("课程更新内容为空，失败");
@@ -137,6 +116,40 @@ public class CourseServiceImpl implements CourseService {
             e.printStackTrace();
             return null;
         }
+    }
+    private Boolean updateCourseContent(CourseUpdate courseUpdate) throws CourseException {
+        // 以下是更新课程的概述
+        if (courseUpdate.getCourseContent() != null && courseUpdate.getCourseContent().length() != 0 ) {
+            // 构建详细描述对象
+            VproCoursesContent vproCoursesContent = new VproCoursesContent();
+            vproCoursesContent.setCourseId(courseUpdate.getCourseId());
+            vproCoursesContent.setCourseContent(courseUpdate.getCourseContent().toString());
+            // 查询数据库有没有这个对象
+            VproCoursesContentExample vproCoursesContentExample = new VproCoursesContentExample();
+            vproCoursesContentExample.createCriteria().andCourseIdEqualTo(courseUpdate.getCourseId());
+            Long count = vproCoursesContentMapper.countByExample(vproCoursesContentExample);
+            Integer res = 0;
+            if (count > 0) {
+                // 找到这个课程的概述，就给她更新
+                res = vproCoursesContentMapper.updateByPrimaryKey(vproCoursesContent);
+                if (res == 0) {
+                    logger.warn("课程详细描述更新失败");
+                    throw new CourseException("课程详细描述更新失败", CourseConstant.UPDATE_COURSE_CONTENT_FAILURE);
+                }
+                logger.info("课程详细描述更新成功");
+                res = 0;
+            } else {
+                // 没找到就给他新增
+                res = vproCoursesContentMapper.insert(vproCoursesContent);
+                if (res == 0) {
+                    logger.warn("课程详细描述插入失败");
+                    throw new CourseException("课程详细描述插入失败", CourseConstant.INSERT_COURSE_CONTENT_FAILURE);
+                }
+                logger.info("课程详细描述插入成功");
+            }
+            return Boolean.valueOf(String.valueOf(res));
+        }
+        return false;
     }
 
     @Override
@@ -152,4 +165,5 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseException("create course failed", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
         }
     }
+
 }

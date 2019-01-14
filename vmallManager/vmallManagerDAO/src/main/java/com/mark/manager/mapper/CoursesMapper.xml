@@ -46,6 +46,7 @@
             vcc.course_cover_uptime,
             vcc.course_cover_isuploaded,
             vcc.course_cover_isused,
+            vct.course_content,
             va.auth_id,
             va.auth_appid
         FROM
@@ -75,6 +76,7 @@
             vcc.course_cover_uptime,
             vcc.course_cover_isuploaded,
             vcc.course_cover_isused,
+            vct.course_content,
             va.auth_id,
             va.auth_appid
         FROM
