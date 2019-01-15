@@ -35,7 +35,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result getCategoriesTree()
     {
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
         return categoryService.getCategoriesTree();
     }
     @PreAuthorize("hasRole('admin')")

@@ -50,7 +50,7 @@ public class DtoUtil {
         if (courseUpdate.getCoursePrice() != null) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         if (courseUpdate.getCourseStatus() != null) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
         if (courseUpdate.getCourseCover() != null) vproCourses.setCourseCover(String.valueOf(courseUpdate.getCourseCover()));
-        if (courseUpdate.getCourseDiscountPrice() != null && !courseUpdate.getCourseDiscountPrice().toString().equals("-1")) vproCourses.setCoursePrice(courseUpdate.getCoursePrice());
+        if (courseUpdate.getCourseDiscountPrice() != null && !courseUpdate.getCourseDiscountPrice().toString().equals("-1")) vproCourses.setCourseDiscountPrice(courseUpdate.getCourseDiscountPrice());
         return vproCourses;
     }
     public static VproCoursesContent courseUpdate2CoursesContent(CourseUpdate courseUpdate) {
