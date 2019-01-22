@@ -13,6 +13,7 @@
         <module>Generator</module>
         <module>demo</module>
         <module>test</module>
+        <module>vmall</module>
     </modules>
     <packaging>pom</packaging>
 
