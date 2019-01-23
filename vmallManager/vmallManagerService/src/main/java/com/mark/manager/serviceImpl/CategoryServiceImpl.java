@@ -1,13 +1,16 @@
 package com.mark.manager.serviceImpl;
 
+import com.mark.common.jedis.JedisClient;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.manager.bo.Result;
+import com.mark.manager.dao.CategoryDao;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.mapper.VproNavbarMapper;
 import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.pojo.VproNavbarExample;
 import com.mark.manager.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,27 +23,27 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     VproNavbarMapper vproNavbarMapper;
+    @Autowired
+    @Qualifier("categoryDao")
+    CategoryDao categoryDao;
+
     private List<VproNavbar> list;
 
     public VproNavbar getCategory(Integer navId)
     {
         return vproNavbarMapper.selectByPrimaryKey(navId);
     }
-
+    @Override
     public List<VproNavbar> getCategories() {
-        VproNavbarExample vproNavbarExample = new VproNavbarExample();
-        vproNavbarExample.createCriteria();
-        list = vproNavbarMapper.selectByExample(vproNavbarExample);
-        return list;
+        return categoryDao.getCategories();
     }
-
-    public Result getCategoriesAsHashMap() {
+    @Override
+    public Map<Integer, VproNavbar> getCategoriesAsHashMap() {
         List<VproNavbar> list = getCategories();
-        Map<Integer, VproNavbar> map = list.stream().collect(Collectors.toMap(VproNavbar::getNavId, vproNavbar -> vproNavbar));
-        return new Result(map);
+        return list.stream().collect(Collectors.toMap(VproNavbar::getNavId, vproNavbar -> vproNavbar));
     }
-
-    public Result getCategoriesTree() {
+    @Override
+    public List<CategoryNode> getCategoriesTree() {
         List<VproNavbar> list = getCategories();
         List<CategoryNode> navs = new ArrayList<CategoryNode>();
         for(int i = 0; i < list.size(); i++)
@@ -57,8 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 //                list.remove(i);
             }
         }
-//        return navs;
-        return new Result(navs);
+        return navs;
     }
     // 给他一个默认参数，如果为空就放一个空List对象。
     public CategoryNode getSubCategory(CategoryNode categoryNode) {
@@ -67,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * 迭代整个目录列表，判断传过来的目录是否
+     * 迭代整个目录列表，判断传过来的目录是否-*docker
      * @param mainNav 主目录
      * @param subNavs 传入的ID所指目录的子目录list()
      * @return 子目录CategoryNode
@@ -100,6 +102,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param idList 最终菜单id集合
      * @return
      */
+    @Override
     public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) {
         VproNavbar vproNavbar = getCategory(navId);
         if (!vproNavbar.getNavIsParent())
@@ -120,15 +123,17 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return idList;
     }
-
+    @Override
     public int addCategory(VproNavbar vproNavbar)
     {
         return  vproNavbarMapper.insert(vproNavbar);
     }
+    @Override
     public int removeCategory(Integer id)
     {
         return vproNavbarMapper.deleteByPrimaryKey(id);
     }
+    @Override
     public int modifyCategory(VproNavbar vproNavbar)
     {
         VproNavbarExample vproNavbarExample = new VproNavbarExample();

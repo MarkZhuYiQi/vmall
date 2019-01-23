@@ -10,8 +10,8 @@ import java.util.Map;
 
 public interface CategoryService {
     public List<VproNavbar> getCategories();
-    public Result getCategoriesAsHashMap();
-    public Result getCategoriesTree();
+    public Map<Integer, VproNavbar> getCategoriesAsHashMap();
+    public List<CategoryNode> getCategoriesTree();
     public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList);
     public int addCategory(VproNavbar vproNavbar);
     public int removeCategory(Integer id);

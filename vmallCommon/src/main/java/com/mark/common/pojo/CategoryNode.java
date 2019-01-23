@@ -87,4 +87,18 @@ public class CategoryNode implements Serializable {
     public void setNavIsParent(Boolean navIsParent) {
         this.navIsParent = navIsParent;
     }
+
+    @Override
+    public String toString() {
+        return "CategoryNode{" +
+                "navId=" + navId +
+                ", navText='" + navText + '\'' +
+                ", navUrl='" + navUrl + '\'' +
+                ", navPid=" + navPid +
+                ", navNickname='" + navNickname + '\'' +
+                ", navStatus=" + navStatus +
+                ", navIsParent=" + navIsParent +
+                ", subNav=" + subNav +
+                '}';
+    }
 }

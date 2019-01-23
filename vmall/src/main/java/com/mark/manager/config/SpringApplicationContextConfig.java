@@ -1,5 +1,6 @@
 package com.mark.manager.config;
 
+import com.alibaba.dubbo.config.spring.context.annotation.DubboComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import java.util.List;
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.mark.manager.controller")
+@DubboComponentScan("com.mark.manager.pojo")
 public class SpringApplicationContextConfig implements WebMvcConfigurer {
     /**
      * 配置静态资源的处理

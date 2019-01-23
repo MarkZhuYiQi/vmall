@@ -28,7 +28,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class SecConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     AuthService authService;

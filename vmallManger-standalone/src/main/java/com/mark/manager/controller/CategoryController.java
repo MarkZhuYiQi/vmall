@@ -29,14 +29,16 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result getCategoriesAsMap()
     {
-        return categoryService.getCategoriesAsHashMap();
+        Map<Integer, VproNavbar> map = categoryService.getCategoriesAsHashMap();
+        return new Result(map);
     }
     @GetMapping("tree")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result getCategoriesTree()
     {
         System.out.println(SecurityContextHolder.getContext().getAuthentication());
-        return categoryService.getCategoriesTree();
+        List<CategoryNode> list = categoryService.getCategoriesTree();
+        return new Result(list);
     }
     @PreAuthorize("hasRole('admin')")
     @PostMapping("modify")
