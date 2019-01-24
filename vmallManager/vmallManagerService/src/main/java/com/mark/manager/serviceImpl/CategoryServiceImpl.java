@@ -31,7 +31,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Qualifier("categoryDao")
     CategoryDao categoryDao;
 
-    private List<VproNavbar> list;
+    private List<VproNavbar> list = null;
+
+    public List<VproNavbar> getList() {
+        return list;
+    }
+
+    public void setList(List<VproNavbar> list) {
+        this.list = list;
+    }
 
     public VproNavbar getCategoryById(Integer navId)
     {
@@ -39,7 +47,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
     @Override
     public List<VproNavbar> getCategories() {
-        return categoryDao.getCategories();
+        if (getList() == null) {
+            setList(categoryDao.getCategories());
+        }
+        return getList();
     }
     @Override
     public Map<Integer, VproNavbar> getCategoriesAsHashMap() {
@@ -61,8 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
             // 顶层目录
             if (list.get(i).getNavPid() == 0)
             {
-                logger.warn("categoriesTree convert:  ");
-                System.out.println(list.get(i).toString());
+                logger.warn("categoriesTree convert:" + list.get(i).toString());
                 // 转换成专属格式
                 CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
                 // 收集该顶层目录下的子目录
@@ -117,6 +127,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) {
         VproNavbar vproNavbar = getCategoryById(navId);
+        logger.info("CategoryServiceImpl： getSubIdFromCategory, navId: " + navId + ", navbarObj: " + vproNavbar.toString());
         if (!vproNavbar.getNavIsParent())
         {
             idList.add(vproNavbar.getNavId());

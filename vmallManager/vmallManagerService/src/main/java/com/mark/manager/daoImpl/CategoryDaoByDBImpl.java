@@ -35,6 +35,7 @@ public class CategoryDaoByDBImpl implements CategoryDao {
         vproNavbarExample.createCriteria();
         List<VproNavbar> navbars = vproNavbarMapper.selectByExample(vproNavbarExample);
         String str = JSON.toJSONString(navbars);
+        logger.info("CategoryDaoByDBImpl: json to redis, key: " + navbarPrefix + ", value: " + str);
         jedisClient.set(navbarPrefix, str);
         return navbars;
     }
@@ -44,6 +45,7 @@ public class CategoryDaoByDBImpl implements CategoryDao {
         VproNavbar vproNavbar = vproNavbarMapper.selectByPrimaryKey(navId);
         try {
             Map<String, String> navbarMap = BeanUtil.bean2map(vproNavbar);
+            logger.info("CategoryDaoByDBImpl: json to redis, key: " + navbarPrefix + navId + ", value: " + navbarMap);
             for(Map.Entry<String, String> m : navbarMap.entrySet()) {
                 jedisClient.hset(navbarPrefix + navId, m.getKey(), m.getValue());
             }

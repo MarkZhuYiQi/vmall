@@ -1,5 +1,7 @@
 package com.mark.manager.daoImpl;
 
+import com.mark.common.constant.CategoryConstant;
+import com.mark.common.exception.CategoryException;
 import com.mark.manager.dao.CategoryDao;
 import com.mark.manager.pojo.VproNavbar;
 import org.slf4j.Logger;
@@ -35,14 +37,17 @@ public class CategoryDaoImpl implements CategoryDao {
     @Override
     public VproNavbar getCategoryById(Integer navId) {
         VproNavbar vproNavbar = new VproNavbar();
-        vproNavbar = categoryRedis.getCategoryById(navId);
-        System.out.println(vproNavbar.toString());
-        System.out.println(vproNavbar);
-        if (vproNavbar == null) {
-            logger.info("get navbar" + navId + " data from redis failed.");
-            vproNavbar = categoryDB.getCategoryById(navId);
+        try {
+            vproNavbar = categoryRedis.getCategoryById(navId);
+        } catch (CategoryException e) {
+            logger.info("get navbar data from redis failed, navId: " + navId);
+            try{
+                vproNavbar = categoryDB.getCategoryById(navId);
+            } catch (CategoryException ex) {
+                logger.info("get navbar data from mysql failed, navId: " + navId);
+                throw new CategoryException("get navbar from database failed, check the navId if exists! navId: " + navId, CategoryConstant.NAVBAR_NULL_BY_ID);
+            }
         }
         return vproNavbar;
-
     }
 }

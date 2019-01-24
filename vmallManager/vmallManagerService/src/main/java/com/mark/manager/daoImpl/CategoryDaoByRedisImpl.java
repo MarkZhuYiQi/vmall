@@ -1,6 +1,7 @@
 package com.mark.manager.daoImpl;
 
 import com.alibaba.fastjson.JSON;
+import com.mark.common.exception.CategoryException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dao.CategoryDao;
@@ -23,17 +24,19 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
     String navbarPrefix;
     @Override
     public List<VproNavbar> getCategories() {
+        System.out.println(navbarPrefix);
         String navbar = jedisClient.get(navbarPrefix);
+        System.out.println("CategoryDaoByRedis: " + navbar.length());
         return JSON.parseArray(navbar, VproNavbar.class);
     }
 
     @Override
-    public VproNavbar getCategoryById(Integer navId) {
+    public VproNavbar getCategoryById(Integer navId) throws CategoryException {
         Map<String, String> navMap = jedisClient.hgetAll(navbarPrefix + navId);
-        if (navMap == null) return null;
+        logger.info("CategoryDaoByRedisImpl: getCategoryById: " + navId+ ", res: " + navMap);
+        if (navMap.size() == 0) throw new CategoryException("get data from redis failed");
         try {
-            VproNavbar vproNavbar = BeanUtil.map2bean(navMap, VproNavbar.class);
-            return vproNavbar;
+            return BeanUtil.map2bean(navMap, VproNavbar.class);
         } catch (IntrospectionException e) {
             logger.info("map convert to navbar object failed");
             e.printStackTrace();
@@ -44,6 +47,6 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
             logger.info("map convert to navbar object failed");
             e.printStackTrace();
         }
-        return null;
+        throw new CategoryException("get data from redis failed");
     }
 }
