@@ -5,12 +5,10 @@ import com.mark.manager.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("index")
 public class IndexController {
 
     @Value("${header}")
@@ -19,11 +17,12 @@ public class IndexController {
     @Reference()
     private CategoryService categoryService;
 
-    @GetMapping("")
+    @GetMapping("{navId:\\d+}")
     @ResponseBody
-    public void home() {
+    public void home(@PathVariable Integer navId) {
         System.out.println("hello");
         System.out.println(header);
-        System.out.println(categoryService.getCategoriesTree());
+//        System.out.println(categoryService.getCategoriesTree());
+        System.out.println(categoryService.getSubIds(navId));
     }
 }

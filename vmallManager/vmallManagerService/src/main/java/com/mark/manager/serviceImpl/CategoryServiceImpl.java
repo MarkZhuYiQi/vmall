@@ -1,5 +1,6 @@
 package com.mark.manager.serviceImpl;
 
+import com.mark.common.exception.CategoryException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.manager.bo.Result;
@@ -9,18 +10,21 @@ import com.mark.manager.mapper.VproNavbarMapper;
 import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.pojo.VproNavbarExample;
 import com.mark.manager.service.CategoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.mark.common.constant.CategoryConstant.NAVBAR_HAS_NO_SUBSETS;
+import static com.mark.common.constant.CategoryConstant.NAVBAR_NULL_BY_ID;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+    private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
     @Autowired
     VproNavbarMapper vproNavbarMapper;
     @Autowired
@@ -29,9 +33,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     private List<VproNavbar> list;
 
-    public VproNavbar getCategory(Integer navId)
+    public VproNavbar getCategoryById(Integer navId)
     {
-        return vproNavbarMapper.selectByPrimaryKey(navId);
+        return categoryDao.getCategoryById(navId);
     }
     @Override
     public List<VproNavbar> getCategories() {
@@ -42,6 +46,12 @@ public class CategoryServiceImpl implements CategoryService {
         List<VproNavbar> list = getCategories();
         return list.stream().collect(Collectors.toMap(VproNavbar::getNavId, vproNavbar -> vproNavbar));
     }
+
+    /**
+     * 获得目录层级结构
+     * [{navId: xx, subNav: [{...}, {...}, ...]}, {...}, ...]
+     * @return
+     */
     @Override
     public List<CategoryNode> getCategoriesTree() {
         List<VproNavbar> list = getCategories();
@@ -51,6 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
             // 顶层目录
             if (list.get(i).getNavPid() == 0)
             {
+                logger.warn("categoriesTree convert:  ");
                 System.out.println(list.get(i).toString());
                 // 转换成专属格式
                 CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
@@ -75,6 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 子目录CategoryNode
      */
     public CategoryNode getSubCategory(CategoryNode mainNav, List<CategoryNode> subNavs) {
+        List<VproNavbar> list = getCategories();
         for(int i = 0; i < list.size(); i++)
         {
             // 判断次级目录的父目录是否属于传来的目录
@@ -82,8 +94,8 @@ public class CategoryServiceImpl implements CategoryService {
             {
                 // 次级目录转换格式
                 CategoryNode sub = DtoUtil.vproNavbar2CategoryNode(list.get(i));
-                // 子目录的迭代结果，寻找该目录下是否还有子目录
-                sub = this.getSubCategory(sub);
+                // 子目录的迭代结果，寻找该目录下是否还有子目录, 迭代寻找
+                sub = getSubCategory(sub);
                 subNavs.add(sub);
 //                list.remove(i);
             }
@@ -104,7 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) {
-        VproNavbar vproNavbar = getCategory(navId);
+        VproNavbar vproNavbar = getCategoryById(navId);
         if (!vproNavbar.getNavIsParent())
         {
             idList.add(vproNavbar.getNavId());
@@ -122,6 +134,45 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         return idList;
+    }
+
+    /**
+     * 通过导航id获得该导航下的子导航id集合
+     * [xx, xxx, xx, xx]
+     * 如果是顶级目录则获得每个顶级导航的子导航id集合
+     * [[xxx], [xxx], [xxx]]
+     * @param navId
+     * @return
+     */
+    @Override
+    public Map<Integer, List<Integer>> getSubIds(Integer navId) throws CategoryException{
+        Map<Integer, List<Integer>> navIds = new HashMap<Integer, List<Integer>>();
+        List<VproNavbar> navbars = getCategories();
+        List<CategoryNode> categoryNodes;
+        if (navId == 0) {
+            logger.info("start navIds collect, navId: " + navId);
+            // 如果传入的导航id为0，说明是顶级导航，直接拿到层级导航对象CategoryNode即可
+            categoryNodes = getCategoriesTree();
+        } else {
+            // 传入了id，说明是在一个子导航中，生成子导航迭代对象CategoryNode
+            VproNavbar navbar = getCategoryById(navId);
+            if (navbar == null) throw new CategoryException("navbar id error, no info detected.", NAVBAR_NULL_BY_ID);
+            CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(navbar);
+            categoryNode = getSubCategory(categoryNode);
+            if (categoryNode.getSubNav().size() > 0) {
+                categoryNodes = categoryNode.getSubNav();
+            } else {
+                throw new CategoryException("navbar has no subsets.", NAVBAR_HAS_NO_SUBSETS);
+            }
+        }
+        for(CategoryNode c : categoryNodes) {
+            navIds.put(c.getNavId(), getSubIdFromCategory(c.getNavId(), navbars, new ArrayList<Integer>()));
+        }
+        return navIds;
+    }
+    @Override
+    public Map<Integer, List<Integer>> getSubIds() {
+        return getSubIds(0);
     }
     @Override
     public int addCategory(VproNavbar vproNavbar)

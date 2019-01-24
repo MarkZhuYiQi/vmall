@@ -31,4 +31,18 @@ public class CategoryDaoImpl implements CategoryDao {
         }
         return list;
     }
+
+    @Override
+    public VproNavbar getCategoryById(Integer navId) {
+        VproNavbar vproNavbar = new VproNavbar();
+        vproNavbar = categoryRedis.getCategoryById(navId);
+        System.out.println(vproNavbar.toString());
+        System.out.println(vproNavbar);
+        if (vproNavbar == null) {
+            logger.info("get navbar" + navId + " data from redis failed.");
+            vproNavbar = categoryDB.getCategoryById(navId);
+        }
+        return vproNavbar;
+
+    }
 }
