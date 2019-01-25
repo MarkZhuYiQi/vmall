@@ -6,11 +6,13 @@ import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseService {
-    public Courses getCourse(Integer courseId);
-    public List<Courses> getCoursesByPid(List<Integer> ids);
-    public PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
-    public Courses updateCourse(CourseUpdate courseUpdate) throws CourseException;
-    public Courses createCourse(Courses courses) throws CourseException;
+    Courses getCourse(Integer courseId);
+    List<Courses> getCoursesByPid(List<Integer> ids);
+    PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
+    Courses updateCourse(CourseUpdate courseUpdate) throws CourseException;
+    Courses createCourse(Courses courses) throws CourseException;
+    Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException;
 }

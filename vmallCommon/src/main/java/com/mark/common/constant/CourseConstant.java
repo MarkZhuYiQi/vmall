@@ -8,4 +8,5 @@ public class CourseConstant {
     public static final Integer INSERT_COURSE_CONTENT_FAILURE = 805;
     public static final Integer UPDATE_COURSE_CONTENT_FAILURE = 806;
     public static final Integer UPDATE_COURSE_WITHOUT_INFO = 807;
+    public static final Integer GET_INDEX_COURSES_INFO_FAILED = 808;
 }

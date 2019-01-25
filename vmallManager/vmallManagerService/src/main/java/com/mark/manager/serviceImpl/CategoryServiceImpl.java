@@ -1,5 +1,6 @@
 package com.mark.manager.serviceImpl;
 
+import com.alibaba.fastjson.JSON;
 import com.mark.common.exception.CategoryException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.pojo.CategoryNode;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Qualifier("categoryDao")
     CategoryDao categoryDao;
 
+    @Autowired
+    JedisClient jedisClient;
+
+    @Value("navbarTreePrefix")
+    String navbarTreePrefix;
+
     private List<VproNavbar> list = null;
 
     public List<VproNavbar> getList() {
@@ -40,14 +48,19 @@ public class CategoryServiceImpl implements CategoryService {
     public void setList(List<VproNavbar> list) {
         this.list = list;
     }
-
-    public VproNavbar getCategoryById(Integer navId)
-    {
+    @Override
+    public VproNavbar getCategoryById(Integer navId) throws CategoryException {
+        // 这里的错误需要更好的处理
         return categoryDao.getCategoryById(navId);
     }
+
+    /**
+     * 获得导航列表
+     * @return [VproNavbar, VproNavbar, VproNavbar, VproNavbar...]
+     */
     @Override
     public List<VproNavbar> getCategories() {
-        if (getList() == null) {
+        if (getList() == null || getList().size() == 0) {
             setList(categoryDao.getCategories());
         }
         return getList();
@@ -61,30 +74,42 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * 获得目录层级结构
      * [{navId: xx, subNav: [{...}, {...}, ...]}, {...}, ...]
-     * @return
+     * @return List<CategoryNode>
      */
     @Override
     public List<CategoryNode> getCategoriesTree() {
         List<VproNavbar> list = getCategories();
-        List<CategoryNode> navs = new ArrayList<CategoryNode>();
-        for(int i = 0; i < list.size(); i++)
-        {
-            // 顶层目录
-            if (list.get(i).getNavPid() == 0)
+        try {
+            return categoryDao.getCategoriesTree(list);
+        } catch (CategoryException e) {
+            List<CategoryNode> navs = new ArrayList<CategoryNode>();
+            for(int i = 0; i < list.size(); i++)
             {
-                logger.warn("categoriesTree convert:" + list.get(i).toString());
-                // 转换成专属格式
-                CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
-                // 收集该顶层目录下的子目录
-                CategoryNode nav = getSubCategory(categoryNode);
-                navs.add(nav);
+                // 顶层目录
+                if (list.get(i).getNavPid() == 0)
+                {
+                    logger.warn("categoriesTree convert:" + list.get(i).toString());
+                    // 转换成专属格式
+                    CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
+                    // 收集该顶层目录下的子目录
+                    CategoryNode nav = getSubCategory(categoryNode);
+                    navs.add(nav);
 //                list.remove(i);
+                }
             }
+            jedisClient.set(navbarTreePrefix, JSON.toJSONString(navs));
+            return navs;
         }
-        return navs;
     }
+    @Override
     // 给他一个默认参数，如果为空就放一个空List对象。
     public CategoryNode getSubCategory(CategoryNode categoryNode) {
+        List<CategoryNode> subs = new ArrayList<CategoryNode>();
+        return getSubCategory(categoryNode, subs);
+    }
+    @Override
+    public CategoryNode getSubCategory(VproNavbar vproNavbar) {
+        CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(vproNavbar);
         List<CategoryNode> subs = new ArrayList<CategoryNode>();
         return getSubCategory(categoryNode, subs);
     }
@@ -93,7 +118,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 迭代整个目录列表，判断传过来的目录是否-*docker
      * @param mainNav 主目录
      * @param subNavs 传入的ID所指目录的子目录list()
-     * @return 子目录CategoryNode
+     * @return 子目录CategoryNode对象，subNav包含CategoryNode
      */
     public CategoryNode getSubCategory(CategoryNode mainNav, List<CategoryNode> subNavs) {
         List<VproNavbar> list = getCategories();
@@ -123,9 +148,10 @@ public class CategoryServiceImpl implements CategoryService {
      * @param list 菜单目录集合
      * @param idList 最终菜单id集合
      * @return
+     * 格式：List<Integer> [xxx,xx,xxx,xx,x,x,xxx]
      */
     @Override
-    public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) {
+    public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) throws CategoryException {
         VproNavbar vproNavbar = getCategoryById(navId);
         logger.info("CategoryServiceImpl： getSubIdFromCategory, navId: " + navId + ", navbarObj: " + vproNavbar.toString());
         if (!vproNavbar.getNavIsParent())
@@ -149,11 +175,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 通过导航id获得该导航下的子导航id集合
-     * [xx, xxx, xx, xx]
+     * [xx=[xxx], xxx=[xxx], ...]
      * 如果是顶级目录则获得每个顶级导航的子导航id集合
-     * [[xxx], [xxx], [xxx]]
+     * [xx=[xxx], xx=[xxx], xx=[xxx]]
      * @param navId
-     * @return
+     * @return Map<Integer, List<Integer>> [xx=[xxx], xx=[xxx], xx=[xxx]]
      */
     @Override
     public Map<Integer, List<Integer>> getSubIds(Integer navId) throws CategoryException{
@@ -181,8 +207,13 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return navIds;
     }
+
+    /**
+     * 重载方法
+     * @return
+     */
     @Override
-    public Map<Integer, List<Integer>> getSubIds() {
+    public Map<Integer, List<Integer>> getSubIds() throws CategoryException {
         return getSubIds(0);
     }
     @Override

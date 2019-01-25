@@ -1,6 +1,7 @@
 package com.mark.common.exception;
 
-public class CategoryException extends RuntimeException{
+//public class CategoryException extends RuntimeException{
+public class CategoryException extends Exception{
     private String msg;
     private Integer code;
 

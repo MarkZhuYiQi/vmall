@@ -1,6 +1,7 @@
 package com.mark.common.exception;
 
-public class CourseException extends RuntimeException{
+//public class CourseException extends RuntimeException{
+public class CourseException extends Exception{
     private String msg;
     private Integer code;
 

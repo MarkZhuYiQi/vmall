@@ -45,13 +45,13 @@ public class BeanUtil {
                 try {
                     Method getter = x.getReadMethod();
                     String value = String.valueOf(getter.invoke(rs));
-                    if (value.equals("null")) {
+                    /*if (value.equals("null")) {
                         value = "";
                     } else if (value.equals("true")) {
                         value = "1";
                     } else if (value.equals("false")) {
                         value = "0";
-                    }
+                    }*/
                     map.put(String.valueOf(x.getName()), value);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

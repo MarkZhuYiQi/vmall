@@ -8,6 +8,7 @@ import com.mark.common.exception.TestException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.UidUtil;
+import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.DtoUtil;
@@ -21,6 +22,7 @@ import com.mark.manager.service.CourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.beans.IntrospectionException;
@@ -39,6 +41,9 @@ public class CourseServiceImpl implements CourseService {
     VproCoursesContentMapper vproCoursesContentMapper;
     @Autowired
     JedisClient jedisClient;
+    @Autowired
+    @Qualifier("courseDao")
+    CourseDao courseDao;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -164,6 +169,16 @@ public class CourseServiceImpl implements CourseService {
         } else {
             throw new CourseException("create course failed", CourseConstant.INSERT_COURSE_AUTHOR_FAILURE);
         }
+    }
+
+    @Override
+    public Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException {
+        Map<Integer, List<Courses>> indexCourses = new HashMap<Integer, List<Courses>>();
+        for(Map.Entry<Integer, List<Integer>> e : navIds.entrySet()) {
+            List<Courses> courses = courseDao.getIndexCoursesInfo(e.getValue());
+            indexCourses.put(e.getKey(), courses);
+        }
+        return indexCourses;
     }
 
 }

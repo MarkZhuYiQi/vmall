@@ -2,6 +2,7 @@ package com.mark.manager.daoImpl;
 
 import com.mark.common.constant.CategoryConstant;
 import com.mark.common.exception.CategoryException;
+import com.mark.common.pojo.CategoryNode;
 import com.mark.manager.dao.CategoryDao;
 import com.mark.manager.pojo.VproNavbar;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public VproNavbar getCategoryById(Integer navId) {
+    public VproNavbar getCategoryById(Integer navId) throws CategoryException {
         VproNavbar vproNavbar = new VproNavbar();
         try {
             vproNavbar = categoryRedis.getCategoryById(navId);
@@ -49,5 +50,10 @@ public class CategoryDaoImpl implements CategoryDao {
             }
         }
         return vproNavbar;
+    }
+
+    @Override
+    public List<CategoryNode> getCategoriesTree(List<VproNavbar> navbars) throws CategoryException {
+        return categoryRedis.getCategoriesTree(navbars);
     }
 }

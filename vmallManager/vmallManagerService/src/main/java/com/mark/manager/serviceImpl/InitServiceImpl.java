@@ -51,8 +51,8 @@ public class InitServiceImpl implements InitService {
 
     private static final Logger logger = LoggerFactory.getLogger(InitServiceImpl.class);
 
-    @Value("${categoryPrefix}")
-    private String categoryPrefix;
+    @Value("${navbarPrefix}")
+    private String navbarPrefix;
     @Value("${rolePrefix}")
     private String rolePrefix;
     @Value("${authPrefix}")
@@ -80,12 +80,12 @@ public class InitServiceImpl implements InitService {
 //    @PostConstruct
     public void genCategoryCache() {
         List<VproNavbar> categories = categoryService.getCategories();
-        logger.info("开始管道插入" + categoryPrefix);
+        logger.info("开始管道插入" + navbarPrefix);
         Jedis jedis = jedisPool.getResource();
         Pipeline p = jedis.pipelined();
 //        categories.stream().forEach(item -> System.out.println(item));
         for(VproNavbar vproNavbar : categories) {
-            String categoryName = categoryPrefix + vproNavbar.getNavId();
+            String categoryName = navbarPrefix + vproNavbar.getNavId();
             Map<String, String> map = null;
             try {
                 map = bean2map(vproNavbar);
@@ -97,7 +97,7 @@ public class InitServiceImpl implements InitService {
         }
         p.sync();
         jedis.close();
-        logger.info("插入完成" + categoryPrefix);
+        logger.info("插入完成" + navbarPrefix);
     }
 
     @Override

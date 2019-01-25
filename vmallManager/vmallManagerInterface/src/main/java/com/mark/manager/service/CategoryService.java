@@ -10,13 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface CategoryService {
+    VproNavbar getCategoryById(Integer navId) throws CategoryException;
     List<VproNavbar> getCategories();
     Map<Integer, VproNavbar> getCategoriesAsHashMap();
     List<CategoryNode> getCategoriesTree();
-    List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList);
+    CategoryNode getSubCategory(CategoryNode categoryNode);
+    CategoryNode getSubCategory(VproNavbar vproNavbar);
+    List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) throws CategoryException;
     int addCategory(VproNavbar vproNavbar);
     int removeCategory(Integer id);
     int modifyCategory(VproNavbar vproNavbar);
-    Map<Integer, List<Integer>> getSubIds();
+    Map<Integer, List<Integer>> getSubIds() throws CategoryException;
     Map<Integer, List<Integer>> getSubIds(Integer navId) throws CategoryException;
 }

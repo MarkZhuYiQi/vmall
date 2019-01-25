@@ -34,6 +34,10 @@ public class Courses implements Serializable {
 
     private Float courseDiscountPrice;
 
+    private Float courseScore;
+
+    private Integer courseClickNum;
+
     private VproCoursesCover vproCoursesCover;
 
     private VproAuth vproAuth;
@@ -63,8 +67,11 @@ public class Courses implements Serializable {
                 ", courseStatus=" + courseStatus +
                 ", coursePrice=" + coursePrice +
                 ", courseDiscountPrice=" + courseDiscountPrice +
+                ", courseScore=" + courseScore +
+                ", courseClickNum=" + courseClickNum +
                 ", vproCoursesCover=" + vproCoursesCover +
                 ", vproAuth=" + vproAuth +
+                ", vproCoursesContent=" + vproCoursesContent +
                 '}';
     }
 
@@ -154,5 +161,21 @@ public class Courses implements Serializable {
 
     public void setVproAuth(VproAuth vproAuth) {
         this.vproAuth = vproAuth;
+    }
+
+    public Float getCourseScore() {
+        return courseScore;
+    }
+
+    public void setCourseScore(Float courseScore) {
+        this.courseScore = courseScore;
+    }
+
+    public Integer getCourseClickNum() {
+        return courseClickNum;
+    }
+
+    public void setCourseClickNum(Integer courseClickNum) {
+        this.courseClickNum = courseClickNum;
     }
 }
