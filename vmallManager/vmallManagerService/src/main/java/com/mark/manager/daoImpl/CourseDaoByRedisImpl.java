@@ -10,6 +10,7 @@ import com.mark.manager.dto.Courses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,10 @@ public class CourseDaoByRedisImpl implements CourseDao {
     private String coursePrefix;
     @Autowired
     JedisClient jedisClient;
+
+    @Value("${indexNavPrefix}")
+    String indexNavPrefix;
+
     @Override
     public Courses getCourse(String courseId) {
 //        Map<String, String> course = jedisClient.hgetAll(coursePrefix + courseId);
@@ -39,7 +44,9 @@ public class CourseDaoByRedisImpl implements CourseDao {
     }
 
     @Override
-    public List<Courses> getIndexCoursesInfo(List<Integer> navIds) throws CourseException {
-        throw new CourseException("get index courses from redis failed!");
+    public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
+        String str = jedisClient.get(indexNavPrefix + navPid);
+        if (StringUtils.isEmpty(str)) throw new CourseException("get index courses from redis failed!");
+        return JSON.parseArray(str, Courses.class);
     }
 }

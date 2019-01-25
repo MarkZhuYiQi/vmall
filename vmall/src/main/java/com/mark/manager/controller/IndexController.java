@@ -38,10 +38,10 @@ public class IndexController {
         }
         try {
             Map<Integer, List<Courses>> indexCourses = courseService.getIndexCoursesInfo(navIds);
+            System.out.println(indexCourses);
         } catch (CourseException e) {
             e.printStackTrace();
         }
-
 
         // 测试课程导航
         CategoryNode categoryNode = new CategoryNode();

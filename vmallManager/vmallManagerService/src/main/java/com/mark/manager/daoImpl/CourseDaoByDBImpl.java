@@ -8,6 +8,7 @@ import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,13 @@ public class CourseDaoByDBImpl implements CourseDao {
     CoursesMapper coursesMapper;
     @Autowired
     JedisClient jedisClient;
+
+    @Value("${indexNavPrefix}")
+    String indexNavPrefix;
+
+    @Value("${expiredSuffix}")
+    String expiredSuffix;
+
     @Override
     public Courses getCourse(String courseId) {
         return null;
@@ -36,10 +44,12 @@ public class CourseDaoByDBImpl implements CourseDao {
     }
 
     @Override
-    public List<Courses> getIndexCoursesInfo(List<Integer> navIds) throws CourseException{
+    public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException{
         List<Courses> indexCourses = coursesMapper.getIndexCoursesInfo(navIds);
         if (indexCourses.size() == 0) throw new CourseException("get index courses failed! navIds: " + navIds);
-//        String str = JSON.toJSONString(indexCourses);
+        String str = JSON.toJSONString(indexCourses);
+        jedisClient.set(indexNavPrefix + navPid, str);
+        jedisClient.zadd(indexNavPrefix + expiredSuffix, (double)(System.currentTimeMillis() / 1000), indexNavPrefix + navPid);
         return indexCourses;
     }
 

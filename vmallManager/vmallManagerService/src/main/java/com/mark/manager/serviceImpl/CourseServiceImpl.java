@@ -174,8 +174,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException {
         Map<Integer, List<Courses>> indexCourses = new HashMap<Integer, List<Courses>>();
+        logger.info("navIds: " + navIds);
         for(Map.Entry<Integer, List<Integer>> e : navIds.entrySet()) {
-            List<Courses> courses = courseDao.getIndexCoursesInfo(e.getValue());
+            logger.info("find indexCourses below navId: " + e.getValue());
+            if (e.getValue().size() == 0) continue;
+            List<Courses> courses = courseDao.getIndexCoursesInfo(e.getKey(), e.getValue());
             indexCourses.put(e.getKey(), courses);
         }
         return indexCourses;

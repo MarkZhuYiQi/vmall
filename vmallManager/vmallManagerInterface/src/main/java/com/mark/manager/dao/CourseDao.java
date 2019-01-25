@@ -11,5 +11,5 @@ public interface CourseDao {
     Courses getCourse(String courseId);
     List<Courses> getCoursesByPid(List<Integer> ids);
     PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
-    List<Courses> getIndexCoursesInfo(List<Integer> navIds) throws CourseException;
+    List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException;
 }

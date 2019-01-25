@@ -37,13 +37,13 @@ public class CourseDaoImpl implements CourseDao {
     }
 
     @Override
-    public List<Courses> getIndexCoursesInfo(List<Integer> navIds) throws CourseException {
+    public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
         List<Courses> indexCourses;
         try {
-            indexCourses = courseDaoByRedis.getIndexCoursesInfo(navIds);
+            indexCourses = courseDaoByRedis.getIndexCoursesInfo(navPid, navIds);
         } catch (CourseException e) {
             try{
-                indexCourses = courseDaoByDB.getIndexCoursesInfo(navIds);
+                indexCourses = courseDaoByDB.getIndexCoursesInfo(navPid, navIds);
             } catch (CourseException ex) {
                 throw new CourseException("Get index courses failed! check the params: " + navIds, CourseConstant.GET_INDEX_COURSES_INFO_FAILED);
             }
