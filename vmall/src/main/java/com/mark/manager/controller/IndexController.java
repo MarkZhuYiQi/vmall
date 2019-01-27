@@ -8,6 +8,7 @@ import com.mark.manager.dto.Courses;
 import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
+import com.mark.manager.service.TestService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ public class IndexController {
     private CategoryService categoryService;
     @Reference
     private CourseService courseService;
+    @Reference
+    private TestService testService;
 
     @GetMapping("{navId:\\d+}")
     @ResponseBody

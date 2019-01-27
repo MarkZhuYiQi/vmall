@@ -1,6 +1,7 @@
 package com.mark.manager.daoImpl;
 
 import com.alibaba.fastjson.JSON;
+import com.mark.common.exception.CategoryException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.common.util.BeanUtil;
@@ -32,11 +33,12 @@ public class CategoryDaoByDBImpl implements CategoryDao {
     String navbarPrefix;
 
     @Override
-    public List<VproNavbar> getCategories() {
+    public List<VproNavbar> getCategories() throws CategoryException {
         System.out.println(navbarPrefix);
         VproNavbarExample vproNavbarExample = new VproNavbarExample();
         vproNavbarExample.createCriteria();
         List<VproNavbar> navbars = vproNavbarMapper.selectByExample(vproNavbarExample);
+        if (navbars.size() == 0) throw new CategoryException("get navbars from database failed! check data in database or connection.");
         String str = JSON.toJSONString(navbars);
         logger.info("CategoryDaoByDBImpl: json to redis, key: " + navbarPrefix + ", value: " + str);
         jedisClient.set(navbarPrefix, str);

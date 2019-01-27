@@ -1,10 +1,7 @@
 package com.mark.common.jedis;
 
 import com.mark.common.exception.RedisException;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.List;
@@ -97,6 +94,32 @@ public class JedisClientPool implements JedisClient{
         Double score = jedis.zincrby(key, increment, member);
         jedis.close();
         return score;
+    }
+
+    @Override
+    public Set<String> zRange(String key, long start, long end) {
+        Jedis jedis = getResource();
+        Set<String> members = jedis.zrange(key, start, end);
+        jedis.close();
+        return members;
+    }
+    @Override
+    /**
+     * 根据分数范围取值
+     */
+    public Set<String> zRangeByScore(String key, Double min, Double max) {
+        Jedis jedis = getResource();
+        Set<String> members = jedis.zrangeByScore(key, min, max);
+        jedis.close();
+        return members;
+    }
+    @Override
+    public Set<Tuple> zrangeByScoreWithScores(String key, Double min, Double max) {
+        Jedis jedis = getResource();
+        Set<Tuple> members = jedis.zrangeByScoreWithScores(key, min, max);
+//        Set<Tuple> members = jedis.zrangeByScoreWithScores(key, min, max, offset, count);
+        jedis.close();
+        return members;
     }
 
     @Override

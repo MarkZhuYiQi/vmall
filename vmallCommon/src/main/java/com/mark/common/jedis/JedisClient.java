@@ -1,10 +1,7 @@
 package com.mark.common.jedis;
 
 import com.mark.common.exception.RedisException;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +27,12 @@ public interface JedisClient {
     Double zscore(String key, String member);
 
     Double zIncrBy(String key, Double increment, String member);
+
+    Set<String> zRange(String key, long start, long end);
+
+    Set<String> zRangeByScore(String key, Double min, Double max);
+
+    Set<Tuple> zrangeByScoreWithScores(String key, Double min, Double max);
 
     Boolean exists(String key) throws RedisException;
 

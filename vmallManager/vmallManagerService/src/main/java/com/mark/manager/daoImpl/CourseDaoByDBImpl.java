@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
+import com.mark.common.util.JedisUtil;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
@@ -46,10 +47,10 @@ public class CourseDaoByDBImpl implements CourseDao {
     @Override
     public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException{
         List<Courses> indexCourses = coursesMapper.getIndexCoursesInfo(navIds);
-        if (indexCourses.size() == 0) throw new CourseException("get index courses failed! navIds: " + navIds);
+        if (indexCourses.size() == 0) throw new CourseException("get index courses from failed!");
         String str = JSON.toJSONString(indexCourses);
         jedisClient.set(indexNavPrefix + navPid, str);
-        jedisClient.zadd(indexNavPrefix + expiredSuffix, (double)(System.currentTimeMillis() / 1000), indexNavPrefix + navPid);
+        jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
         return indexCourses;
     }
 

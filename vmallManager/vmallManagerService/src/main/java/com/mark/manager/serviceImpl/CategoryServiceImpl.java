@@ -61,7 +61,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<VproNavbar> getCategories() {
         if (getList() == null || getList().size() == 0) {
-            setList(categoryDao.getCategories());
+            try {
+                setList(categoryDao.getCategories());
+            } catch (CategoryException e) {
+                e.printStackTrace();
+            }
         }
         return getList();
     }

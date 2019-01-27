@@ -7,7 +7,7 @@ import com.mark.manager.pojo.VproNavbar;
 import java.util.List;
 
 public interface CategoryDao {
-    List<VproNavbar> getCategories();
+    List<VproNavbar> getCategories() throws CategoryException;
     VproNavbar getCategoryById(Integer navId) throws CategoryException;
     List<CategoryNode> getCategoriesTree(List<VproNavbar> navbars) throws CategoryException;
 }

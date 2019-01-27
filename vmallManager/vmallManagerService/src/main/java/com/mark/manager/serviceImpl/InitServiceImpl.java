@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Tuple;
 
 import javax.annotation.PostConstruct;
 import java.beans.IntrospectionException;
@@ -260,5 +261,23 @@ public class InitServiceImpl implements InitService {
             jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
         }
     }
-
+    @Value("${expiredSuffix}")
+    String expiredSuffix;
+    @PostConstruct
+    public void routineTask() {
+        while(true) {
+            try {
+                Thread.sleep(1000);
+                Set<String> expiredKeys = jedisClient.keys("*" + expiredSuffix);
+                if (expiredKeys.size() == 0) continue;
+                for(String s : expiredKeys) {
+                    String key = s.substring(0, s.length() - expiredSuffix.length() - 1);
+                    Set<String> members = jedisClient.zRangeByScore(key, (double)0, (double)(System.currentTimeMillis() / 1000));
+                    
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -31,9 +31,10 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
     String navbarTreePrefix;
 
     @Override
-    public List<VproNavbar> getCategories() {
+    public List<VproNavbar> getCategories() throws CategoryException {
         System.out.println(navbarPrefix);
         String navbar = jedisClient.get(navbarPrefix);
+        if (StringUtils.isEmpty(navbar)) throw new CategoryException("get data from redis failed");
         System.out.println("CategoryDaoByRedis: " + navbar.length());
         return JSON.parseArray(navbar, VproNavbar.class);
     }
@@ -41,22 +42,7 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
     @Override
     public VproNavbar getCategoryById(Integer navId) throws CategoryException {
         Map<String, String> navMap = jedisClient.hgetAll(navbarPrefix + navId);
-        logger.info("CategoryDaoByRedisImpl: getCategoryById: " + navId+ ", res: " + navMap);
         if (navMap.size() == 0) throw new CategoryException("get data from redis failed");
-        /*try {
-            return BeanUtil.map2bean(navMap, VproNavbar.class);
-        } catch (IntrospectionException e) {
-            logger.info("map convert to navbar object failed");
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            logger.info("map convert to navbar object failed");
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            logger.info("map convert to navbar object failed");
-            e.printStackTrace();
-        }
-        throw new CategoryException("get data from redis failed");
-        */
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(navMap, VproNavbar.class);
     }
