@@ -42,6 +42,7 @@ import javax.annotation.PostConstruct;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -263,18 +264,21 @@ public class InitServiceImpl implements InitService {
     }
     @Value("${expiredSuffix}")
     String expiredSuffix;
-    @PostConstruct
+//    @PostConstruct
     public void routineTask() {
         while(true) {
             try {
+                List<Set<String>> membersList = new ArrayList<Set<String>>();
                 Thread.sleep(1000);
                 Set<String> expiredKeys = jedisClient.keys("*" + expiredSuffix);
                 if (expiredKeys.size() == 0) continue;
                 for(String s : expiredKeys) {
                     String key = s.substring(0, s.length() - expiredSuffix.length() - 1);
                     Set<String> members = jedisClient.zRangeByScore(key, (double)0, (double)(System.currentTimeMillis() / 1000));
-                    
+                    membersList.add(members);
                 }
+                if (membersList.size() == 0) logger.info("No keys expired in redis at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+                logger.info("{} keys has been expired", membersList.size());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -32,10 +32,8 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
 
     @Override
     public List<VproNavbar> getCategories() throws CategoryException {
-        System.out.println(navbarPrefix);
         String navbar = jedisClient.get(navbarPrefix);
         if (StringUtils.isEmpty(navbar)) throw new CategoryException("get data from redis failed");
-        System.out.println("CategoryDaoByRedis: " + navbar.length());
         return JSON.parseArray(navbar, VproNavbar.class);
     }
 

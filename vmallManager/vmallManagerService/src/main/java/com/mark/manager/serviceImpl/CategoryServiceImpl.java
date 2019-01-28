@@ -81,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return List<CategoryNode>
      */
     @Override
-    public List<CategoryNode> getCategoriesTree() {
+    public List<CategoryNode>  getCategoriesTree() {
         List<VproNavbar> list = getCategories();
         try {
             return categoryDao.getCategoriesTree(list);
@@ -92,7 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
                 // 顶层目录
                 if (list.get(i).getNavPid() == 0)
                 {
-                    logger.warn("categoriesTree convert:" + list.get(i).toString());
+//                    logger.warn("categoriesTree convert:" + list.get(i).toString());
                     // 转换成专属格式
                     CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
                     // 收集该顶层目录下的子目录

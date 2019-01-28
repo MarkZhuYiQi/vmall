@@ -6,7 +6,6 @@ import com.mark.common.jedis.JedisClient;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dao.CategoryDao;
-import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.mapper.VproNavbarMapper;
 import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.pojo.VproNavbarExample;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.beans.IntrospectionException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
