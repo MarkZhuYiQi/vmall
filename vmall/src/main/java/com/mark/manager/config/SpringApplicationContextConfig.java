@@ -50,14 +50,21 @@ public class SpringApplicationContextConfig implements WebMvcConfigurer {
         return resourceViewResolver;
     }
 
-/*    @Override
+    @Override
     public void addCorsMappings(CorsRegistry registry) {
+        System.out.println("corsMapping: ");
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:9528, http://127.0.0.1:9528")
+                .allowedOrigins("*")
                 .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("x-token")
+                .exposedHeaders(
+                        "access-control-allow-origin",
+                        "access-control-allow-headers",
+                        "access-control-allow-method",
+                        "access-control-max-age"
+                        )
                 .allowCredentials(true);
-    }*/
+    }
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {

@@ -56,6 +56,7 @@
         <hutool.version>4.1.9</hutool.version>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>2.11.1</log4j.version>
+        <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
         <tomcat-jdbc.version>9.0.10</tomcat-jdbc.version>
         <jwt.version>3.4.0</jwt.version>
         <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
@@ -74,6 +75,7 @@
                 <version>${qcloud-version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.qcloud/qcloud-java-sdk -->
+            <!--qcloud-java-tencent 腾讯云密钥api-->
             <!--qcloud-java-tencent 腾讯云密钥api-->
             <dependency>
                 <groupId>com.qcloud</groupId>
@@ -170,6 +172,23 @@
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- 桥接：告诉Slf4j使用Log4j2 -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${log4j-over-slf4j.version}</version>
+            </dependency>
+
             <!-- Mybatis -->
             <dependency>
                 <groupId>org.mybatis</groupId>
