@@ -11,6 +11,7 @@ public class JedisUtil {
     }
     public static boolean isExpired(Double timeStamp) {
         // 当前时间戳大于timestamp说明过期了，返回true
-        return timeStamp < (System.currentTimeMillis() / 1000);
+//        return timeStamp < (System.currentTimeMillis() / 1000);
+        return false;
     }
 }

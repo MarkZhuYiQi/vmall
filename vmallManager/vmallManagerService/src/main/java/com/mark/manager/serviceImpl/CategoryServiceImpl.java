@@ -86,21 +86,32 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             return categoryDao.getCategoriesTree(list);
         } catch (CategoryException e) {
+            Long time = System.currentTimeMillis();
             List<CategoryNode> navs = new ArrayList<CategoryNode>();
             for(int i = 0; i < list.size(); i++)
             {
                 // 顶层目录
                 if (list.get(i).getNavPid() == 0)
                 {
-//                    logger.warn("categoriesTree convert:" + list.get(i).toString());
                     // 转换成专属格式
                     CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(list.get(i));
                     // 收集该顶层目录下的子目录
                     CategoryNode nav = getSubCategory(categoryNode);
                     navs.add(nav);
-//                list.remove(i);
+//                    list.remove(i);
                 }
             }
+            /*Iterator<VproNavbar> vproNavbarIterator = list.iterator();
+            while (vproNavbarIterator.hasNext()) {
+                VproNavbar vproNavbar = vproNavbarIterator.next();
+                if (vproNavbar.getNavPid() == 0) {
+                    CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(vproNavbar);
+                    vproNavbarIterator.remove();
+                    CategoryNode nav = getSubCategory(categoryNode);
+                    navs.add(nav);
+                }
+            }*/
+            System.out.println("导航树消耗时间： " + String.valueOf(System.currentTimeMillis() - time) + "ms");
             jedisClient.set(navbarTreePrefix, JSON.toJSONString(navs));
             return navs;
         }
@@ -139,6 +150,16 @@ public class CategoryServiceImpl implements CategoryService {
 //                list.remove(i);
             }
         }
+        /*Iterator<VproNavbar> vproNavbarIterator = list.iterator();
+        while (vproNavbarIterator.hasNext()) {
+            VproNavbar vproNavbar = vproNavbarIterator.next();
+            if (vproNavbar.getNavPid().equals(mainNav.getNavId())) {
+                CategoryNode sub = DtoUtil.vproNavbar2CategoryNode(vproNavbar);
+                vproNavbarIterator.remove();
+                sub = getSubCategory(sub);
+                subNavs.add(sub);
+            }
+        }*/
         if (subNavs != null)
         {
             mainNav.setSubNav(subNavs);

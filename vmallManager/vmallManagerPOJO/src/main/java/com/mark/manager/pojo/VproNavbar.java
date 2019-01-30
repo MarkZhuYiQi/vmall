@@ -3,6 +3,7 @@ package com.mark.manager.pojo;
 import java.io.Serializable;
 
 public class VproNavbar implements Serializable {
+
     @Override
     public String toString() {
         return "VproNavbar{" +

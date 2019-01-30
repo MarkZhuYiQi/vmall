@@ -173,6 +173,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException {
+        long time = System.currentTimeMillis();
         Map<Integer, List<Courses>> indexCourses = new HashMap<Integer, List<Courses>>();
         logger.info("navIds: " + navIds);
         for(Map.Entry<Integer, List<Integer>> e : navIds.entrySet()) {
@@ -181,6 +182,7 @@ public class CourseServiceImpl implements CourseService {
             List<Courses> courses = courseDao.getIndexCoursesInfo(e.getKey(), e.getValue());
             indexCourses.put(e.getKey(), courses);
         }
+        System.out.println("得到展示页课程需要时间：" + String.valueOf(System.currentTimeMillis() - time) + "ms");
         return indexCourses;
     }
 

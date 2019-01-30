@@ -41,6 +41,10 @@ public class IndexController {
         IndexResult indexResult = new IndexResult();
         CategoryNode categoryNode = new CategoryNode();
         try {
+
+            long time = System.currentTimeMillis();
+            long navTime = System.currentTimeMillis();
+
             // 导航
             if (navId == 0) {
                 List<CategoryNode> list = categoryService.getCategoriesTree();
@@ -50,12 +54,22 @@ public class IndexController {
                 VproNavbar vproNavbar = categoryService.getCategoryById(navId);
                 categoryNode = categoryService.getSubCategory(vproNavbar);
             }
+
+            System.out.println("导航数据消耗时间：" + String.valueOf(System.currentTimeMillis() - navTime) + "ms");
+
             indexResult.setNav(categoryNode);
 
+            long courseTime = System.currentTimeMillis();
             // 封面课程
             Map<Integer, List<Integer>> navIds = categoryService.getSubIds(navId);
             Map<Integer, List<Courses>> indexCourses = courseService.getIndexCoursesInfo(navIds);
+
+            System.out.println("课程数据消耗时间：" + String.valueOf(System.currentTimeMillis() - courseTime) + "ms");
+
             indexResult.setCourses(indexCourses);
+
+            System.out.println("总时间： " + String.valueOf(System.currentTimeMillis() - time) + "ms");
+
             return new Result(indexResult);
         } catch (CategoryException ee) {
             logger.warn(ee.getMsg());
