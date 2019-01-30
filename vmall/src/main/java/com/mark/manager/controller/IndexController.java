@@ -35,6 +35,54 @@ public class IndexController {
     @Reference
     private TestService testService;
 
+    @GetMapping("nav/{navId:\\d+}")
+    @ResponseBody
+    public Result nav(@PathVariable Integer navId) {
+        CategoryNode categoryNode = new CategoryNode();
+        try {
+            long navTime = System.currentTimeMillis();
+            // 导航
+            if (navId == 0) {
+                List<CategoryNode> list = categoryService.getCategoriesTree();
+                categoryNode.setSubNav(list);
+                categoryNode.setNavId(0);
+            } else {
+                VproNavbar vproNavbar = categoryService.getCategoryById(navId);
+                categoryNode = categoryService.getSubCategory(vproNavbar);
+            }
+            System.out.println("导航数据消耗时间：" + String.valueOf(System.currentTimeMillis() - navTime) + "ms");
+            return new Result(categoryNode);
+        } catch (CategoryException ee) {
+            logger.warn(ee.getMsg());
+            return new Result(ee.getCode(), ee.getMessage());
+        }
+    }
+    @GetMapping("courses/{navId:\\d+}")
+    @ResponseBody
+    public Result indexCourses(@PathVariable Integer navId) {
+        try {
+            long courseTime = System.currentTimeMillis();
+            // 封面课程
+            Map<Integer, List<Integer>> navIds = categoryService.getSubIds(navId);
+            Map<Integer, List<Courses>> indexCourses = courseService.getIndexCoursesInfo(navIds);
+
+            System.out.println("课程数据消耗时间：" + String.valueOf(System.currentTimeMillis() - courseTime) + "ms");
+
+            return new Result(indexCourses);
+        } catch (CategoryException ee) {
+            logger.warn(ee.getMsg());
+            return new Result(ee.getCode(), ee.getMessage());
+        } catch (CourseException ec) {
+            logger.warn(ec.getMsg());
+            return new Result(ec.getCode(), ec.getMessage());
+        }
+    }
+    /**
+     * 导航和课程捆绑销售，发现时间很长啊
+     * @param navId
+     * @return
+     */
+/*
     @GetMapping("{navId:\\d+}")
     @ResponseBody
     public Result indexnav(@PathVariable Integer navId) {
@@ -79,6 +127,7 @@ public class IndexController {
             return new Result(ec.getCode(), ec.getMessage());
         }
     }
+*/
 
 /*    @GetMapping("{navId:\\d+}")
     @ResponseBody
