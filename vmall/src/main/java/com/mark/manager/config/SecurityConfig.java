@@ -9,13 +9,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         logger.info("begin security filter chain");
+        System.out.print("begin security filter chain");
         http
                 .authorizeRequests()
                 .anyRequest().permitAll()
