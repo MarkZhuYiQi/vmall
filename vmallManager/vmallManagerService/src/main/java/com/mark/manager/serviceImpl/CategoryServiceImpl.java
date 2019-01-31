@@ -178,7 +178,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) throws CategoryException {
         VproNavbar vproNavbar = getCategoryById(navId);
-        logger.info("CategoryServiceImpl： getSubIdFromCategory, navId: " + navId + ", navbarObj: " + vproNavbar.toString());
+//        logger.info("CategoryServiceImpl： getSubIdFromCategory, navId: " + navId + ", navbarObj: " + vproNavbar.toString());
         if (!vproNavbar.getNavIsParent())
         {
             idList.add(vproNavbar.getNavId());
@@ -212,13 +212,15 @@ public class CategoryServiceImpl implements CategoryService {
         List<VproNavbar> navbars = getCategories();
         List<CategoryNode> categoryNodes;
         if (navId == 0) {
-            logger.info("start navIds collect, navId: " + navId);
+//            logger.info("start navIds collect, navId: " + navId);
             // 如果传入的导航id为0，说明是顶级导航，直接拿到层级导航对象CategoryNode即可
             categoryNodes = getCategoriesTree();
         } else {
             // 传入了id，说明是在一个子导航中，生成子导航迭代对象CategoryNode
             VproNavbar navbar = getCategoryById(navId);
-            if (navbar == null) throw new CategoryException("navbar id error, no info detected.", NAVBAR_NULL_BY_ID);
+            if (!navbar.getNavId().equals(navId) || navbar.getNavId() == null) throw new CategoryException("navbar id error, no info detected.", NAVBAR_NULL_BY_ID);
+            
+
             CategoryNode categoryNode = DtoUtil.vproNavbar2CategoryNode(navbar);
             categoryNode = getSubCategory(categoryNode);
             if (categoryNode.getSubNav().size() > 0) {

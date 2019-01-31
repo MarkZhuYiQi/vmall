@@ -8,13 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestServiceImpl implements TestService {
 
-    @Autowired
-    JedisClient jedisClient;
-
     @Override
-    public String test() {
-//        System.out.println(jedisClient.zscore("test", "test"));
-        String str = jedisClient.get("test1");
-        return str;
+    public Long test() {
+        Long time = System.currentTimeMillis();
+        System.out.println(time);
+        return time;
     }
 }

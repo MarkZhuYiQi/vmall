@@ -12,4 +12,5 @@ public interface CourseDao {
     List<Courses> getCoursesByPid(List<Integer> ids);
     PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
     List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException;
+    boolean indexCoursesIsExisted(Integer navId);
 }

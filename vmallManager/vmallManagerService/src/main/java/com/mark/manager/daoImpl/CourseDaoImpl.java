@@ -59,4 +59,9 @@ public class CourseDaoImpl implements CourseDao {
         }
         return indexCourses;
     }
+
+    @Override
+    public boolean indexCoursesIsExisted(Integer navId) {
+
+    }
 }

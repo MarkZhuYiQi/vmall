@@ -15,4 +15,7 @@ public interface CourseService {
     Courses updateCourse(CourseUpdate courseUpdate) throws CourseException;
     Courses createCourse(Courses courses) throws CourseException;
     Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException;
+    boolean indexCoursesIsExisted(Integer navId);
+
+    Long test();
 }

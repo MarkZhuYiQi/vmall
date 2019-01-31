@@ -29,6 +29,9 @@ public class CourseDaoByDBImpl implements CourseDao {
     @Value("${expiredSuffix}")
     String expiredSuffix;
 
+    @Value("${indexCoursesPrefix}")
+    String indexCoursesPrefix;
+
     @Override
     public Courses getCourse(String courseId) {
         return null;
@@ -52,6 +55,12 @@ public class CourseDaoByDBImpl implements CourseDao {
         jedisClient.set(indexNavPrefix + navPid, str);
         jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
         return indexCourses;
+    }
+
+    @Override
+    public boolean indexCoursesIsExisted(Integer navId) {
+        // key: indexCourses[NAVID]
+        return jedisClient.exists(indexCoursesPrefix + String.valueOf(navId));
     }
 
 }

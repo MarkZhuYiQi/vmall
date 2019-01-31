@@ -4,7 +4,7 @@
     <!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
     <Configuration status="INFO" monitorInterval="30">
     <properties>
-        <property name="LOG_HOME">${sys:catalina.home}/logs/</property>
+        <property name="LOG_HOME">${sys:catalina.home}/logs/vmall</property>
     </properties>
     <!--先定义所有的appender-->
         <Appenders>

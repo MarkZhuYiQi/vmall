@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 
 @Component("courseByRedis")
 public class CourseDaoByRedisImpl implements CourseDao {

@@ -35,6 +35,17 @@ public class IndexController {
     @Reference
     private TestService testService;
 
+    @GetMapping("test")
+    @ResponseBody
+    public Result test() {
+        Long time = System.currentTimeMillis();
+        courseService.test();
+        System.out.println(time);
+        String delay = String.valueOf(System.currentTimeMillis() - time) + "ms";
+        System.out.println(delay);
+        return new Result(delay);
+    }
+
     @GetMapping("nav/{navId:\\d+}")
     @ResponseBody
     public Result nav(@PathVariable Integer navId) {
