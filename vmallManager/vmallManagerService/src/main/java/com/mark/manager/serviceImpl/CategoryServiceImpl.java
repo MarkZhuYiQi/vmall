@@ -36,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     JedisClient jedisClient;
 
-    @Value("navbarTreePrefix")
+    @Value("${navbarTreePrefix}")
     String navbarTreePrefix;
 
     private List<VproNavbar> list = null;

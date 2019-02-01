@@ -71,14 +71,18 @@ public class IndexController {
     @GetMapping("courses/{navId:\\d+}")
     @ResponseBody
     public Result indexCourses(@PathVariable Integer navId) {
+        Map<Integer, List<Courses>> indexCourses;
+        long courseTime = System.currentTimeMillis();
         try {
-            long courseTime = System.currentTimeMillis();
-            // 封面课程
-            Map<Integer, List<Integer>> navIds = categoryService.getSubIds(navId);
-            Map<Integer, List<Courses>> indexCourses = courseService.getIndexCoursesInfo(navIds);
-
+            if (courseService.indexCoursesIsExisted(navId)) {
+                logger.info("indexCourses info get from redis");
+                indexCourses = courseService.getIndexCoursesInfoCache(navId);
+            } else {
+                // 封面课程
+                Map<Integer, List<Integer>> navIds = categoryService.getSubIds(navId);
+                indexCourses = courseService.getIndexCoursesInfo(navId, navIds);
+            }
             System.out.println("课程数据消耗时间：" + String.valueOf(System.currentTimeMillis() - courseTime) + "ms");
-
             return new Result(indexCourses);
         } catch (CategoryException ee) {
             logger.warn(ee.getMsg());

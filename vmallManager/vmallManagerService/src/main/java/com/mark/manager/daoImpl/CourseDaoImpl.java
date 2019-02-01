@@ -5,6 +5,7 @@ import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.util.LogUtil;
 import com.mark.manager.dao.CourseDao;
+import com.mark.manager.dao.CourseDaoAbstract;
 import com.mark.manager.dto.Courses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component("courseDao")
-public class CourseDaoImpl implements CourseDao {
+public class CourseDaoImpl extends CourseDaoAbstract {
     private final static Logger logger = LoggerFactory.getLogger(CourseDaoImpl.class);
     @Autowired
     @Qualifier("courseByDB")
@@ -40,7 +41,7 @@ public class CourseDaoImpl implements CourseDao {
         return null;
     }
 
-    @Override
+/*    @Override
     public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
         String err;
         List<Courses> indexCourses;
@@ -58,10 +59,34 @@ public class CourseDaoImpl implements CourseDao {
             }
         }
         return indexCourses;
+    }*/
+
+    @Override
+    public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
+        String err;
+        List<Courses> indexCourses;
+        try {
+            indexCourses = courseDaoByDB.getIndexCoursesInfo(navPid, navIds);
+        } catch (CourseException ex) {
+            err = String.format("%s->%s: %s, navPid: %d, navIds: %s", LogUtil.getObjectName(), LogUtil.funcName(), ex.getMsg(), navPid, navIds.toString());
+            logger.info(err);
+            throw new CourseException("Get index courses failed! check the params: " + navIds, CourseConstant.GET_INDEX_COURSES_INFO_FAILED);
+        }
+        return indexCourses;
     }
 
     @Override
-    public boolean indexCoursesIsExisted(Integer navId) {
+    public boolean indexCoursesIsExisted(Integer indexNavId) {
+        return courseDaoByRedis.indexCoursesIsExisted(indexNavId);
+    }
 
+    @Override
+    public Map<Integer, List<Courses>> getIndexCoursesCache(Integer indexNavId) throws CourseException {
+        return courseDaoByRedis.getIndexCoursesCache(indexNavId);
+    }
+
+    @Override
+    public void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache) {
+        courseDaoByRedis.setIndexCoursesCache(indexNavId, indexCoursesCache);
     }
 }

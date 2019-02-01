@@ -13,4 +13,6 @@ public interface CourseDao {
     PageInfo<Courses> getCoursesByPid(int currentPage, int pageSize, List<Integer> ids);
     List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException;
     boolean indexCoursesIsExisted(Integer navId);
+    Map<Integer, List<Courses>> getIndexCoursesCache(Integer indexNavId) throws CourseException;
+    public void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache);
 }

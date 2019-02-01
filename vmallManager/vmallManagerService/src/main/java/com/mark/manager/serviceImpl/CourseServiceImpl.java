@@ -9,6 +9,7 @@ import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.UidUtil;
 import com.mark.manager.dao.CourseDao;
+import com.mark.manager.daoImpl.CourseDaoByRedisImpl;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.DtoUtil;
@@ -44,6 +45,8 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     @Qualifier("courseDao")
     CourseDao courseDao;
+    @Qualifier("courseByRedis")
+    CourseDaoByRedisImpl courseDaoByRedis;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -172,7 +175,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<Integer, List<Courses>> getIndexCoursesInfo(Map<Integer, List<Integer>> navIds) throws CourseException {
+    public Map<Integer, List<Courses>> getIndexCoursesInfo(Integer indexNavId, Map<Integer, List<Integer>> navIds) throws CourseException {
         long time = System.currentTimeMillis();
         Map<Integer, List<Courses>> indexCourses = new HashMap<Integer, List<Courses>>();
 //        logger.info("navIds: " + navIds);
@@ -182,13 +185,19 @@ public class CourseServiceImpl implements CourseService {
             List<Courses> courses = courseDao.getIndexCoursesInfo(e.getKey(), e.getValue());
             indexCourses.put(e.getKey(), courses);
         }
+        courseDao.setIndexCoursesCache(indexNavId, indexCourses);
         System.out.println("得到展示页课程需要时间：" + String.valueOf(System.currentTimeMillis() - time) + "ms");
         return indexCourses;
     }
 
     @Override
-    public boolean indexCoursesIsExisted(Integer navId) {
+    public Map<Integer, List<Courses>> getIndexCoursesInfoCache(Integer indexNavId) throws CourseException {
+        return courseDao.getIndexCoursesCache(indexNavId);
+    }
 
+    @Override
+    public boolean indexCoursesIsExisted(Integer indexNavId) {
+        return courseDao.indexCoursesIsExisted(indexNavId);
     }
 
     @Override

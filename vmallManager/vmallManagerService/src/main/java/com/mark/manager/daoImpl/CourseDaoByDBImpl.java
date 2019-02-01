@@ -6,6 +6,7 @@ import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.JedisUtil;
 import com.mark.manager.dao.CourseDao;
+import com.mark.manager.dao.CourseDaoAbstract;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component("courseByDB")
-public class CourseDaoByDBImpl implements CourseDao {
+public class CourseDaoByDBImpl extends CourseDaoAbstract {
     @Autowired
     CoursesMapper coursesMapper;
     @Autowired
@@ -51,16 +52,10 @@ public class CourseDaoByDBImpl implements CourseDao {
     public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException{
         List<Courses> indexCourses = coursesMapper.getIndexCoursesInfo(navIds);
         if (indexCourses.size() == 0) throw new CourseException("get index courses from failed!");
-        String str = JSON.toJSONString(indexCourses);
-        jedisClient.set(indexNavPrefix + navPid, str);
-        jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
+//        String str = JSON.toJSONString(indexCourses);
+//        jedisClient.set(indexNavPrefix + navPid, str);
+//        jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
         return indexCourses;
-    }
-
-    @Override
-    public boolean indexCoursesIsExisted(Integer navId) {
-        // key: indexCourses[NAVID]
-        return jedisClient.exists(indexCoursesPrefix + String.valueOf(navId));
     }
 
 }
