@@ -1,5 +1,6 @@
 package com.mark.manager.service;
 
 public interface TestService {
-    Long test();
+    Long directExchange();
+    Long directExchangeReceiving() throws Exception;
 }
