@@ -24,6 +24,7 @@ public class TestServiceImpl implements TestService {
         // try-with-resource 语法糖，将创建过程写在try里头，如果他实现了AutoCloseable接口，自动关闭连接
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
             // queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments)
+            // 队列名称 | 是否持久化 | 是否为独占队列（创建者自用，退出就删除） | 所有消费者退出后是否删除队列 | 队列其他参数
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             String message = "hello world";
             // basicPublish(String exchange, String routingKey, BasicProperties props, byte[] body)

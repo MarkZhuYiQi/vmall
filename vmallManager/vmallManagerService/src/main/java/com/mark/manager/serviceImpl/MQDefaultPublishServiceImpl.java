@@ -33,6 +33,7 @@ public class MQDefaultPublishServiceImpl implements ShutdownListener {
     private Channel getChannel(String queueName) throws IOException {
         Channel channel = channelTable.get(queueName);
         if (channel == null) {
+            // 同步代码
             synchronized (channelLock) {
                 channel = channelTable.get(queueName);
                 if (channel == null) {

@@ -58,6 +58,7 @@ public class ConnectionManager {
             System.err.println("connection: "+connection);
             return connection;
         }
+        // 同步代码，同一时间只能创建一个连接
         synchronized (this) {
             connection = connectionTable.get(connectionName);
             if (connection != null) {
