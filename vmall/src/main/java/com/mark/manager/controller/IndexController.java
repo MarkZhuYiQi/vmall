@@ -47,6 +47,25 @@ public class IndexController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                break;
+            case "workQueues":
+                testService.workQueues("work.");
+                break;
+            case "workQueuesReceiving":
+                testService.workQueuesReceiving();
+                break;
+            case "subscribe":
+                testService.subscribe();
+                break;
+            case "publish":
+                testService.publish();
+                break;
+            case "topic":
+                testService.topic();
+                break;
+            case "topicReceiving":
+                testService.topicReceiving();
+                break;
         }
         return new Result(res);
     }

@@ -15,7 +15,9 @@ import java.util.concurrent.TimeoutException;
 
 public class ConnectionManager {
     private Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
+    // 本静态对象
     private static ConnectionManager instance = new ConnectionManager();
+    // 连接表，保存所有连接
     private Map<String, Connection> connectionTable = Collections.synchronizedMap(new HashMap<>());
     private ConnectionFactory connectionFactory;
 
@@ -25,6 +27,7 @@ public class ConnectionManager {
     private ConnectionManager() {
         initialize();
     }
+    // 初始化连接参数
     private boolean initialize() {
         InputStream inputStream = null;
         try {
@@ -60,12 +63,16 @@ public class ConnectionManager {
         }
         // 同步代码，同一时间只能创建一个连接
         synchronized (this) {
+            // 取出该连接名对应的连接
             connection = connectionTable.get(connectionName);
             if (connection != null) {
                 return connection;
             }
+            // 该连接不存在，需要创建
+            // 创建完毕放入map，失败则重试
             try {
                 connection = connectionFactory.newConnection(connectionName);
+                logger.info(connection.toString());
                 this.connectionTable.put(connectionName, connection);
             } catch (IOException e) {
                 // TODO 可以发邮件通知消息服务器负责人，不能获取连接
@@ -81,9 +88,13 @@ public class ConnectionManager {
     public Connection reConnection(String connectionName) {
         Connection connection = null;
         try {
+            // 反复尝试连接
             for(;;){
+                // 创建连接
                 connection = getAndCreateConnection(connectionName);
+                // 连接创建成功，返回
                 if (connection.isOpen()) {
+                    logger.info("connection is created: {}", connection.toString());
                     break;
                 }else {
                     System.err.println("connection not open");
