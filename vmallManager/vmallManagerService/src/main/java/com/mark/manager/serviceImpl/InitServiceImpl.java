@@ -29,6 +29,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -283,5 +285,20 @@ public class InitServiceImpl implements InitService {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+    @PostConstruct
+    public void queueTest() {
+/*
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setConsumerQueue("vmallExpiredFields");
+        amqpTemplate.send(new Message("test".getBytes(), messageProperties));
+*/
+//        rabbitTemplate.setExchange("vmallExpiredExchange");
+//        rabbitTemplate.setRoutingKey("vmallExpiredBindingKey");
+        Message message = MessageBuilder.withBody("test".getBytes()).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
+        rabbitTemplate.convertAndSend("vmallExpiredExchange", "vmallExpiredBindingKey", message);
     }
 }

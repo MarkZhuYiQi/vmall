@@ -17,4 +17,9 @@ public class RoutineTask {
         long todayAtZero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
         jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
     }
+//    @Scheduled(cron = "0 0/1 0/1 * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
+    public void ExpiredListening() {
+
+    }
 }
