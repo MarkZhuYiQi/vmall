@@ -1,5 +1,6 @@
 package com.mark.manager.config;
 
+import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -17,30 +18,50 @@ import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class RabbitMQConfig {
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQConfig.class);
     @Value("${rabbitmq.host}")
     String host;
+
     @Value("${rabbitmq.port}")
     String port;
+
     @Value("${rabbitmq.username}")
     String username;
+
     @Value("${rabbitmq.password}")
     String password;
+
     @Value("${rabbitmq.directExchange}")
     String directExchange;
+
+    @Value("${rabbitmq.topicExchange}")
+    String topicExchange;
+
     @Value("${rabbitmq.channel}")
     String channel;
+
     @Value("${rabbitmq.bindingkey}")
     String bindingKey;
-    @Value("${rabbitmq.produce.queuename}")
+
+    @Value("${rabbitmq.topickey}")
+    String topickey;
+
+    @Value("${rabbitmq.topicQueue}")
+    String topicQueue;
+
+    @Value("${rabbitmq.directQueue}")
     String queueName;
+
     @Value("${rabbitmq.queuenames}")
     String queueNames;
+
     @Value("${rabbitmq.listener.class}")
     String listenerClass;
+
     @Bean
     public CachingConnectionFactory connectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory(host, Integer.valueOf(port));
@@ -58,13 +79,10 @@ public class RabbitMQConfig {
     @Bean
     //AmqpTemplate配置，AmqpTemplate接口定义了发送和接收消息的基本操作
     public RabbitTemplate rabbitTemplate() {
-
         CachingConnectionFactory connectionFactory = connectionFactory();
         connectionFactory.setPublisherReturns(true);
         connectionFactory.setPublisherConfirms(true);
-
         RabbitTemplate rabbitTemplate=new RabbitTemplate(connectionFactory);
-
         rabbitTemplate.setMandatory(true);
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
@@ -78,7 +96,7 @@ public class RabbitMQConfig {
                 logger.info("消息丢失:exchange({}),route({}),replyCode({}),replyText({}),message:{}",exchange,routingKey,replyCode,replyText,message);
             }
         });
-
+        // retry相关配置
         RetryTemplate retryTemplate = new RetryTemplate();
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
         backOffPolicy.setInitialInterval(500);
@@ -94,6 +112,19 @@ public class RabbitMQConfig {
     @Bean
     public Queue myQueue() {
         return new Queue(queueName);
+    }
+
+    @Bean
+    public Queue topicQueue() {
+        return new Queue(topicQueue);
+    }
+    @Bean
+    public TopicExchange vmallTopicExchange() {
+        return new TopicExchange(topicExchange, true, false);
+    }
+    @Bean
+    public Binding topicBinding() {
+        return BindingBuilder.bind(topicQueue()).to(vmallTopicExchange()).with(topickey);
     }
     // directExchange
     @Bean
@@ -117,15 +148,38 @@ public class RabbitMQConfig {
         container.setConnectionFactory(connectionFactory);
 
         container.setMessageListener(channelAwareMessageListener);
-        Queue[] queues=new Queue[queueNames.split(",").length];
-        for (int i = 0; i < queues.length; i++) {
-            System.out.println(queueNames.split(",")[i]);
-            Queue queue=new Queue(queueNames.split(",")[i]);
-            queues[i]=queue;
-        }
-        container.setQueues(queues);
+//        批量关注队列的方法
+//        Queue[] queues=new Queue[queueNames.split(",").length];
+//        for (int i = 0; i < queues.length; i++) {
+//            System.out.println(queueNames.split(",")[i]);
+//            Queue queue=new Queue(queueNames.split(",")[i]);
+//            queues[i]=queue;
+//        }
+//        container.setQueues(queues);
+        container.setQueues(myQueue());
         container.setConsumerArguments(Collections. <String, Object> singletonMap("x-priority",
                 Integer.valueOf(10)));
         return container;
+    }
+    @Bean
+    public SimpleMessageListenerContainer topicContainer() {
+        SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer(connectionFactory());
+        simpleMessageListenerContainer.setMaxConcurrentConsumers(1);
+        simpleMessageListenerContainer.setConcurrentConsumers(1);
+        // 设置队列
+        simpleMessageListenerContainer.setQueues(topicQueue());
+        // 设置结果知晓模式
+        simpleMessageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        // 设置监听器
+        simpleMessageListenerContainer.setMessageListener(new ChannelAwareMessageListener() {
+            @Override
+            public void onMessage(Message message, Channel channel) throws Exception {
+                byte[] body = message.getBody();
+                System.out.println("receive message from topicQueue: " + new String(body));
+                TimeUnit.MILLISECONDS.sleep(3000);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            }
+        });
+        return simpleMessageListenerContainer;
     }
 }

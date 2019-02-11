@@ -11,7 +11,7 @@ public class ServiceMessageListener implements ChannelAwareMessageListener {
     public void onMessage(Message message, Channel channel) throws Exception {
         String body = new String(message.getBody(), "UTF-8");
         System.out.println("消息内容："+body);
-        System.out.println(message.getMessageProperties().getConsumerQueue());
+        System.out.println("消息队列名称：" + message.getMessageProperties().getConsumerQueue());
         System.out.println(channel.toString());
 //        boolean mqFlag=false;//业务处理
 //        //还有一个点就是如何获取mq消息的报文部分message？

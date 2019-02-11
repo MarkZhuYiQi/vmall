@@ -286,19 +286,4 @@ public class InitServiceImpl implements InitService {
             }
         }
     }
-
-    @Autowired
-    RabbitTemplate rabbitTemplate;
-    @PostConstruct
-    public void queueTest() {
-/*
-        MessageProperties messageProperties = new MessageProperties();
-        messageProperties.setConsumerQueue("vmallExpiredFields");
-        amqpTemplate.send(new Message("test".getBytes(), messageProperties));
-*/
-//        rabbitTemplate.setExchange("vmallExpiredExchange");
-//        rabbitTemplate.setRoutingKey("vmallExpiredBindingKey");
-        Message message = MessageBuilder.withBody("test".getBytes()).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
-        rabbitTemplate.convertAndSend("vmallExpiredExchange", "vmallExpiredBindingKey", message);
-    }
 }
