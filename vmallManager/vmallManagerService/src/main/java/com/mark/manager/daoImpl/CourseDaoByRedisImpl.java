@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component("courseByRedis")
 public class CourseDaoByRedisImpl extends CourseDaoAbstract {
@@ -91,5 +92,18 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         String str = jedisClient.get(indexCoursesPrefix + String.valueOf(indexNavId));
         if (StringUtils.isEmpty(str)) throw new CourseException("indexCoursesCache stored in redis is empty", CourseConstant.GET_INDEX_COURSES_INFO_FROM_REDIS_FAILED);
         return JSON.parseObject(str, Map.class);
+    }
+
+    @Override
+    public Set<String> checkIndexCourseCache() throws CourseException {
+        String expiredKey = indexCoursesPrefix + expiredSuffix;
+        System.out.println(expiredKey);
+        if (jedisClient.exists(expiredKey)) {
+//            Set<String> expiredSet = jedisClient.zRangeByScore(expiredKey, (double)0, (double)System.currentTimeMillis());
+            Set<String> expiredSet = jedisClient.zRange(expiredKey, (long)0, (long)-1);
+            if (expiredSet.size() != 0) return expiredSet;
+            throw new CourseException(indexCoursesPrefix + " cache is null");
+        }
+        throw new CourseException(indexCoursesPrefix + " cache does not exist");
     }
 }

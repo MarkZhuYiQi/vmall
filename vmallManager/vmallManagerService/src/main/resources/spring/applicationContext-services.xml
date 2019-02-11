@@ -10,6 +10,7 @@
     <context:component-scan base-package="com.mark.manager.serviceImpl" />
     <context:component-scan base-package="com.mark.manager.daoImpl" />
     <context:component-scan base-package="com.mark.manager.task" />
+    <context:component-scan base-package="com.mark.manager.mq" />
     <!-- 注解 -->
     <!--@EnableWebMvc-->
     <mvc:annotation-driven />

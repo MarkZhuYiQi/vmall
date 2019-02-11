@@ -6,6 +6,7 @@ import com.mark.manager.dto.Courses;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class CourseDaoAbstract implements CourseDao {
     @Override
@@ -36,5 +37,8 @@ public abstract class CourseDaoAbstract implements CourseDao {
     public void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache) {
     }
 
-
+    @Override
+    public Set<String> checkIndexCourseCache() throws CourseException {
+        return null;
+    }
 }

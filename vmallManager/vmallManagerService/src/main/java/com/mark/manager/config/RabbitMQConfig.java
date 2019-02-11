@@ -1,5 +1,14 @@
 package com.mark.manager.config;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.mark.common.exception.CategoryException;
+import com.mark.common.exception.CourseException;
+import com.mark.common.util.Utils;
+import com.mark.manager.bo.Result;
+import com.mark.manager.dto.Courses;
+import com.mark.manager.mq.ExpiredMessageListener;
+import com.mark.manager.service.CategoryService;
+import com.mark.manager.service.CourseService;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +20,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +28,8 @@ import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -161,6 +173,9 @@ public class RabbitMQConfig {
                 Integer.valueOf(10)));
         return container;
     }
+
+    @Autowired
+    private ExpiredMessageListener expiredMessageListener;
     @Bean
     public SimpleMessageListenerContainer topicContainer() {
         SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer(connectionFactory());
@@ -171,15 +186,15 @@ public class RabbitMQConfig {
         // 设置结果知晓模式
         simpleMessageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         // 设置监听器
-        simpleMessageListenerContainer.setMessageListener(new ChannelAwareMessageListener() {
-            @Override
-            public void onMessage(Message message, Channel channel) throws Exception {
-                byte[] body = message.getBody();
-                System.out.println("receive message from topicQueue: " + new String(body));
-                TimeUnit.MILLISECONDS.sleep(3000);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            }
-        });
+//        simpleMessageListenerContainer.setMessageListener(new ChannelAwareMessageListener() {
+//            @Override
+//            public void onMessage(Message message, Channel channel) throws Exception {
+//                byte[] body = message.getBody();
+//                System.out.println("receive message from topicQueue: " + new String(body));
+//                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+//            }
+//        });
+        simpleMessageListenerContainer.setMessageListener(expiredMessageListener);
         return simpleMessageListenerContainer;
     }
 }

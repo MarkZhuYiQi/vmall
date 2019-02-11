@@ -6,6 +6,7 @@ import com.mark.manager.dto.Courses;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface CourseDao {
     Courses getCourse(String courseId);
@@ -14,5 +15,6 @@ public interface CourseDao {
     List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException;
     boolean indexCoursesIsExisted(Integer navId);
     Map<Integer, List<Courses>> getIndexCoursesCache(Integer indexNavId) throws CourseException;
-    public void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache);
+    void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache);
+    Set<String> checkIndexCourseCache() throws CourseException;
 }
