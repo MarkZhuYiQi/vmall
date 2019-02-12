@@ -197,6 +197,11 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return idList;
     }
+    @Override
+    public List<Integer> getSubIdFromCategory(Integer navId) throws CategoryException {
+        List<VproNavbar> list = getCategories();
+        return getSubIdFromCategory(navId, list, new ArrayList<Integer>());
+    }
 
     /**
      * 通过导航id获得该导航下的子导航id集合

@@ -201,6 +201,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public PageInfo<Courses> getCoursesForCatalog(int currentPage, int pageSize, List<Integer> ids) {
+        PageHelper.startPage(currentPage, pageSize);
+        List<Courses> courses = coursesMapper.getCoursesByPid(getCoursePidCriteria(ids));
+        PageInfo page = new PageInfo(courses);
+        return page;
+    }
+
+    @Override
     public Long test() {
         return System.currentTimeMillis();
     }

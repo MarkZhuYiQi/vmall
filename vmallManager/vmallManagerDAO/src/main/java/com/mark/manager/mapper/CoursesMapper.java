@@ -22,4 +22,7 @@ public interface CoursesMapper {
     List<Courses> getIndexCoursesInfo(
             @Param("navIds") List<Integer> navIds
     );
+    List<Courses> getCoursesInfoForCatalog(
+            @Param("navIds") List<Integer> navIds
+    );
 }

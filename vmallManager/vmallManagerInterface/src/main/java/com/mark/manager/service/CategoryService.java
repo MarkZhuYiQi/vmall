@@ -17,6 +17,7 @@ public interface CategoryService {
     CategoryNode getSubCategory(CategoryNode categoryNode);
     CategoryNode getSubCategory(VproNavbar vproNavbar);
     List<Integer> getSubIdFromCategory(Integer navId, List<VproNavbar> list, List<Integer> idList) throws CategoryException;
+    List<Integer> getSubIdFromCategory(Integer navId) throws CategoryException;
     int addCategory(VproNavbar vproNavbar);
     int removeCategory(Integer id);
     int modifyCategory(VproNavbar vproNavbar);
