@@ -18,6 +18,8 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class EncryptUtil {
 
+    private EncryptUtil() {}
+
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 
     private static String toHexString(byte[] bytes) {

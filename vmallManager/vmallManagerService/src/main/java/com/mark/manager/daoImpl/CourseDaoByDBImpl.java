@@ -50,12 +50,15 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
 
     @Override
     public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException{
-        List<Courses> indexCourses = coursesMapper.getIndexCoursesInfo(navIds);
-        if (indexCourses.size() == 0) throw new CourseException("get index courses from failed!");
-//        String str = JSON.toJSONString(indexCourses);
-//        jedisClient.set(indexNavPrefix + navPid, str);
-//        jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
-        return indexCourses;
+        try {
+            List<Courses> indexCourses = coursesMapper.getIndexCoursesInfo(navIds);
+//            String str = JSON.toJSONString(indexCourses);
+//            jedisClient.set(indexNavPrefix + navPid, str);
+//            jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
+            return indexCourses;
+        } catch (Exception e) {
+            throw new CourseException(e.getMessage());
+        }
     }
 
 }

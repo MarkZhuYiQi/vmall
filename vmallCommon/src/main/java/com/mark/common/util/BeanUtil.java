@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BeanUtil {
+    private BeanUtil() {}
     public static <T, K, V> T map2bean(Map<K, V> map, Class<T> pojoClass) throws IntrospectionException, IllegalAccessException, InstantiationException {
         T t = null;
         try {

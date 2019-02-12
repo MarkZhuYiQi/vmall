@@ -1,6 +1,7 @@
 package com.mark.common.util;
 
 public class JedisUtil {
+    private JedisUtil() {}
     public static Double expiredTimeStamp(Integer min, Integer max) {
         // int num = min + (int)(Math.random() * (max-min+1));
         double num = min + (double)(Math.random() * (max - min + 1));

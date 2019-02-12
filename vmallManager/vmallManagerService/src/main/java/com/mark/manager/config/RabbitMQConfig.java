@@ -32,6 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Mark
+ * @version 1.0
+ */
 @Configuration
 public class RabbitMQConfig {
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQConfig.class);
@@ -74,6 +78,9 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.listener.class}")
     String listenerClass;
 
+    /**
+     * @return CachingConnectionFactory
+     */
     @Bean
     public CachingConnectionFactory connectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory(host, Integer.valueOf(port));
@@ -176,6 +183,10 @@ public class RabbitMQConfig {
 
     @Autowired
     private ExpiredMessageListener expiredMessageListener;
+
+    /**
+     * @return SimpleMessageListenerContainer
+     */
     @Bean
     public SimpleMessageListenerContainer topicContainer() {
         SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer(connectionFactory());

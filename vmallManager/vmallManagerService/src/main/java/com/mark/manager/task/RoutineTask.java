@@ -58,7 +58,7 @@ public class RoutineTask {
     @Value("${rabbitmq.topicExchange}")
     String topicExchange;
 
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 0/2 * * ?")
     public void expiredChecking() {
         try {
             Set<String> expiredSet = courseDao.checkIndexCourseCache();
