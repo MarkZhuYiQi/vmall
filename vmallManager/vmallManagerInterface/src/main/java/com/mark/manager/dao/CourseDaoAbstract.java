@@ -41,4 +41,6 @@ public abstract class CourseDaoAbstract implements CourseDao {
     public Set<String> checkIndexCourseCache() throws CourseException {
         return null;
     }
+    @Override
+    public abstract PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
 }

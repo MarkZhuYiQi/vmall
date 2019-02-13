@@ -1,6 +1,7 @@
 package com.mark.manager.daoImpl;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
@@ -33,6 +34,9 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
     @Value("${indexCoursesPrefix}")
     String indexCoursesPrefix;
 
+    @Value("${coursesForCatalogPrefix}")
+    String coursesForCatalogPrefix;
+
     @Override
     public Courses getCourse(String courseId) {
         return null;
@@ -56,6 +60,21 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
 //            jedisClient.set(indexNavPrefix + navPid, str);
 //            jedisClient.zadd(indexNavPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), indexNavPrefix + navPid);
             return indexCourses;
+        } catch (Exception e) {
+            throw new CourseException(e.getMessage());
+        }
+    }
+
+    @Override
+    public PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException {
+        try{
+            PageHelper.startPage(currentPage, pageSize);
+            List<Courses> courses = coursesMapper.getCoursesInfoForCatalog(ids);
+            PageInfo page = new PageInfo(courses);
+            jedisClient.hset(coursesForCatalogPrefix + String.valueOf(navId), String.valueOf(currentPage), JSON.toJSONString(page));
+            // 过期时间是基于整个navId下的，而缓存是基于页码的，一个页码过期，会刷新整个navId的日期，所以暂时在过期后直接删除整个缓存
+            jedisClient.zadd(coursesForCatalogPrefix + expiredSuffix, JedisUtil.expiredTimeStamp(), coursesForCatalogPrefix + String.valueOf(navId));
+            return page;
         } catch (Exception e) {
             throw new CourseException(e.getMessage());
         }

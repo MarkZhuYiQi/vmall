@@ -71,4 +71,8 @@ public class RoutineTask {
             logger.info(e.getMsg());
         }
     }
+    @Scheduled(cron = "0 0 2 * * ? ")
+    public void updateClickNumFromRedis() {
+
+    }
 }

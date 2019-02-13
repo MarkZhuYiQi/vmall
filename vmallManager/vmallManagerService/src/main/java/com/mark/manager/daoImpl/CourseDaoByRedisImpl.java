@@ -7,6 +7,7 @@ import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.JedisUtil;
+import com.mark.common.util.LogUtil;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dao.CourseDaoAbstract;
 import com.mark.manager.dto.Courses;
@@ -34,6 +35,9 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
 
     @Value("${indexCoursesPrefix}")
     String indexCoursesPrefix;
+
+    @Value("${coursesForCatalogPrefix}")
+    String coursesForCatalogPrefix;
 
     @Override
     public Courses getCourse(String courseId) {
@@ -105,5 +109,25 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
             throw new CourseException(indexCoursesPrefix + " cache is null");
         }
         throw new CourseException(indexCoursesPrefix + " cache does not exist");
+    }
+
+    @Override
+    public PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException {
+
+        // 如果缓存过期，就把整个hash表全删除，（所有页码的缓存都删除）
+        String expiredKey = coursesForCatalogPrefix + expiredSuffix;
+        if (jedisClient.exists(expiredKey)) {
+            Double expiredTime = jedisClient.zscore(expiredKey, coursesForCatalogPrefix + String.valueOf(navId));
+            if (expiredTime <= System.currentTimeMillis()) {
+                jedisClient.del(coursesForCatalogPrefix + String.valueOf(navId));
+            }
+        }
+
+        String str = jedisClient.hget(coursesForCatalogPrefix + navId, String.valueOf(currentPage));
+        if (StringUtils.isEmpty(str)) {
+            String err = String.format("%s->%s: courses for catalog %s does not exist", LogUtil.getObjectName(), LogUtil.funcName(), navId);
+            throw new CourseException(err);
+        }
+        return JSON.parseObject(str, PageInfo.class);
     }
 }

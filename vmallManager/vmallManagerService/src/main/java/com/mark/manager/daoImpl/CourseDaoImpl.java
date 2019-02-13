@@ -89,4 +89,18 @@ public class CourseDaoImpl extends CourseDaoAbstract {
     public void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache) {
         courseDaoByRedis.setIndexCoursesCache(indexNavId, indexCoursesCache);
     }
+
+    @Override
+    public PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException {
+        try {
+            return courseDaoByRedis.getCoursesForCatalog(navId, currentPage, pageSize, ids);
+        } catch (CourseException e) {
+            logger.info(e.getMsg());
+            try {
+                return courseDaoByDB.getCoursesForCatalog(navId, currentPage, pageSize, ids);
+            } catch (CourseException ec) {
+                throw new CourseException("get courses for catalog " + navId + " faild!", CourseConstant.GET_COURSES_FOR_CATALOG);
+            }
+        }
+    }
 }

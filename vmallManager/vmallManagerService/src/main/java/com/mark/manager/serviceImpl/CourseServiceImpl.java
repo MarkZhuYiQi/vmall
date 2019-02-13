@@ -45,8 +45,6 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     @Qualifier("courseDao")
     CourseDao courseDao;
-    @Qualifier("courseByRedis")
-    CourseDaoByRedisImpl courseDaoByRedis;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -201,11 +199,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public PageInfo<Courses> getCoursesForCatalog(int currentPage, int pageSize, List<Integer> ids) {
-        PageHelper.startPage(currentPage, pageSize);
-        List<Courses> courses = coursesMapper.getCoursesByPid(getCoursePidCriteria(ids));
-        PageInfo page = new PageInfo(courses);
-        return page;
+    public PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException {
+        return courseDao.getCoursesForCatalog(navId, currentPage, pageSize, ids);
     }
 
     @Override

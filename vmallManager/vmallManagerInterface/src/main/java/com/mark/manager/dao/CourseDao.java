@@ -17,4 +17,5 @@ public interface CourseDao {
     Map<Integer, List<Courses>> getIndexCoursesCache(Integer indexNavId) throws CourseException;
     void setIndexCoursesCache(Integer indexNavId, Map<Integer, List<Courses>> indexCoursesCache);
     Set<String> checkIndexCourseCache() throws CourseException;
+    PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
 }
