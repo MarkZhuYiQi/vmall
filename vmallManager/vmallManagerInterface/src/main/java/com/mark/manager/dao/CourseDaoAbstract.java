@@ -43,4 +43,7 @@ public abstract class CourseDaoAbstract implements CourseDao {
     }
     @Override
     public abstract PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
+
+    @Override
+    public abstract Courses getCourseForDetail(Integer courseId) throws CourseException;
 }

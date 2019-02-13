@@ -80,4 +80,9 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
         }
     }
 
+    @Override
+    public Courses getCourseForDetail(Integer courseId) {
+        Courses course = coursesMapper.getCourseForDetail(courseId);
+    }
+
 }

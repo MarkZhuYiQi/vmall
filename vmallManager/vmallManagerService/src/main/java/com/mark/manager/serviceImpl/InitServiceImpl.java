@@ -11,10 +11,7 @@ import com.mark.manager.config.ElasticsearchPool;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.daoImpl.CourseDaoByRedisImpl;
 import com.mark.manager.dto.Courses;
-import com.mark.manager.mapper.CoursesMapper;
-import com.mark.manager.mapper.VproAuthMapper;
-import com.mark.manager.mapper.VproCoursesMapper;
-import com.mark.manager.mapper.VproRolesMapper;
+import com.mark.manager.mapper.*;
 import com.mark.manager.pojo.*;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
@@ -264,28 +261,31 @@ public class InitServiceImpl implements InitService {
             jedisClient.set("uid", String.valueOf(todayAtZero / 1000));
         }
     }
-    @Value("${expiredSuffix}")
-    String expiredSuffix;
-//    @PostConstruct
-    public void routineTask() {
-        while(true) {
-            try {
-                List<Set<String>> membersList = new ArrayList<Set<String>>();
-                Thread.sleep(1000);
-                Set<String> expiredKeys = jedisClient.keys("*" + expiredSuffix);
-                if (expiredKeys.size() == 0) continue;
-                for(String s : expiredKeys) {
-                    String key = s.substring(0, s.length() - expiredSuffix.length() - 1);
-                    Set<String> members = jedisClient.zRangeByScore(key, (double)0, (double)(System.currentTimeMillis() / 1000));
-                    membersList.add(members);
-                }
-                if (membersList.size() == 0) logger.info("No keys expired in redis at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-                logger.info("{} keys has been expired", membersList.size());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
+    @Value("${coursesClicksSummary}")
+    String courseClicksSummary;
+
+    @Autowired
+    VproCoursesTempDetailMapper vproCoursesTempDetailMapper;
+
+    @PostConstruct
+    public void transferClickNum() {
+        System.out.println(courseClicksSummary);
+        VproCoursesTempDetailExample vproCoursesTempDetailExample = new VproCoursesTempDetailExample();
+        vproCoursesTempDetailExample.createCriteria();
+        List<VproCoursesTempDetail> list = vproCoursesTempDetailMapper.selectByExample(vproCoursesTempDetailExample);
+        logger.info("开始管道插入" + navbarPrefix);
+        Jedis jedis = jedisPool.getResource();
+        Pipeline p = jedis.pipelined();
+        for(VproCoursesTempDetail vproCoursesTempDetail : list) {
+            Integer courseClickNum  = vproCoursesTempDetail.getCourseClicknum();
+            Integer courseId = vproCoursesTempDetail.getCourseId();
+            // key, score, member
+            p.zadd(courseClicksSummary, courseClickNum, String.valueOf(courseId));
+        }
+        p.sync();
+        jedis.close();
+        logger.info("插入完成" + navbarPrefix);
+    }
 
 }

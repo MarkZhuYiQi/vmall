@@ -39,6 +39,9 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
     @Value("${coursesForCatalogPrefix}")
     String coursesForCatalogPrefix;
 
+    @Value("${coursesDetailPrefix}")
+    String coursesDetailPrefix;
+
     @Override
     public Courses getCourse(String courseId) {
 //        Map<String, String> course = jedisClient.hgetAll(coursePrefix + courseId);
@@ -118,7 +121,7 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         String expiredKey = coursesForCatalogPrefix + expiredSuffix;
         if (jedisClient.exists(expiredKey)) {
             Double expiredTime = jedisClient.zscore(expiredKey, coursesForCatalogPrefix + String.valueOf(navId));
-            if (expiredTime <= System.currentTimeMillis()) {
+            if (JedisUtil.isExpired(expiredTime)) {
                 jedisClient.del(coursesForCatalogPrefix + String.valueOf(navId));
             }
         }
@@ -129,5 +132,17 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
             throw new CourseException(err);
         }
         return JSON.parseObject(str, PageInfo.class);
+    }
+
+    @Override
+    public Courses getCourseForDetail(Integer courseId) throws CourseException {
+        String courseKey = coursesDetailPrefix + String.valueOf(courseId);
+        if (jedisClient.exists(courseKey)) {
+            Double expiredTime = jedisClient.zscore(coursesDetailPrefix + expiredSuffix, String.valueOf(courseId));
+            if (JedisUtil.isExpired(expiredTime)) throw new CourseException("course cache expired, courseId: " + courseId);
+            Map<String, String> course = jedisClient.hgetAll(courseKey);
+            return BeanUtil.
+        }
+
     }
 }

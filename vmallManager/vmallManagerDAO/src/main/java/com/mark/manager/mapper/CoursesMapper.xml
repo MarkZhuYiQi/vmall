@@ -29,6 +29,33 @@
             <id property="detailId" column="detail_id" />
             <result property="courseContent" column="course_content" />
         </collection>
+        <collection property="vproCoursesTempDetail" ofType="com.mark.manager.pojo.VproCoursesTempDetail">
+            <id property="courseId" column="course_id" />
+            <result property="coursePid" column="course_pid" />
+            <result property="courseScore" column="course_score" />
+            <result property="courseClickNum" column="course_clickNum" />
+        </collection>
+        <collection property="vproVideo" ofType="com.mark.manager.pojo.VproVideo">
+            <id property="videoId" column="video_id" />
+            <result property="videoFileId" column="video_file_id" />
+            <result property="videoAuthor" column="video_author" />
+            <result property="videoTag" column="video_tag" />
+            <result property="videoDetailId" column="video_detail_id" />
+            <result property="videoLessonIsused" column="video_lesson_isused" />
+        </collection>
+        <collection property="vproVideoDetail" ofType="com.mark.manager.pojo.VproVideoDetail">
+            <result property="detailId" column="detail_id" />
+            <result property="detailContent" column="detail_content" />
+            <result property="detailFavorite" column="detail_favorite" />
+        </collection>
+        <collection property="vproVideoFiles" ofType="com.mark.manager.pojo.VproVideoFiles">
+            <result property="videoFileId" column="video_file_id" />
+            <result property="videoFileKey" column="video_file_key" />
+            <result property="videoFileUptime" column="video_file_uptime" />
+            <result property="videoFileIsuploaded" column="video_file_isuploaded" />
+            <result property="videoFileIsused" column="video_file_isused" />
+            <result property="videoFileSize" column="video_file_size" />
+        </collection>
     </resultMap>
 
     <select id="getCoursesByPid" resultMap="coursesResultMap" parameterType="string">
@@ -194,6 +221,38 @@ WHERE
 		as f
 );
     </select>
+    
+    <select id="getCourseForDetail" resultMap="coursesResultMap">
+SELECT
+	vpro_courses_lesson_list.lesson_id,
+	vpro_courses_lesson_list.lesson_lid,
+	vpro_courses_lesson_list.lesson_pid,
+	vpro_courses_lesson_list.lesson_title,
+	vpro_courses_lesson_list.lesson_is_chapter_head,
+	vpro_courses_lesson_list.lesson_course_id,
+	vpro_courses_lesson_list.lesson_is_deleted,
+	vpro_video.video_id,
+	vpro_video.video_file_id,
+	vpro_video.video_author,
+	vpro_video.video_tag,
+	vpro_video.video_detail_id,
+	vpro_video.video_lesson_isused,
+	vpro_video_detail.detail_id,
+	vpro_video_detail.detail_content,
+	vpro_video_detail.detail_favorite,
+	vpro_video_files.*
+FROM
+	vpro_courses
+LEFT JOIN
+	vpro_auth on vpro_auth.auth_id = vpro_courses.course_author
+LEFT JOIN
+	vpro_courses_temp_detail on vpro_courses_temp_detail.course_id = vpro_courses.course_id
+LEFT JOIN
+	vpro_courses_cover on vpro_courses_cover.course_cover_id = vpro_courses.course_cover
+WHERE
+	vpro_courses.course_id = #{courseId}
+    </select>
+    
     <sql id="getIndexCourseInfo_Where_Clause">
         <!--
           WARNING - @mbg.generated

@@ -38,4 +38,9 @@ public class CourseController {
             return new Result(e.getCode(), e.getMessage());
         }
     }
+    @GetMapping("detail")
+    @ResponseBody
+    public Result getCoursesForDetail(@RequestParam("cid") Integer cid) {
+        courseService.
+    }
 }

@@ -1,8 +1,6 @@
 package com.mark.manager.dto;
 
-import com.mark.manager.pojo.VproAuth;
-import com.mark.manager.pojo.VproCoursesContent;
-import com.mark.manager.pojo.VproCoursesCover;
+import com.mark.manager.pojo.*;
 import com.mark.common.validateGroup.CreateCourse;
 import com.mark.common.validateGroup.InsertCourseItems;
 
@@ -44,13 +42,13 @@ public class Courses implements Serializable {
 
     private VproCoursesContent vproCoursesContent;
 
-    public VproCoursesContent getVproCoursesContent() {
-        return vproCoursesContent;
-    }
+    private VproCoursesTempDetail vproCoursesTempDetail;
 
-    public void setVproCoursesContent(VproCoursesContent vproCoursesContent) {
-        this.vproCoursesContent = vproCoursesContent;
-    }
+    private VproVideo vproVideo;
+
+    private VproVideoDetail vproVideoDetail;
+
+    private VproVideoFiles vproVideoFiles;
 
     public Courses() {
     }
@@ -72,6 +70,10 @@ public class Courses implements Serializable {
                 ", vproCoursesCover=" + vproCoursesCover +
                 ", vproAuth=" + vproAuth +
                 ", vproCoursesContent=" + vproCoursesContent +
+                ", vproCoursesTempDetail=" + vproCoursesTempDetail +
+                ", vproVideo=" + vproVideo +
+                ", vproVideoDetail=" + vproVideoDetail +
+                ", vproVideoFiles=" + vproVideoFiles +
                 '}';
     }
 
@@ -147,6 +149,22 @@ public class Courses implements Serializable {
         this.courseDiscountPrice = courseDiscountPrice;
     }
 
+    public Float getCourseScore() {
+        return courseScore;
+    }
+
+    public void setCourseScore(Float courseScore) {
+        this.courseScore = courseScore;
+    }
+
+    public Integer getCourseClickNum() {
+        return courseClickNum;
+    }
+
+    public void setCourseClickNum(Integer courseClickNum) {
+        this.courseClickNum = courseClickNum;
+    }
+
     public VproCoursesCover getVproCoursesCover() {
         return vproCoursesCover;
     }
@@ -163,19 +181,43 @@ public class Courses implements Serializable {
         this.vproAuth = vproAuth;
     }
 
-    public Float getCourseScore() {
-        return courseScore;
+    public VproCoursesContent getVproCoursesContent() {
+        return vproCoursesContent;
     }
 
-    public void setCourseScore(Float courseScore) {
-        this.courseScore = courseScore;
+    public void setVproCoursesContent(VproCoursesContent vproCoursesContent) {
+        this.vproCoursesContent = vproCoursesContent;
     }
 
-    public Integer getCourseClickNum() {
-        return courseClickNum;
+    public VproCoursesTempDetail getVproCoursesTempDetail() {
+        return vproCoursesTempDetail;
     }
 
-    public void setCourseClickNum(Integer courseClickNum) {
-        this.courseClickNum = courseClickNum;
+    public void setVproCoursesTempDetail(VproCoursesTempDetail vproCoursesTempDetail) {
+        this.vproCoursesTempDetail = vproCoursesTempDetail;
+    }
+
+    public VproVideo getVproVideo() {
+        return vproVideo;
+    }
+
+    public void setVproVideo(VproVideo vproVideo) {
+        this.vproVideo = vproVideo;
+    }
+
+    public VproVideoDetail getVproVideoDetail() {
+        return vproVideoDetail;
+    }
+
+    public void setVproVideoDetail(VproVideoDetail vproVideoDetail) {
+        this.vproVideoDetail = vproVideoDetail;
+    }
+
+    public VproVideoFiles getVproVideoFiles() {
+        return vproVideoFiles;
+    }
+
+    public void setVproVideoFiles(VproVideoFiles vproVideoFiles) {
+        this.vproVideoFiles = vproVideoFiles;
     }
 }

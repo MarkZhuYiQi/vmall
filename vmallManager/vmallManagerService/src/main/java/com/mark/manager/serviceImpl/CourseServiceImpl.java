@@ -204,6 +204,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public Courses getCourseForDetail(Integer courseId) {
+
+    }
+
+    @Override
     public Long test() {
         return System.currentTimeMillis();
     }

@@ -103,4 +103,17 @@ public class CourseDaoImpl extends CourseDaoAbstract {
             }
         }
     }
+
+    @Override
+    public Courses getCourseForDetail(Integer courseId) {
+        try{
+            return courseDaoByRedis.getCourseForDetail(courseId);
+        } catch (CourseException e) {
+            try {
+                return courseDaoByDB.getCourseForDetail(courseId);
+            } catch (CourseException ec) {
+                throw new CourseException();
+            }
+        }
+    }
 }
