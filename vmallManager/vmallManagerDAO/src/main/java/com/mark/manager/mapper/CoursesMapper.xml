@@ -223,34 +223,27 @@ WHERE
     </select>
     
     <select id="getCourseForDetail" resultMap="coursesResultMap">
-SELECT
-	vpro_courses_lesson_list.lesson_id,
-	vpro_courses_lesson_list.lesson_lid,
-	vpro_courses_lesson_list.lesson_pid,
-	vpro_courses_lesson_list.lesson_title,
-	vpro_courses_lesson_list.lesson_is_chapter_head,
-	vpro_courses_lesson_list.lesson_course_id,
-	vpro_courses_lesson_list.lesson_is_deleted,
-	vpro_video.video_id,
-	vpro_video.video_file_id,
-	vpro_video.video_author,
-	vpro_video.video_tag,
-	vpro_video.video_detail_id,
-	vpro_video.video_lesson_isused,
-	vpro_video_detail.detail_id,
-	vpro_video_detail.detail_content,
-	vpro_video_detail.detail_favorite,
-	vpro_video_files.*
-FROM
-	vpro_courses
+select
+	vc.course_id,
+	vc.course_pid,
+	vc.course_title,
+	vc.course_price,
+	vc.course_author,
+	vc.course_discount_price,
+	vcc.course_cover_address,
+	va.auth_appid,
+	vct.course_score,
+	vct.course_clickNum
+from
+	vpro_courses as vc
 LEFT JOIN
-	vpro_auth on vpro_auth.auth_id = vpro_courses.course_author
+	vpro_courses_temp_detail as vct on vct.course_id = vc.course_id
 LEFT JOIN
-	vpro_courses_temp_detail on vpro_courses_temp_detail.course_id = vpro_courses.course_id
+	vpro_auth as va on va.auth_id = vc.course_author
 LEFT JOIN
-	vpro_courses_cover on vpro_courses_cover.course_cover_id = vpro_courses.course_cover
+	vpro_courses_cover as vcc on vcc.course_cover_id = vc.course_id
 WHERE
-	vpro_courses.course_id = #{courseId}
+	vc.course_id = #{courseId}
     </select>
     
     <sql id="getIndexCourseInfo_Where_Clause">

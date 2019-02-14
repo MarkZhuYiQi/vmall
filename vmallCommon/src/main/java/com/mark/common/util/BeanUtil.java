@@ -2,6 +2,7 @@ package com.mark.common.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -63,6 +64,16 @@ public class BeanUtil {
         });
         return map;
     }
+
+    public static <T, K, V> T mapToBean(Map<K, V> map, Class<T> pojoClass) {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(map, pojoClass);
+    }
+    public static <T> Map<String, Object> beanToMap(Object obj, Class<T> clazz) {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue((T)obj, Map.class);
+    }
+
     public static Map<String, Object> bean2map4criteria(Object obj) throws IntrospectionException {
         BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
         PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();

@@ -18,7 +18,7 @@ public interface CourseService {
     Map<Integer, List<Courses>> getIndexCoursesInfoCache(Integer indexNavId) throws CourseException;
     boolean indexCoursesIsExisted(Integer navId);
     PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
-    Courses getCourseForDetail(Integer courseId);
+    Courses getCourseForDetail(Integer courseId) throws CourseException;
 
     Long test();
 }

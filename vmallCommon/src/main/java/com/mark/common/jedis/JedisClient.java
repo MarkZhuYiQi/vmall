@@ -18,6 +18,14 @@ public interface JedisClient {
 
     String setex(String key, Integer seconds, String value);
 
+    Long expire(String key, Integer seconds);
+
+    Long pexpire(String key, Long milliseconds);
+
+    Long expireAt(String key, Long unixTime);
+
+    Long pexpireAt(String key, Long millisecondsTimestamp);
+
     String getSet(String key, String value);
 
     String get(String key);

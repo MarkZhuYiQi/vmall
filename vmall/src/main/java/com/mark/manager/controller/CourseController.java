@@ -41,6 +41,11 @@ public class CourseController {
     @GetMapping("detail")
     @ResponseBody
     public Result getCoursesForDetail(@RequestParam("cid") Integer cid) {
-        courseService.
+        try {
+            Courses courses = courseService.getCourseForDetail(cid);
+            return new Result(courses);
+        } catch (CourseException e) {
+            return new Result(e.getCode(), e.getMessage());
+        }
     }
 }

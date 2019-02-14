@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
+import com.mark.common.util.BeanUtil;
 import com.mark.common.util.JedisUtil;
 import com.mark.common.util.LogUtil;
 import com.mark.manager.dao.CourseDao;
@@ -138,11 +139,13 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
     public Courses getCourseForDetail(Integer courseId) throws CourseException {
         String courseKey = coursesDetailPrefix + String.valueOf(courseId);
         if (jedisClient.exists(courseKey)) {
+            // 课程信息过期不仅设置了set，而且设置了自动过期，所以可以不用这个判断
             Double expiredTime = jedisClient.zscore(coursesDetailPrefix + expiredSuffix, String.valueOf(courseId));
-            if (JedisUtil.isExpired(expiredTime)) throw new CourseException("course cache expired, courseId: " + courseId);
-            Map<String, String> course = jedisClient.hgetAll(courseKey);
-            return BeanUtil.
+            if (JedisUtil.isExpired(expiredTime)) {
+                Map<String, String> course = jedisClient.hgetAll(courseKey);
+                return BeanUtil.mapToBean(course, Courses.class);
+            }
         }
-
+        throw new CourseException("course cache does not exist or expired, courseId: " + courseId);
     }
 }

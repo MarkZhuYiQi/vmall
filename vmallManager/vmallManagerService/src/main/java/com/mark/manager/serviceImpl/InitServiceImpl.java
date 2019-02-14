@@ -268,6 +268,9 @@ public class InitServiceImpl implements InitService {
     @Autowired
     VproCoursesTempDetailMapper vproCoursesTempDetailMapper;
 
+    /**
+     * 点击set存储格式：key: courses.clicks.set; member: courseId; score: clickNumber
+     */
     @PostConstruct
     public void transferClickNum() {
         System.out.println(courseClicksSummary);

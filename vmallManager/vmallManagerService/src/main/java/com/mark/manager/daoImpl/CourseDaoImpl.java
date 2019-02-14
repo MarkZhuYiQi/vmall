@@ -41,26 +41,6 @@ public class CourseDaoImpl extends CourseDaoAbstract {
         return null;
     }
 
-/*    @Override
-    public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
-        String err;
-        List<Courses> indexCourses;
-        try {
-            indexCourses = courseDaoByRedis.getIndexCoursesInfo(navPid, navIds);
-        } catch (CourseException e) {
-            err = String.format("%s->%s: %s, navPid: %d, navIds: %s", LogUtil.getObjectName(), LogUtil.funcName(), e.getMsg(), navPid, navIds.toString());
-            logger.info(err);
-            try {
-                indexCourses = courseDaoByDB.getIndexCoursesInfo(navPid, navIds);
-            } catch (CourseException ex) {
-                err = String.format("%s->%s: %s, navPid: %d, navIds: %s", LogUtil.getObjectName(), LogUtil.funcName(), e.getMsg(), navPid, navIds.toString());
-                logger.info(err);
-                throw new CourseException("Get index courses failed! check the params: " + navIds, CourseConstant.GET_INDEX_COURSES_INFO_FAILED);
-            }
-        }
-        return indexCourses;
-    }*/
-
     @Override
     public List<Courses> getIndexCoursesInfo(Integer navPid, List<Integer> navIds) throws CourseException {
         String err;
@@ -105,14 +85,16 @@ public class CourseDaoImpl extends CourseDaoAbstract {
     }
 
     @Override
-    public Courses getCourseForDetail(Integer courseId) {
+    public Courses getCourseForDetail(Integer courseId) throws CourseException {
         try{
             return courseDaoByRedis.getCourseForDetail(courseId);
         } catch (CourseException e) {
+            logger.warn("get courses detail info from cache failed. {}->{}: {}", LogUtil.getObjectName(), LogUtil.funcName(), e.getMsg());
             try {
                 return courseDaoByDB.getCourseForDetail(courseId);
             } catch (CourseException ec) {
-                throw new CourseException();
+                logger.warn("get courses detail info from DB failed. {}->{}: {}", LogUtil.getObjectName(), LogUtil.funcName(), e.getMsg());
+                throw new CourseException("get courses info failed!", CourseConstant.GET_COURSES_DETAIL_FAILED);
             }
         }
     }

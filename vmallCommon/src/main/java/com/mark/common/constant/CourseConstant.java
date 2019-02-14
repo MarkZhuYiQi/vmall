@@ -11,6 +11,7 @@ public class CourseConstant {
     public static final Integer GET_INDEX_COURSES_INFO_FAILED = 808;
     public static final Integer GET_INDEX_COURSES_INFO_FROM_REDIS_FAILED = 809;
     public static final Integer GET_COURSES_FOR_CATALOG = 810;
+    public static final Integer GET_COURSES_DETAIL_FAILED = 811;
 
     public static final Integer COURSES_FOR_CATALOG_SIZE = 40;
 }

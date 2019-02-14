@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
+import com.mark.common.util.BeanUtil;
 import com.mark.common.util.JedisUtil;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dao.CourseDaoAbstract;
@@ -36,6 +37,13 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
 
     @Value("${coursesForCatalogPrefix}")
     String coursesForCatalogPrefix;
+
+    @Value("${coursesDetailPrefix}")
+    String coursesDetailPrefix;
+
+    @Value("${coursesClicksSummary}")
+    String coursesClicksSummary;
+
 
     @Override
     public Courses getCourse(String courseId) {
@@ -81,8 +89,26 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
     }
 
     @Override
-    public Courses getCourseForDetail(Integer courseId) {
-        Courses course = coursesMapper.getCourseForDetail(courseId);
+    public Courses getCourseForDetail(Integer courseId) throws CourseException {
+        try {
+            Courses course = coursesMapper.getCourseForDetail(courseId);
+            Double clickNum = jedisClient.zscore(coursesClicksSummary, String.valueOf(courseId));
+            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClicknum(Integer.parseInt(String.valueOf(clickNum)));
+            Map<String, Object> map = BeanUtil.beanToMap(course, Courses.class);
+            for(Map.Entry<String, Object> m : map.entrySet()) {
+                System.out.println(m.getKey());
+                System.out.println(m.getValue());
+                jedisClient.hset(coursesDetailPrefix + courseId, m.getKey(), String.valueOf(m.getValue()));
+            }
+            String expiredTime = String.valueOf(JedisUtil.expiredTimeStamp());
+            // 到期自动删除
+            jedisClient.pexpireAt(coursesDetailPrefix + courseId, Long.parseLong(expiredTime));
+            // 生成一个课程信息过期set，备用
+            jedisClient.zadd(coursesDetailPrefix + expiredSuffix, Double.valueOf(expiredTime), String.valueOf(courseId));
+            return course;
+        } catch (Exception e) {
+            throw new CourseException(e.getMessage());
+        }
     }
 
 }

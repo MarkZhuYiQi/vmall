@@ -204,8 +204,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Courses getCourseForDetail(Integer courseId) {
-
+    public Courses getCourseForDetail(Integer courseId) throws CourseException {
+        return courseDao.getCourseForDetail(courseId);
     }
 
     @Override

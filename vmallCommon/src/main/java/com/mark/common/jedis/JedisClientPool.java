@@ -55,6 +55,62 @@ public class JedisClientPool implements JedisClient{
         return res;
     }
 
+    /**
+     *
+     * @param key 键名
+     * @param seconds 经过seconds后数据过期
+     * @return
+     */
+    @Override
+    public Long expire(String key, Integer seconds) {
+        Jedis jedis = jedisPool.getResource();
+        Long time = jedis.expire(key, seconds);
+        jedis.close();
+        return time;
+    }
+
+    /**
+     *
+     * @param key 键名
+     * @param milliseconds 经过milliseconds后数据过期
+     * @return
+     */
+    @Override
+    public Long pexpire(String key, Long milliseconds) {
+        Jedis jedis = jedisPool.getResource();
+        Long time = jedis.pexpire(key, milliseconds);
+        jedis.close();
+        return time;
+    }
+
+    /**
+     *
+     * @param key 键名
+     * @param unixTime 到这个时间点数据过期
+     * @return
+     */
+    @Override
+    public Long expireAt(String key, Long unixTime) {
+        Jedis jedis = jedisPool.getResource();
+        Long time = jedis.expireAt(key, unixTime);
+        jedis.close();
+        return time;
+    }
+
+    /**
+     * 原始方法
+     * @param key
+     * @param millisecondsTimestamp 到达这个毫秒计算的时间戳后过期。
+     * @return
+     */
+    @Override
+    public Long pexpireAt(String key, Long millisecondsTimestamp) {
+        Jedis jedis = jedisPool.getResource();
+        Long time = jedis.pexpireAt(key, millisecondsTimestamp);
+        jedis.close();
+        return time;
+    }
+
     @Override
     public String getSet(String key, String value) {
         Jedis jedis = jedisPool.getResource();

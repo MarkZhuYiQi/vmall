@@ -1,6 +1,7 @@
 package com.mark.manager.mapper;
 
 import com.mark.manager.dto.Courses;
+import com.mark.manager.pojo.VproCoursesLessonList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,5 +26,7 @@ public interface CoursesMapper {
     List<Courses> getCoursesInfoForCatalog(
             @Param("navIds") List<Integer> navIds
     );
-    Courses getCourseForDetail(@Param("courseId") Integer courseId);
+    Courses getCourseForDetail(
+            @Param("courseId") Integer courseId
+    );
 }

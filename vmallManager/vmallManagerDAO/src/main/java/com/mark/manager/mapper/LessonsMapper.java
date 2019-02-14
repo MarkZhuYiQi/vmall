@@ -1,5 +1,6 @@
 package com.mark.manager.mapper;
 
+import com.mark.manager.pojo.VproCoursesLessonList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,5 +40,8 @@ public interface LessonsMapper {
             @Param("courseId") Integer courseId,
             @Param("lessonIsChapterHead") Integer lessonIsChapterHead,
             @Param("lessonPid") Integer lessonPid
+    );
+    List<VproCoursesLessonList> getLessonsList(
+            @Param("courseId") Integer courseId
     );
 }

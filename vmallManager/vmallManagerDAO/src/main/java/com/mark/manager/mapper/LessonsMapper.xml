@@ -144,4 +144,33 @@
             AND lesson_pid = #{lessonPid}
         </if>
     </select>
+
+    <select id="getLessonsListAnnonation">
+SELECT
+	vpro_courses_lesson_list.lesson_id,
+	vpro_courses_lesson_list.lesson_lid,
+	vpro_courses_lesson_list.lesson_pid,
+	vpro_courses_lesson_list.lesson_title,
+	vpro_courses_lesson_list.lesson_is_chapter_head,
+	vpro_courses_lesson_list.lesson_course_id,
+	vpro_courses_lesson_list.lesson_is_deleted,
+	vpro_video.video_id,
+	vpro_video.video_file_id,
+	vpro_video.video_author,
+	vpro_video.video_tag,
+	vpro_video.video_detail_id,
+	vpro_video.video_lesson_isused,
+	vpro_video_detail.detail_id,
+	vpro_video_detail.detail_content,
+	vpro_video_detail.detail_favorite,
+	vpro_video_files.*
+FROM
+	vpro_courses_lesson_list
+LEFT JOIN vpro_video ON vpro_video.video_lesson_id = vpro_courses_lesson_list.lesson_id and vpro_courses_lesson_list.lesson_is_chapter_head = 0
+LEFT JOIN vpro_video_detail ON vpro_video_detail.detail_lesson_id = vpro_courses_lesson_list.lesson_id and vpro_courses_lesson_list.lesson_is_chapter_head = 0
+LEFT JOIN vpro_video_files ON vpro_video_files.video_file_lesson_id = vpro_courses_lesson_list.lesson_id and vpro_courses_lesson_list.lesson_is_chapter_head = 0
+WHERE
+	vpro_courses_lesson_list.lesson_course_id = 215015
+    </select>
+
 </mapper>

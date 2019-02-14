@@ -44,12 +44,6 @@ public class Courses implements Serializable {
 
     private VproCoursesTempDetail vproCoursesTempDetail;
 
-    private VproVideo vproVideo;
-
-    private VproVideoDetail vproVideoDetail;
-
-    private VproVideoFiles vproVideoFiles;
-
     public Courses() {
     }
 
@@ -71,9 +65,6 @@ public class Courses implements Serializable {
                 ", vproAuth=" + vproAuth +
                 ", vproCoursesContent=" + vproCoursesContent +
                 ", vproCoursesTempDetail=" + vproCoursesTempDetail +
-                ", vproVideo=" + vproVideo +
-                ", vproVideoDetail=" + vproVideoDetail +
-                ", vproVideoFiles=" + vproVideoFiles +
                 '}';
     }
 
@@ -195,29 +186,5 @@ public class Courses implements Serializable {
 
     public void setVproCoursesTempDetail(VproCoursesTempDetail vproCoursesTempDetail) {
         this.vproCoursesTempDetail = vproCoursesTempDetail;
-    }
-
-    public VproVideo getVproVideo() {
-        return vproVideo;
-    }
-
-    public void setVproVideo(VproVideo vproVideo) {
-        this.vproVideo = vproVideo;
-    }
-
-    public VproVideoDetail getVproVideoDetail() {
-        return vproVideoDetail;
-    }
-
-    public void setVproVideoDetail(VproVideoDetail vproVideoDetail) {
-        this.vproVideoDetail = vproVideoDetail;
-    }
-
-    public VproVideoFiles getVproVideoFiles() {
-        return vproVideoFiles;
-    }
-
-    public void setVproVideoFiles(VproVideoFiles vproVideoFiles) {
-        this.vproVideoFiles = vproVideoFiles;
     }
 }
