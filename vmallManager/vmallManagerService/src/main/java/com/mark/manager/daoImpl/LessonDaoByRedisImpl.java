@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mark.common.exception.LessonException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
+import com.mark.common.util.JedisUtil;
 import com.mark.manager.dao.LessonDao;
 import com.mark.manager.pojo.VproCoursesLessonList;
 import org.slf4j.Logger;
@@ -26,11 +27,14 @@ public class LessonDaoByRedisImpl implements LessonDao {
     @Autowired
     JedisClient jedisClient;
 
-    @Value("lessonsListPrefix")
+    @Value("${lessonsListPrefix}")
     String lessonsListPrefix;
 
-    @Value("lessonPrefix")
+    @Value("${lessonPrefix}")
     String lessonPrefix;
+
+    @Value("${expiredSuffix}")
+    String expiredSuffix;
 
     /**
      * 获得课程列表缓存，列表用hash格式存储，{lessonId: lessonInfo(json), lessonId2: lessonInfo2, ...}
@@ -39,17 +43,11 @@ public class LessonDaoByRedisImpl implements LessonDao {
      */
     @Override
     public List<VproCoursesLessonList> getLessonsList(Integer courseId) throws LessonException {
-        List<VproCoursesLessonList> list = new ArrayList<VproCoursesLessonList>();
         String key = lessonsListPrefix + String.valueOf(courseId);
-        if (jedisClient.exists(key)) {
-            Map<String, String> lessonsMap = jedisClient.hgetAll(key);
-            if (lessonsMap.size() != 0) {
-                // 从缓存取出lessonsList
-                for(Map.Entry<String, String> m : lessonsMap.entrySet()) {
-                    JSONObject jsonObject = JSON.parseObject(m.getValue());
-                    list.add(JSON.toJavaObject(jsonObject, VproCoursesLessonList.class));
-                }
-            }
+        Double timestamp = jedisClient.zscore(lessonsListPrefix + expiredSuffix, String.valueOf(courseId));
+        if (jedisClient.exists(key) && timestamp != null && !JedisUtil.isExpired(timestamp)) {
+            String json = jedisClient.get(key);
+            return JSON.parseArray(json, VproCoursesLessonList.class);
         }
         throw new LessonException("get lessonsList cache failed");
     }

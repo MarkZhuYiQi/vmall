@@ -102,7 +102,7 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
             }
             String expiredTime = String.valueOf(JedisUtil.expiredTimeStamp());
             // 到期自动删除
-            jedisClient.pexpireAt(coursesDetailPrefix + courseId, Long.parseLong(expiredTime));
+            jedisClient.expireAt(coursesDetailPrefix + courseId, Long.parseLong(expiredTime));
             // 生成一个课程信息过期set，备用
             jedisClient.zadd(coursesDetailPrefix + expiredSuffix, Double.valueOf(expiredTime), String.valueOf(courseId));
             return course;

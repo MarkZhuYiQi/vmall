@@ -1,10 +1,13 @@
 package com.mark.manager.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.mark.common.exception.LessonException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.pojo.VproCoursesLessonList;
 import com.mark.manager.service.LessonService;
-import jdk.nashorn.internal.ir.annotations.Reference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +19,7 @@ import java.util.List;
 @Controller
 @RequestMapping("lesson")
 public class LessonController {
+    private static final Logger logger = LoggerFactory.getLogger(LessonController.class);
     @Reference()
     private LessonService lessonService;
 
@@ -31,6 +35,7 @@ public class LessonController {
         }
     }
     @GetMapping("list")
+    @ResponseBody
     public Result test() {
         return new Result("666");
     }

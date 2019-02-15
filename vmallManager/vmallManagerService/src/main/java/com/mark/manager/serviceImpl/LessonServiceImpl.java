@@ -29,7 +29,6 @@ public class LessonServiceImpl implements LessonService {
     @Autowired
     LessonsMapper lessonsMapper;
 
-    private static final String lessonPrefix = "lesson";
     @Override
     public List<VproCoursesLessonList> getLessonsList(Integer courseId) throws LessonException {
         return lessonDao.getLessonsList(courseId);
