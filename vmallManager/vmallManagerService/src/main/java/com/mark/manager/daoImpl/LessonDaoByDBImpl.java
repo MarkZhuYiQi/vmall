@@ -19,7 +19,7 @@ import redis.clients.jedis.Pipeline;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+@Repository("lessonDaoByDB")
 public class LessonDaoByDBImpl implements LessonDao {
     private final static Logger logger = LoggerFactory.getLogger(LessonDaoByDBImpl.class);
 

@@ -3,7 +3,6 @@ package com.mark.manager.dao;
 import com.mark.common.exception.LessonException;
 import com.mark.manager.pojo.VproCoursesLessonList;
 
-import java.beans.IntrospectionException;
 import java.util.List;
 
 public interface LessonDao{
