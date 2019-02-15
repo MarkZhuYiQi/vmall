@@ -79,7 +79,7 @@ public class CourseDaoImpl extends CourseDaoAbstract {
             try {
                 return courseDaoByDB.getCoursesForCatalog(navId, currentPage, pageSize, ids);
             } catch (CourseException ec) {
-                throw new CourseException("get courses for catalog " + navId + " faild!", CourseConstant.GET_COURSES_FOR_CATALOG);
+                throw new CourseException("get courses for catalog " + navId + " faild!" + ec.getMessage(), CourseConstant.GET_COURSES_FOR_CATALOG);
             }
         }
     }

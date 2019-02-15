@@ -69,7 +69,7 @@ public class BeanUtil {
         final ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(map, pojoClass);
     }
-    public static <T> Map<String, Object> beanToMap(Object obj, Class<T> clazz) {
+    public static <T> Map<String, String> beanToMap(Object obj, Class<T> clazz) {
         final ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue((T)obj, Map.class);
     }

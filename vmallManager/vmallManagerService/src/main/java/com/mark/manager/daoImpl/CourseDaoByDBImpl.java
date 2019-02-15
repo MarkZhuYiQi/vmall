@@ -93,9 +93,9 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
         try {
             Courses course = coursesMapper.getCourseForDetail(courseId);
             Double clickNum = jedisClient.zscore(coursesClicksSummary, String.valueOf(courseId));
-            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClicknum(Integer.parseInt(String.valueOf(clickNum)));
-            Map<String, Object> map = BeanUtil.beanToMap(course, Courses.class);
-            for(Map.Entry<String, Object> m : map.entrySet()) {
+            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClickNum(Integer.parseInt(String.valueOf(clickNum)));
+            Map<String, String> map = BeanUtil.beanToMap(course, Courses.class);
+            for(Map.Entry<String, String> m : map.entrySet()) {
                 System.out.println(m.getKey());
                 System.out.println(m.getValue());
                 jedisClient.hset(coursesDetailPrefix + courseId, m.getKey(), String.valueOf(m.getValue()));

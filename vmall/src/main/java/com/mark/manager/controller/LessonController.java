@@ -1,5 +1,6 @@
 package com.mark.manager.controller;
 
+import com.mark.common.exception.LessonException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.pojo.VproCoursesLessonList;
 import com.mark.manager.service.LessonService;
@@ -19,7 +20,12 @@ public class LessonController {
 
     @GetMapping("list/{courseId:\\d+}}")
     public Result getLessonsList(@PathVariable Integer courseId) {
-        List<VproCoursesLessonList> lessons = lessonService.getLessonsList(courseId);
-        return new Result(lessons);
+        try {
+            List<VproCoursesLessonList> lessons = lessonService.getLessonsList(courseId);
+            return new Result(lessons);
+        } catch (LessonException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
+
     }
 }

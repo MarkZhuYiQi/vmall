@@ -122,7 +122,7 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         String expiredKey = coursesForCatalogPrefix + expiredSuffix;
         if (jedisClient.exists(expiredKey)) {
             Double expiredTime = jedisClient.zscore(expiredKey, coursesForCatalogPrefix + String.valueOf(navId));
-            if (JedisUtil.isExpired(expiredTime)) {
+            if (expiredTime == null || JedisUtil.isExpired(expiredTime)) {
                 jedisClient.del(coursesForCatalogPrefix + String.valueOf(navId));
             }
         }

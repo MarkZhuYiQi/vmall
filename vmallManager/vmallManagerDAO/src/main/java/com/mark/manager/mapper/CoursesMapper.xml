@@ -35,27 +35,27 @@
             <result property="courseScore" column="course_score" />
             <result property="courseClickNum" column="course_clickNum" />
         </collection>
-        <collection property="vproVideo" ofType="com.mark.manager.pojo.VproVideo">
-            <id property="videoId" column="video_id" />
-            <result property="videoFileId" column="video_file_id" />
-            <result property="videoAuthor" column="video_author" />
-            <result property="videoTag" column="video_tag" />
-            <result property="videoDetailId" column="video_detail_id" />
-            <result property="videoLessonIsused" column="video_lesson_isused" />
-        </collection>
-        <collection property="vproVideoDetail" ofType="com.mark.manager.pojo.VproVideoDetail">
-            <result property="detailId" column="detail_id" />
-            <result property="detailContent" column="detail_content" />
-            <result property="detailFavorite" column="detail_favorite" />
-        </collection>
-        <collection property="vproVideoFiles" ofType="com.mark.manager.pojo.VproVideoFiles">
-            <result property="videoFileId" column="video_file_id" />
-            <result property="videoFileKey" column="video_file_key" />
-            <result property="videoFileUptime" column="video_file_uptime" />
-            <result property="videoFileIsuploaded" column="video_file_isuploaded" />
-            <result property="videoFileIsused" column="video_file_isused" />
-            <result property="videoFileSize" column="video_file_size" />
-        </collection>
+        <!--<collection property="vproVideo" ofType="com.mark.manager.pojo.VproVideo">-->
+            <!--<id property="videoId" column="video_id" />-->
+            <!--<result property="videoFileId" column="video_file_id" />-->
+            <!--<result property="videoAuthor" column="video_author" />-->
+            <!--<result property="videoTag" column="video_tag" />-->
+            <!--<result property="videoDetailId" column="video_detail_id" />-->
+            <!--<result property="videoLessonIsused" column="video_lesson_isused" />-->
+        <!--</collection>-->
+        <!--<collection property="vproVideoDetail" ofType="com.mark.manager.pojo.VproVideoDetail">-->
+            <!--<result property="detailId" column="detail_id" />-->
+            <!--<result property="detailContent" column="detail_content" />-->
+            <!--<result property="detailFavorite" column="detail_favorite" />-->
+        <!--</collection>-->
+        <!--<collection property="vproVideoFiles" ofType="com.mark.manager.pojo.VproVideoFiles">-->
+            <!--<result property="videoFileId" column="video_file_id" />-->
+            <!--<result property="videoFileKey" column="video_file_key" />-->
+            <!--<result property="videoFileUptime" column="video_file_uptime" />-->
+            <!--<result property="videoFileIsuploaded" column="video_file_isuploaded" />-->
+            <!--<result property="videoFileIsused" column="video_file_isused" />-->
+            <!--<result property="videoFileSize" column="video_file_size" />-->
+        <!--</collection>-->
     </resultMap>
 
     <select id="getCoursesByPid" resultMap="coursesResultMap" parameterType="string">

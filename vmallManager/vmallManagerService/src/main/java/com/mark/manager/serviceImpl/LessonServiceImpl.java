@@ -1,7 +1,6 @@
 package com.mark.manager.serviceImpl;
 import com.mark.common.exception.LessonException;
-import com.mark.manager.daoImpl.LessonDaoByDBImpl;
-import com.mark.manager.daoImpl.LessonDaoByRedisImpl;
+import com.mark.manager.dao.LessonDao;
 import com.mark.manager.dto.LessonsOps;
 import com.mark.manager.dto.LessonsOpsList;
 import com.mark.manager.mapper.LessonsMapper;
@@ -10,53 +9,38 @@ import com.mark.manager.pojo.VproCoursesLessonList;
 import com.mark.manager.pojo.VproCoursesLessonListExample;
 import com.mark.manager.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
-@Repository
+@Service
 public class LessonServiceImpl implements LessonService {
+
     @Autowired
-    LessonDaoByDBImpl lessonDaoByDB;
-    @Autowired
-    LessonDaoByRedisImpl lessonDaoByRedis;
+    @Qualifier("lessonDao")
+    LessonDao lessonDao;
+
     @Autowired
     VproCoursesLessonListMapper vproCoursesLessonListMapper;
+
     @Autowired
     LessonsMapper lessonsMapper;
 
     private static final String lessonPrefix = "lesson";
     @Override
-    public List<VproCoursesLessonList> getLessonsList(Integer courseId) {
-        List<VproCoursesLessonList> list = lessonDaoByRedis.getLessonsList(courseId);
-        if (lessonDaoByRedis.getLessonsList(courseId).size() == 0) {
-            list = lessonDaoByDB.getLessonsList(courseId);
-        }
-        return list;
+    public List<VproCoursesLessonList> getLessonsList(Integer courseId) throws LessonException {
+        return lessonDao.getLessonsList(courseId);
     }
 
     @Override
-    public VproCoursesLessonList getLesson(Integer lessonId) {
-        VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
+    public VproCoursesLessonList getLesson(Integer lessonId) throws LessonException {
         // 先去redis获取，没拿到就去数据库找，但是看结果是否命中，如果没有命中则直接返回空，
         // 同时可以给这个键放一个空值。
         // 为了防止缓存穿透，给这个访问ip做一个限制，如果这个访问多次没有命中，就直接封杀这个IP
-        try {
-            vproCoursesLessonList = lessonDaoByRedis.getLesson(lessonId);
-            if (vproCoursesLessonList == null) {
-                vproCoursesLessonList = lessonDaoByDB.getLesson(lessonId);
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-        return vproCoursesLessonList;
+        return lessonDao.getLesson(lessonId);
     }
 
     @Override
@@ -75,7 +59,7 @@ public class LessonServiceImpl implements LessonService {
      * @return List<Integer> id集合
      */
     @Override
-    public List<Integer> getLessonsNeedReLocation(LessonsOps lessonsOps) {
+    public List<Integer> getLessonsNeedReLocation(LessonsOps lessonsOps) throws LessonException {
         List<Integer> list = new ArrayList<Integer>();
         // 拿到被移动的lesson的课程内部位置
         Integer original = Integer.parseInt(lessonsOps.getOriginal().getLessonLid());
@@ -116,7 +100,7 @@ public class LessonServiceImpl implements LessonService {
      */
     @Override
     @Transactional
-    public VproCoursesLessonList updateLessonToLocationSpecified(VproCoursesLessonList original, VproCoursesLessonList destination) {
+    public VproCoursesLessonList updateLessonToLocationSpecified(VproCoursesLessonList original, VproCoursesLessonList destination) throws LessonException {
         // 修改lesson/subtitle的序列到目的地
         VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
         if (
@@ -158,7 +142,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public boolean removeLesson(LessonsOps lessonsOps) {
+    public boolean removeLesson(LessonsOps lessonsOps) throws LessonException {
         if (lessonsOps.getOriginal() == null) {
             throw new LessonException("删除lesson信息错误， DTO信息： " + lessonsOps.toString());
         }
@@ -170,7 +154,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public VproCoursesLessonList addLesson(LessonsOps lessonsOps) {
+    public VproCoursesLessonList addLesson(LessonsOps lessonsOps) throws LessonException {
         Integer primaryId = 0;
         if (lessonsOps.getOriginal() != null && lessonsOps.getDestination() == null) {
             // 只是顺序插入一个lesson，跟在最后
@@ -219,7 +203,7 @@ public class LessonServiceImpl implements LessonService {
      */
     @Override
     @Transactional
-    public boolean moveLesson(LessonsOps lessonsOps) {
+    public boolean moveLesson(LessonsOps lessonsOps) throws LessonException {
         List<Integer> list = new ArrayList<Integer>();
         // 获得搬迁lessonsIds区间（或者需要移动的所有副标题id）
         // 有一种情况， 如果只是从下一个标题的第一个移动到上一个标题的最后一个，不涉及其他内容调整，只需要更改该元素的pid
@@ -244,7 +228,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public VproCoursesLessonList addSubTitle(LessonsOps lessonsOps) {
+    public VproCoursesLessonList addSubTitle(LessonsOps lessonsOps) throws LessonException {
         if (lessonsOps.getOriginal() != null && lessonsOps.getDestination() == null) {
             if (lessonsOps.getOriginal().getLessonIsChapterHead().equals("1")) {
                 return addLesson(lessonsOps);
@@ -269,7 +253,7 @@ public class LessonServiceImpl implements LessonService {
      * @param lessonsOps
      * @return
      */
-    private List<Integer> getTransferLessonsRange(LessonsOps lessonsOps) {
+    private List<Integer> getTransferLessonsRange(LessonsOps lessonsOps) throws LessonException {
         Integer relocateStart = null;
         Integer relocateEnd = null;
         // 根据上移还是下移得到需要移动的数据范围
@@ -308,7 +292,7 @@ public class LessonServiceImpl implements LessonService {
      * 2. 获取转移到的目标副标题中的第一个课程
      */
     @Transactional
-    public boolean moveSubTitle(LessonsOps lessonsOps) {
+    public boolean moveSubTitle(LessonsOps lessonsOps) throws LessonException {
         moveLesson(lessonsOps);
         // -----------至此，标题搬迁完毕，剩下的事情是lessons-------------
 /*
@@ -357,7 +341,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public boolean removeSubTitle(LessonsOps lessonsOps) {
+    public boolean removeSubTitle(LessonsOps lessonsOps) throws LessonException {
         VproCoursesLessonList vproCoursesLessonList = new VproCoursesLessonList();
         vproCoursesLessonList.setLessonIsDeleted("1");
         removeLesson(lessonsOps);
@@ -373,7 +357,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public boolean manageEdit(LessonsOpsList lessonsOpsList) {
+    public boolean manageEdit(LessonsOpsList lessonsOpsList) throws LessonException {
         boolean res = false;
         VproCoursesLessonList vproCoursesLessonList = null;
         for(LessonsOps l : lessonsOpsList.getLessonsOpsList()) {
