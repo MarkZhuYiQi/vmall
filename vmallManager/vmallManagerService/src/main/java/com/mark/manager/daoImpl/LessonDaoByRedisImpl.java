@@ -20,7 +20,7 @@ import redis.clients.jedis.Response;
 import java.beans.IntrospectionException;
 import java.util.*;
 
-@Repository
+@Repository("lessonDaoByRedis")
 public class LessonDaoByRedisImpl implements LessonDao {
     private static final Logger logger = LoggerFactory.getLogger(LessonDaoByRedisImpl.class);
     @Autowired

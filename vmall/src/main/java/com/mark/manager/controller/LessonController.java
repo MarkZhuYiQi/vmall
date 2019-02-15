@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -16,16 +17,21 @@ import java.util.List;
 @RequestMapping("lesson")
 public class LessonController {
     @Reference()
-    LessonService lessonService;
+    private LessonService lessonService;
 
-    @GetMapping("list/{courseId:\\d+}}")
+    @GetMapping("list/{courseId:\\d+}")
+    @ResponseBody
     public Result getLessonsList(@PathVariable Integer courseId) {
         try {
+            System.out.println(lessonService);
             List<VproCoursesLessonList> lessons = lessonService.getLessonsList(courseId);
             return new Result(lessons);
         } catch (LessonException e) {
             return new Result(e.getCode(), e.getMsg());
         }
-
+    }
+    @GetMapping("list")
+    public Result test() {
+        return new Result("666");
     }
 }

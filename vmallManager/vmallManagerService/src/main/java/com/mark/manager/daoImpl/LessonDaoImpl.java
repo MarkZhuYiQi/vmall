@@ -17,11 +17,11 @@ import java.util.List;
 public class LessonDaoImpl implements LessonDao {
     private final static Logger logger = LoggerFactory.getLogger(LessonDaoImpl.class);
     @Autowired
-    @Qualifier("lessonByDB")
+    @Qualifier("lessonDaoByDB")
     LessonDao lessonDaoByDB;
 
     @Autowired
-    @Qualifier("lessonByRedis")
+    @Qualifier("lessonDaoByRedis")
     LessonDao lessonDaoByRedis;
 
     @Override
