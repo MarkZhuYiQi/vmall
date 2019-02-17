@@ -2,6 +2,7 @@ package com.mark.manager.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
+import com.mark.common.exception.CategoryException;
 import com.mark.common.exception.CourseException;
 import com.mark.common.validateGroup.CreateCourse;
 import com.mark.manager.bo.Result;
@@ -40,12 +41,16 @@ public class CourseController {
             @RequestParam(name = "s", defaultValue = "10") Integer pageSize
     )
     {
-        List<Integer> idList = categoryService.getSubIdFromCategory(navId, categoryService.getCategories(), new ArrayList<Integer>());
+        try {
+            List<Integer> idList = categoryService.getSubIdFromCategory(navId, categoryService.getCategories(), new ArrayList<Integer>());
 //        List<Courses> courses = courseService.getCoursesByPid(idList);
 
-        PageInfo<Courses> courses = courseService.getCoursesByPid(currentPage, pageSize, idList);
+            PageInfo<Courses> courses = courseService.getCoursesByPid(currentPage, pageSize, idList);
 
-        return new Result(courses);
+            return new Result(courses);
+        } catch (CategoryException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
     }
     @GetMapping("{courseId:\\d+}")
     public Result getCourseById(@PathVariable("courseId") Integer courseId) {

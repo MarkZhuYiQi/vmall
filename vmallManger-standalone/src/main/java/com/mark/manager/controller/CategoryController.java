@@ -50,9 +50,4 @@ public class CategoryController {
     public void addCategory(@RequestBody VproNavbar vproNavbar) {
         categoryService.addCategory(vproNavbar);
     }
-    @GetMapping("test/{id:\\d+}")
-    public void test(@PathVariable("id") Integer navId)
-    {
-        System.out.println(categoryService.getSubIdFromCategory(navId, categoryService.getCategories(), new ArrayList<Integer>()));
-    }
 }

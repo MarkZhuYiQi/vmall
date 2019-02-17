@@ -1,12 +1,14 @@
 package com.mark.common.jwt;
 
 import java.util.Calendar;
+import java.util.Collections;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.mark.common.pojo.JwtUserDetails;
 import com.mark.common.pojo.User;
 
 public class JwtUtil {
@@ -44,5 +46,15 @@ public class JwtUtil {
             e.printStackTrace();
         }
         return null;
+    }
+    public static JwtUserDetails getUserFromToken(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        JwtUserDetails jwtUserDetails = new JwtUserDetails(
+                (long)Integer.valueOf(decodedJWT.getClaim("id").asString()),
+                decodedJWT.getClaim("authAppid").asString(),
+                decodedJWT.getClaim("authAppkey").asString(),
+                Collections.singleton(new SimpleGrantedAuthority(decodedJWT.getClaim("roleName").asString()))
+        );
+        return jwtUserDetails;
     }
 }

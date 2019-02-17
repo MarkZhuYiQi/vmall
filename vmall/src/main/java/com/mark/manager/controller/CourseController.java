@@ -10,10 +10,7 @@ import com.mark.manager.dto.Courses;
 import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,11 +35,11 @@ public class CourseController {
             return new Result(e.getCode(), e.getMessage());
         }
     }
-    @GetMapping("detail")
+    @GetMapping("detail/{courseId:\\d+}")
     @ResponseBody
-    public Result getCoursesForDetail(@RequestParam("cid") Integer cid) {
+    public Result getCoursesForDetail(@PathVariable Integer courseId) {
         try {
-            Courses courses = courseService.getCourseForDetail(cid);
+            Courses courses = courseService.getCourseForDetail(courseId);
             return new Result(courses);
         } catch (CourseException e) {
             return new Result(e.getCode(), e.getMessage());

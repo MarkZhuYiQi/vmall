@@ -230,6 +230,7 @@ select
 	vc.course_price,
 	vc.course_author,
 	vc.course_discount_price,
+	vcc.course_cover_key,
 	vcc.course_cover_address,
 	va.auth_appid,
 	vct.course_score,

@@ -93,7 +93,7 @@ public class CourseDaoImpl extends CourseDaoAbstract {
             try {
                 return courseDaoByDB.getCourseForDetail(courseId);
             } catch (CourseException ec) {
-                logger.warn("get courses detail info from DB failed. {}->{}: {}", LogUtil.getObjectName(), LogUtil.funcName(), e.getMsg());
+                logger.warn("get courses detail info from DB failed. {}->{}: {}", LogUtil.getObjectName(), LogUtil.funcName(), ec.getMessage());
                 throw new CourseException("get courses info failed!", CourseConstant.GET_COURSES_DETAIL_FAILED);
             }
         }

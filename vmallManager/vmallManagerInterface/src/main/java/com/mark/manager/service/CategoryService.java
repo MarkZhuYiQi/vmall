@@ -3,6 +3,7 @@ package com.mark.manager.service;
 import com.mark.common.exception.CategoryException;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.manager.bo.Result;
+import com.mark.manager.dto.Navbar;
 import com.mark.manager.pojo.VproNavbar;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -11,6 +12,8 @@ import java.util.Map;
 
 public interface CategoryService {
     VproNavbar getCategoryById(Integer navId) throws CategoryException;
+    Navbar getCrumb(Integer navId) throws CategoryException;
+    List<VproNavbar> getCrumb(Integer navId, List<VproNavbar> navList) throws CategoryException;
     List<VproNavbar> getCategories();
     Map<Integer, VproNavbar> getCategoriesAsHashMap();
     List<CategoryNode> getCategoriesTree();

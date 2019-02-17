@@ -93,16 +93,15 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
         try {
             Courses course = coursesMapper.getCourseForDetail(courseId);
             Double clickNum = jedisClient.zscore(coursesClicksSummary, String.valueOf(courseId));
-            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClickNum(Integer.parseInt(String.valueOf(clickNum)));
+            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClickNum(clickNum.intValue());
             Map<String, String> map = BeanUtil.beanToMap(course, Courses.class);
+            System.out.println(map);
             for(Map.Entry<String, String> m : map.entrySet()) {
-                System.out.println(m.getKey());
-                System.out.println(m.getValue());
                 jedisClient.hset(coursesDetailPrefix + courseId, m.getKey(), String.valueOf(m.getValue()));
             }
-            String expiredTime = String.valueOf(JedisUtil.expiredTimeStamp());
+            Double expiredTime = JedisUtil.expiredTimeStamp();
             // 到期自动删除
-            jedisClient.expireAt(coursesDetailPrefix + courseId, Long.parseLong(expiredTime));
+            jedisClient.expireAt(coursesDetailPrefix + courseId, expiredTime.longValue());
             // 生成一个课程信息过期set，备用
             jedisClient.zadd(coursesDetailPrefix + expiredSuffix, Double.valueOf(expiredTime), String.valueOf(courseId));
             return course;

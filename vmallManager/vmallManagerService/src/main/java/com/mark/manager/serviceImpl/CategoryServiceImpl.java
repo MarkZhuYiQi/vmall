@@ -7,6 +7,7 @@ import com.mark.common.pojo.CategoryNode;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dao.CategoryDao;
 import com.mark.manager.dto.DtoUtil;
+import com.mark.manager.dto.Navbar;
 import com.mark.manager.mapper.VproNavbarMapper;
 import com.mark.manager.pojo.VproNavbar;
 import com.mark.manager.pojo.VproNavbarExample;
@@ -52,6 +53,34 @@ public class CategoryServiceImpl implements CategoryService {
     public VproNavbar getCategoryById(Integer navId) throws CategoryException {
         // 这里的错误需要更好的处理
         return categoryDao.getCategoryById(navId);
+    }
+
+    /**
+     * 递归获取面包屑导航
+     * @param navId
+     * @return
+     * @throws CategoryException
+     */
+    public Navbar getCrumb(Integer navId) throws CategoryException {
+        VproNavbar vproNavbar = getCategoryById(navId);
+        if (vproNavbar.getNavPid() == 0) {
+//            最里层，末端，创建navbar
+            return new Navbar(vproNavbar);
+        }
+        // 末端(后方)返回一个对象, 存储在当前导航层的navbar属性里然后返回
+        Navbar newNavbar = new Navbar(vproNavbar);
+        newNavbar.setNavbar(getCrumb(vproNavbar.getNavPid()));
+        return newNavbar;
+    }
+    public  List<VproNavbar> getCrumb(Integer navId, List<VproNavbar> navList) throws CategoryException {
+        VproNavbar vproNavbar = getCategoryById(navId);
+        if (vproNavbar.getNavPid() == 0) {
+            navList.add(vproNavbar);
+            return navList;
+        }
+        navList = getCrumb(vproNavbar.getNavPid(), navList);
+        navList.add(vproNavbar);
+        return navList;
     }
 
     /**

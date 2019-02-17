@@ -31,7 +31,7 @@ public class ShoppingServiceImpl implements ShoppingService {
     @PostConstruct
     public void test() {
         Integer stock = 100;
-        jedisClient.zadd("stock", Double.valueOf(String.valueOf(stock)), "panicBuying");
+        jedisClient.zadd("stock", stock.doubleValue(), "panicBuying");
         String[] values = new String[stock];
         for(Integer i = 0; i < stock; i++) {
             values[i] = String.valueOf(stock);
