@@ -1,10 +1,11 @@
 package com.mark.manager.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mark.SpringMVC.util.JwtUtil;
 import com.mark.common.jwt.JwtUtil;
+import com.mark.manager.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,8 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,25 +21,25 @@ import java.io.IOException;
 /**
  * 通过token还原用户信息
  */
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter implements Filter {
 //    @Autowired
 //    PropertyConfig propertyConfig;
-
     private Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+//    protected void doFilter(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
         logger.warn("JwtAuthenticationFilter");
         logger.warn("filter: JwtAuthenticationFilter");
 //        System.out.println("tokenHeader: " + propertyConfig.toString());
         String tokenHeader = "MyToken";
-        String authToken = httpServletRequest.getHeader(tokenHeader);
+        String authToken = ((HttpServletRequest)servletRequest).getHeader(tokenHeader);
         final String authTokenStart = "";
         if (!StringUtils.isEmpty(authToken) && authToken.startsWith(authTokenStart)) {
             authToken = authToken.substring(authTokenStart.length());
         } else {
             // 不符合规范，不通过验证
             authToken = null;
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            filterChain.doFilter(servletRequest, servletResponse);
         }
         // 测试是否有效
         DecodedJWT jwt = JwtUtil.verifyToken(authToken);
@@ -66,6 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("当前身份：" + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             }
         }
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
+
 }

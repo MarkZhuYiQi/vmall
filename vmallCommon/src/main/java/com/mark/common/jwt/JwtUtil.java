@@ -10,6 +10,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mark.common.pojo.JwtUserDetails;
 import com.mark.common.pojo.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class JwtUtil {
     private final static String JWT_KEY = "MarkZhu026";

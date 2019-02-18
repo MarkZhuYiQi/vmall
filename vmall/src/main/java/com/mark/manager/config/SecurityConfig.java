@@ -13,8 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-//@Configuration
-//@EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
     @Override
@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.print("begin security filter chain");
         http
                 .authorizeRequests()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
                 .addFilterBefore(new CorsFilter(), JwtAuthenticationFilter.class)
