@@ -2,7 +2,6 @@ package com.mark.manager.config;
 
 import com.mark.manager.component.AuthenticationPointExceptionHandler;
 import com.mark.manager.component.AuthenticationUnAuthenticatedHandler;
-import com.mark.manager.filter.CorsFilter;
 import com.mark.manager.filter.JwtAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
-                .addFilterBefore(new CorsFilter(), JwtAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 设置认证失败处理器和拒绝访问处理器
