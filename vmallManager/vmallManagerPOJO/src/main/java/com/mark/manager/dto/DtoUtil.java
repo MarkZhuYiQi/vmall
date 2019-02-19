@@ -19,7 +19,7 @@ public class DtoUtil {
         User user = new User();
         user.setAuthAppid(userRoles.getAuthAppid());
         user.setAuthAppkey(userRoles.getAuthAppkey());
-        user.setAuthId(userRoles.getAuthAppid());
+        user.setAuthId(userRoles.getAuthId().toString());
         user.setAuthIp(userRoles.getAuthIp());
         user.setAuthRolesId(userRoles.getRole().get(0).getRoleId());
         user.setAuthRolesName(userRoles.getRole().get(0).getRoleName());

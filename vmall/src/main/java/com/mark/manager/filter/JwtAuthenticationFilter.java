@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 测试是否有效
             DecodedJWT jwt = JwtUtil.verifyToken(authToken);
 //            Map<String, Claim> claims = jwt.getClaims();
-            String username = jwt.getClaim("authAppid").asString();
+            String username = jwt.getClaim("appId").asString();
             System.out.println("getClaim: " + username);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 用户数据可以从数据库获取或者从token中获取

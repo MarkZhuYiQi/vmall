@@ -56,14 +56,17 @@ public class SpringApplicationContextConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("x-token")
-                .exposedHeaders(
-                        "access-control-allow-origin",
-                        "access-control-allow-headers",
-                        "access-control-allow-method",
-                        "access-control-max-age"
-                        )
-                .allowCredentials(true);
+                .allowedHeaders("*")
+//                .exposedHeaders(
+//                        "access-control-allow-origin",
+//                        "access-control-allow-headers",
+//                        "access-control-allow-methods",
+//                        "access-control-max-age"
+//                        )
+                // 是否允许发送cookie
+                .allowCredentials(true)
+                // 预检请求生命周期
+                .maxAge(3600);
     }
 
     @Override
