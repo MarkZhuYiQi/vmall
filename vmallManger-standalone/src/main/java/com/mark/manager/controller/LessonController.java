@@ -1,6 +1,7 @@
 package com.mark.manager.controller;
 
 import com.mark.common.constant.LessonsConstant;
+import com.mark.common.exception.LessonException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.LessonsOps;
 import com.mark.manager.dto.LessonsOpsList;
@@ -19,16 +20,25 @@ public class LessonController {
 
     @GetMapping("{courseId:\\d+}")
     public Result getCourseLessonsList(@PathVariable Integer courseId) {
-        return new Result(lessonService.getLessonsList(courseId));
+        try {
+            List<VproCoursesLessonList> list = lessonService.getLessonsList(courseId);
+            return new Result(list);
+        } catch (LessonException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
     }
 
     @PostMapping("")
     public Result editLessonsList(@RequestBody LessonsOpsList lessonsOpsList) {
-        if (lessonsOpsList.getLessonsOpsList().size() > 0) {
-            Boolean res = lessonService.manageEdit(lessonsOpsList);
-            return new Result(res);
+        try {
+            if (lessonsOpsList.getLessonsOpsList().size() > 0) {
+                Boolean res = lessonService.manageEdit(lessonsOpsList);
+                return new Result(res);
+            }
+            return new Result("对lessons的修改失败, ", LessonsConstant.LESSONS_EDIT_FAILED);
+        } catch (LessonException e) {
+            return new Result("对lessons的修改失败, " + e.getMsg(), LessonsConstant.LESSONS_EDIT_FAILED);
         }
-        return new Result("对lessons的修改失败", LessonsConstant.LESSONS_EDIT_FAILED);
     }
 }
 

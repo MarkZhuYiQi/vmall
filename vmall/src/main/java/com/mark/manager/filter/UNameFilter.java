@@ -1,6 +1,8 @@
 package com.mark.manager.filter;
 
 import com.mark.manager.service.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -18,10 +20,14 @@ public class UNameFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
     AuthService authService;
 
+    private Logger logger = LoggerFactory.getLogger(UNameFilter.class);
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        logger.info("UNameFilter");
         SecurityContextHolder.clearContext();
         Object tokenObj = req.getParameter("token");
+
         if (tokenObj == null) {
             chain.doFilter(req, res);
             return;
