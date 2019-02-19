@@ -8,10 +8,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public interface AuthService {
-    public Result genToken(Login login) throws Exception;
-    public String verifyLogin(Login login);
-    public UserRoles getAuthRoles(String appId);
-    public Login decrypt(Login login) throws Exception;
-    public String getRoleByNameInRedis(String appAuthId);
-    public Map<String, String> getAuthByAuthIdFromRedis(String appAuthId);
+    String encryptForTest(String str) throws Exception;
+    Result genToken(Login login) throws Exception;
+    String verifyLogin(Login login);
+    UserRoles getAuthRoles(String appId);
+    Login decrypt(Login login) throws Exception;
+    String getRoleByNameInRedis(String appAuthId);
+    Map<String, String> getAuthByAuthIdFromRedis(String appAuthId);
 }

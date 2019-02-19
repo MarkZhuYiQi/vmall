@@ -1,16 +1,11 @@
 package com.mark.manager.serviceImpl;
 
-import cn.hutool.core.util.HexUtil;
-import cn.hutool.crypto.asymmetric.KeyType;
-import cn.hutool.crypto.asymmetric.RSA;
 import com.mark.common.constant.LoginConstant;
 import com.mark.common.constant.RSAConstant;
 import com.mark.common.jedis.JedisClient;
-import com.mark.common.jedis.JedisClientPool;
 import com.mark.common.jwt.JwtUtil;
 import com.mark.common.pojo.User;
 import com.mark.common.rsa.RsaUtil;
-import com.mark.common.util.BeanUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.bo.TokenResult;
 import com.mark.manager.dto.DtoUtil;
@@ -18,7 +13,6 @@ import com.mark.manager.dto.UserRoles;
 import com.mark.manager.mapper.UserRolesPermissionsMapper;
 import com.mark.manager.mapper.VproAuthMapper;
 import com.mark.manager.dto.Login;
-import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +23,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Validator;
 
-import java.beans.IntrospectionException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Map;
-import java.util.Set;
+
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -60,6 +52,8 @@ public class AuthServiceImpl implements AuthService {
 //    @Value("${privateKey}")
 //    private String privateKey;
 
+
+
     /**
      * 检验信息是否合规合法，手动@Validated
      * @param login
@@ -84,6 +78,15 @@ public class AuthServiceImpl implements AuthService {
     public UserRoles getAuthRoles(String appId) {
         System.out.println(appId);
         return userRolesPermissionsMapper.getUserRoles(appId);
+    }
+
+    @Override
+    public String encryptForTest(String str) throws Exception {
+        //将Base64编码后的私钥转换成PrivateKey对象
+        PublicKey publicKey = RsaUtil.string2PublicKey(RSAConstant.publicKey);
+        //用公钥加密
+        byte[] strPublicEncrypt = RsaUtil.publicEncrypt(str.getBytes(), publicKey);
+        return new String(strPublicEncrypt);
     }
 
     @Override
