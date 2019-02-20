@@ -12,6 +12,11 @@
     <artifactId>vmallCommon</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Redis客户端 -->
         <dependency>
             <groupId>redis.clients</groupId>

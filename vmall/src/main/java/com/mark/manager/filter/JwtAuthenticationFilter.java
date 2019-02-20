@@ -2,6 +2,8 @@ package com.mark.manager.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mark.common.jwt.JwtUtil;
+import com.mark.common.pojo.JwtUserDetails;
+import com.mark.common.util.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,15 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // It is not compelling necessary to load the use details from the database. You could also store the information
                 // in the token and read it from it. It's up to you ;)
                 // UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                UserDetails userDetails = JwtUtil.getUserFromToken(authToken);
-                System.out.println("RequestURI: " + httpServletRequest.getRequestURI());
+                JwtUserDetails userDetails = JwtUtil.getUserFromToken(authToken);
+                System.out.println("getLocalAddr: " + IpUtil.getIpAddress(httpServletRequest));
                 System.out.println(userDetails.toString());
                 // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
                 // the database compellingly. Again it's up to you ;)
                 if (JwtUtil.verifyToken(authToken) != null) {
                     System.out.println("Gen authentication");
-//                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, Collections.singleton(new SimpleGrantedAuthority("ADMIN")));
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 //                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
                     // 生成登陆的额外信息
 //                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));

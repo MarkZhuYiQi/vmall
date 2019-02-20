@@ -50,7 +50,8 @@ public class JwtUtil {
     }
     public static JwtUserDetails getUserFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);
-        System.out.println(decodedJWT.getClaims());
+        System.out.println("claims: " + decodedJWT.getClaims());
+        System.out.println("role: " + decodedJWT.getClaim("rolename").asString());
         JwtUserDetails jwtUserDetails = new JwtUserDetails(
                 (long)Integer.valueOf(decodedJWT.getClaim("id").asString()),
                 decodedJWT.getClaim("appid").asString(),
