@@ -39,4 +39,7 @@ public class AuthController {
         System.out.println(authService.decrypt(login));
         return new Result();
     }
+//    @GetMapping("info")
+//    public Result getInfo() {
+//    }
 }

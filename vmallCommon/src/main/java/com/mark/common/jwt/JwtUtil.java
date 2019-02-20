@@ -1,7 +1,6 @@
 package com.mark.common.jwt;
 
-import java.util.Calendar;
-import java.util.Collections;
+import java.util.*;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -10,6 +9,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mark.common.pojo.JwtUserDetails;
 import com.mark.common.pojo.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class JwtUtil {
@@ -50,12 +50,22 @@ public class JwtUtil {
     }
     public static JwtUserDetails getUserFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);
+        System.out.println(decodedJWT.getClaims());
         JwtUserDetails jwtUserDetails = new JwtUserDetails(
                 (long)Integer.valueOf(decodedJWT.getClaim("id").asString()),
-                decodedJWT.getClaim("authAppid").asString(),
-                decodedJWT.getClaim("authAppkey").asString(),
-                Collections.singleton(new SimpleGrantedAuthority(decodedJWT.getClaim("roleName").asString()))
+                decodedJWT.getClaim("appid").asString(),
+                Collections.singleton(new SimpleGrantedAuthority(decodedJWT.getClaim("rolename").asString()))
         );
         return jwtUserDetails;
+    }
+
+    public static Collection<? extends GrantedAuthority> parseAuthorities(List<String> roles) {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        SimpleGrantedAuthority authority;
+        for (String role : roles) {
+            authority = new SimpleGrantedAuthority(role.toString());
+            authorities.add(authority);
+        }
+        return authorities;
     }
 }

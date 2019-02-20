@@ -29,8 +29,8 @@ public class JwtUserDetails implements UserDetails {
                 '}';
     }
 
-    public JwtUserDetails(Long userId, String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this(userId, username, password, true, true, true, true, authorities);
+    public JwtUserDetails(Long userId, String username, Collection<? extends GrantedAuthority> authorities) {
+        this(userId, username, "", true, true, true, true, authorities);
     }
 
     public JwtUserDetails(Long userId, String username, String password, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialNonExpired, Collection<? extends GrantedAuthority> authorities) {
