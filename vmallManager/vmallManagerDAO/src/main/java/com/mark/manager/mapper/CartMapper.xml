@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mark.manager.mapper.CartMapper">
+    <resultMap id="cartResultMap" type="com.mark.manager.dto.Cart">
+        <id property="cartId" column="cart_id" />
+        <result property="cartAddTime" column="cart_addtime"></result>
+        <result property="cartUserId" column="cart_userid"></result>
+        <result property="cartPayment" column="cart_payment"></result>
+        <result property="cartStatus" column="cart_status"></result>
+        <collection property="vproCartDetail" ofType="com.mark.manager.pojo.VproCartDetail">
+            <id property="cartDetailId" column="cart_detail_id" />
+            <result property="cartCourseId" column="cart_course_id" />
+            <result property="cartParentId" column="cart_parent_id" />
+            <result property="cartAddTime" column="cart_add_time" />
+            <result property="cartIsCookie" column="cart_is_cookie" />
+        </collection>
+    </resultMap>
 
-</beans>
+    <select id="loadUserCart" resultMap="cartResultMap" parameterType="string">
+SELECT
+	*
+FROM
+	vpro_cart
+LEFT JOIN vpro_cart_detail ON vpro_cart_detail.cart_parent_id = vpro_cart.cart_id
+WHERE
+	vpro_cart.cart_userid = #{userId}
+    </select>
+</mapper>

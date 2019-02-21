@@ -1,4 +1,9 @@
 package com.mark.manager.service;
 
-public class CartService {
+import com.mark.manager.dto.Cart;
+
+public interface CartService {
+    Cart loadUserCartWithLogin(String token);
+    Cart loadUserCartWithoutLogin();
+
 }
