@@ -77,4 +77,20 @@ public interface JedisClient {
     String watch(String... keys);
 
     Transaction multi();
+
+    Long sadd(String key, String... members);
+
+    Long scard(String key);
+
+    Set<String> smembers(String key);
+
+    Set<String> sdiff(String... keys);
+
+    Long sdiffstore(String destination, String... keys);
+
+    Set<String> sinter(String... keys);
+
+    Long sinterstore(String destination, String... keys);
+
+    Long srem(String key, String... members);
 }
