@@ -9,8 +9,17 @@ public class RedisLockUtil {
     public RedisLockUtil(Jedis jedis) {
         this.jedis = jedis;
     }
-    /*
-    加锁
+
+    /**
+     * 加锁
+     * 第一个问题：超时
+     * 获取锁的时间戳，判断锁（时间戳）不为空并且是否已经过期，如果过期就说明失效了，立即重设
+     * 第二个问题，争抢
+     * 设置完毕再次去获得锁时间戳，如果拿到的锁时间戳是超时的，说明抢到了
+     * 否则说明这个锁被别的线程抢走了。
+     * @param key
+     * @param value
+     * @return
      */
     public boolean lock(String key,String value) {
         //setnx，成功设置直接返回true，否则继续

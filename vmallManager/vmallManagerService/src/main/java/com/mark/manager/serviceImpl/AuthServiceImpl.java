@@ -6,6 +6,7 @@ import com.mark.common.jedis.JedisClient;
 import com.mark.common.jwt.JwtUtil;
 import com.mark.common.pojo.User;
 import com.mark.common.rsa.RsaUtil;
+import com.mark.common.util.BeanUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.bo.TokenResult;
 import com.mark.manager.dto.DtoUtil;
@@ -22,7 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Validator;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Map;
@@ -39,6 +44,8 @@ public class AuthServiceImpl implements AuthService {
     UserRolesPermissionsMapper userRolesPermissionsMapper;
     @Autowired
     JedisClient jedisClient;
+    @Autowired
+    JedisPool jedisPool;
 
     @Value("${publicKey}")
     private String publicKey;
@@ -49,10 +56,11 @@ public class AuthServiceImpl implements AuthService {
     @Value("${rolePrefix}")
     private String rolePrefix;
 
-//    @Value("${privateKey}")
-//    private String privateKey;
+    @Value("${expireTime}")
+    private String expireTime;
 
-
+    @Value("${loginInfoPrefix}")
+    private String loginInfoPrefix;
 
     /**
      * 检验信息是否合规合法，手动@Validated
@@ -90,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Result genToken(Login login) throws Exception {
+    public Result genToken(Login login, String ip) throws Exception {
         // 拿到用户在数据库的信息和权限
         UserRoles userRoles = userRolesPermissionsMapper.getUserRoles(login.getAppId());
         if (userRoles == null)
@@ -105,10 +113,12 @@ public class AuthServiceImpl implements AuthService {
         {
             return new Result(new TokenResult("", "", "passError"), LoginConstant.PASS_MISMATCH);
         }
+        userRoles.setAuthIp(ip);
         User user = DtoUtil.userRoles2user(userRoles);
         System.out.println("AuthService.genToken_user_beforeGenToken : " + user.toString());
         String token = JwtUtil.genToken(user);
-        return new Result(new TokenResult("admin", token));
+        saveLoginCache(user, token);
+        return new Result(new TokenResult(user.getAuthRolesName(), token));
     }
     @Override
     public String getRoleByNameInRedis(String appAuthId) {
@@ -142,5 +152,23 @@ public class AuthServiceImpl implements AuthService {
         login.setAppId(decryptString(login.getAppId()));
         login.setAppKey(decryptString(login.getAppKey()));
         return login;
+    }
+    private void saveLoginCache(User user, String token) {
+        try {
+            Map<String, String> map = BeanUtil.beanToMap(user, User.class);
+            map.remove("authAppkey");
+            map.remove("authRolesId");
+            map.remove("authRolesName");
+            Jedis jedis = jedisPool.getResource();
+            Pipeline p = jedis.pipelined();
+            p.hmset(loginInfoPrefix + token, map);
+            // token过期时间设置
+            p.pexpireAt(loginInfoPrefix + token, System.currentTimeMillis() + Long.parseLong(expireTime) * 1000);
+            p.sync();
+            p.close();
+            jedis.close();
+        } catch (IOException e) {
+            logger.error("loginCache save failed! {}", e.getMessage());
+        }
     }
 }

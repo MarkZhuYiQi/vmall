@@ -3,14 +3,10 @@ package com.mark.manager.filter;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mark.common.jwt.JwtUtil;
 import com.mark.common.pojo.JwtUserDetails;
-import com.mark.common.util.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,8 +14,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * 通过token还原用户信息
@@ -37,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authToken = httpServletRequest.getHeader(tokenHeader);
         final String authTokenStart = "";
         System.out.println("Token:" + authToken);
+        // 不够，需要判断来源，比如ip
         if (!StringUtils.isEmpty(authToken) && authToken.startsWith(authTokenStart)) {
             authToken = authToken.substring(authTokenStart.length());
             // 测试是否有效
@@ -50,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // in the token and read it from it. It's up to you ;)
                 // UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 JwtUserDetails userDetails = JwtUtil.getUserFromToken(authToken);
-                System.out.println("getLocalAddr: " + IpUtil.getIpAddress(httpServletRequest));
+
                 System.out.println(userDetails.toString());
                 // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
                 // the database compellingly. Again it's up to you ;)

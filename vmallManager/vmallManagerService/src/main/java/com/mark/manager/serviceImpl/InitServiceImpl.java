@@ -60,6 +60,10 @@ public class InitServiceImpl implements InitService {
     private String authPrefix;
     @Value("${coursePrefix}")
     private String coursePrefix;
+    @Value("${cartInit}")
+    String cartInit;
+    @Value("${cartIdINCR}")
+    String cartIdINCR;
     @Autowired
     private JedisPool jedisPool;
     @Autowired
@@ -252,6 +256,10 @@ public class InitServiceImpl implements InitService {
         GenericObjectPool<RestHighLevelClient> clientPool = new GenericObjectPool<RestHighLevelClient>(elasticRestClientPool, poolConfig);
         return clientPool;
     }
+
+    /**
+     * 存储每天0点时间戳
+     */
     @PostConstruct
     public void setUid() {
         Long current = System.currentTimeMillis();
@@ -289,6 +297,20 @@ public class InitServiceImpl implements InitService {
         p.sync();
         jedis.close();
         logger.info("插入完成" + navbarPrefix);
+    }
+
+    /**
+     * 初始化购物车编号
+     * 每天0点的时间戳前面加上3为特殊编号601
+     */
+    @PostConstruct
+    public void cartNoInit() {
+        Long current = System.currentTimeMillis();
+        long todayAtZero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
+        String dataInRedis = jedisClient.get(cartIdINCR);
+        if (dataInRedis == null || (Long.parseLong(dataInRedis) < todayAtZero)) {
+            jedisClient.set(cartIdINCR, cartInit + String.valueOf(todayAtZero / 1000));
+        }
     }
 
 }
