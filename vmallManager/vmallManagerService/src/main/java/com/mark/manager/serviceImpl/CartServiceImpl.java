@@ -92,7 +92,28 @@ public class CartServiceImpl implements CartService {
             logger.warn(c.getMsg());
             throw new CartException(c.getMsg(), c.getCode());
         }
+    }
 
+    @Override
+    public Boolean addItemToCookieCart(CartDetail cartDetail) throws CartException {
+        try {
+            Courses course = courseService.getCourse(cartDetail.getCartCourseId().intValue());
+            if (course == null) throw new CartException("course not exist", CartConstant.COURSE_NOT_EXIST);
+            VproCartDetail cartDetail1 = cartDao.addItem(cartDetail);
+            return true;
+        } catch (CartException c) {
+            logger.warn(c.getMsg());
+            throw new CartException(c.getMsg(), c.getCode());
+        }
+    }
 
+    @Override
+    public Boolean delItemFromCart(CartDetail cartDetail) throws CartException {
+        try {
+            return cartDao.delCartItem(cartDetail);
+        } catch (CartException e) {
+            logger.warn(e.getMsg());
+            throw new CartException(e.getMsg(), e.getCode());
+        }
     }
 }

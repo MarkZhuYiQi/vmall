@@ -179,6 +179,14 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public Long zremrangeByScore(String key, Double start, Double end) {
+        Jedis jedis = getResource();
+        Long res = jedis.zremrangeByScore(key, start, end);
+        jedis.close();
+        return res;
+    }
+
+    @Override
     public Boolean exists(String key) throws RedisException{
         Jedis jedis = getResource();
         Boolean result = jedis.exists(key);

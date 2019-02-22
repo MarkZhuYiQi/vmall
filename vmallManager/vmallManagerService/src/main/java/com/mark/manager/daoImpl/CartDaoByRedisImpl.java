@@ -42,10 +42,10 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
     @Value("${userCartIdHash}")
     String userCartIdHash;
 
-    // 未登录用户cookie购物车存储前缀，后加cartId，Set
+    // 未登录用户cookie购物车存储前缀，后加cartId，SortedSet
     @Value("${cookieCartPrefix}")
     String cookieCartPrefix;
-    // 登陆用户购物车存储前缀，后加cartId，Set
+    // 登陆用户购物车存储前缀，后加cartId，SortedSet
     @Value("${userCartPrefix}")
     String userCartPrefix;
 
@@ -85,7 +85,11 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
     @Override
     public VproCartDetail addItem(CartDetail cartDetail) throws CartException {
         VproCartDetail vproCartDetail = DtoUtil.cartDetail2VproCartDetail(cartDetail);
-        Long reply = jedisClient.sadd(userCartPrefix + cartDetail.getCartParentId(), BeanUtil.parseObjToJson(vproCartDetail));
+        Long reply = jedisClient.zadd(
+                (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
+                cartDetail.getCartCourseId().doubleValue(),
+                BeanUtil.parseObjToJson(vproCartDetail)
+        );
         if (reply > 0) return vproCartDetail;
         throw new CartException("add item to userCart failed! cartId: " + vproCartDetail.getCartParentId() + ", courseId: " + vproCartDetail.getCartCourseId());
     }
@@ -122,5 +126,16 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         Boolean isExists = jedisClient.exists(cartId);
         if (!isExists) throw new CartException("userCart not exist in redis");
         return isExists;
+    }
+
+    @Override
+    public Boolean delCartItem(CartDetail cartDetail) throws CartException {
+        Long res = jedisClient.zremrangeByScore(
+                (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
+                cartDetail.getCartCourseId().doubleValue(),
+                cartDetail.getCartCourseId().doubleValue()
+        );
+        if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());
+        return (res > 0);
     }
 }

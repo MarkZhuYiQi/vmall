@@ -42,6 +42,8 @@ public interface JedisClient {
 
     Set<Tuple> zrangeByScoreWithScores(String key, Double min, Double max);
 
+    Long zremrangeByScore(String key, Double start, Double end);
+
     Boolean exists(String key) throws RedisException;
 
     Long expire(String key, int seconds);

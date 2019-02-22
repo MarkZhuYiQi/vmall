@@ -33,10 +33,23 @@ public class CartController {
     public Result addItemToUserCart(@RequestBody @Validated CartDetail cartDetail, HttpServletRequest httpServletRequest) {
         String token = httpServletRequest.getHeader("MyToken");
         try {
-            Boolean replay = cartService.addItemToCart(cartDetail, token);
-            return new Result(replay);
+            Boolean reply = cartService.addItemToCart(cartDetail, token);
+            return new Result(reply);
         } catch (CartException e) {
             return new Result(e.getCode(), e.getMsg());
         }
+    }
+    @PostMapping("/cookie/add")
+    public Result addItemToCookieCart(@RequestBody @Validated CartDetail cartDetail) {
+        try {
+            Boolean reply = cartService.addItemToCookieCart(cartDetail);
+            return new Result(reply);
+        } catch (CartException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
+    }
+    @PostMapping
+    public Result delItemInCart(@RequestBody CartDetail cartDetail) {
+
     }
 }

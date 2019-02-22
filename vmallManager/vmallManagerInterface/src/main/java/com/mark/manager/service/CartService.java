@@ -8,5 +8,7 @@ public interface CartService {
     Cart loadUserCartWithLogin(String token) throws CartException;
     Cart loadUserCartWithoutLogin();
     Boolean addItemToCart(CartDetail cartDetail, String token) throws CartException;
+    Boolean addItemToCookieCart(CartDetail cartDetail) throws CartException;
+    Boolean delItemFromCart(CartDetail cartDetail) throws CartException;
 
 }

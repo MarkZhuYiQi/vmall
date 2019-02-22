@@ -121,4 +121,16 @@ public class CartDaoImpl extends CartDaoAbstract {
             }
         }
     }
+
+    @Override
+    public Boolean delCartItem(CartDetail cartDetail) throws CartException {
+        try {
+            cartRedis.delCartItem(cartDetail);
+            cartDB.delCartItem(cartDetail);
+            return true;
+        } catch (CartException e) {
+            logger.warn(e.getMsg());
+            throw new CartException("item delete failed!" + cartDetail.toString(), CartConstant.ITEM_DEL_FAILED);
+        }
+    }
 }

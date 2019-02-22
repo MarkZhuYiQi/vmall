@@ -6,16 +6,13 @@ import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.mapper.VproCartDetailMapper;
 import com.mark.manager.mapper.VproCartMapper;
-import com.mark.manager.pojo.VproAuth;
-import com.mark.manager.pojo.VproCart;
-import com.mark.manager.pojo.VproCartDetail;
+import com.mark.manager.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.mark.common.exception.CartException;
 import com.mark.manager.mapper.CartMapper;
-import com.mark.manager.pojo.VproCartExample;
 
 import java.util.List;
 
@@ -78,5 +75,17 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
         Boolean isExist = (vproCartMapper.countByExample(vproCartExample) > 0);
         if (!isExist) throw new CartException("userCart not exist in DB");
         return isExist;
+    }
+
+    @Override
+    public Boolean delCartItem(CartDetail cartDetail) throws CartException {
+        VproCartDetailExample vproCartDetailExample = new VproCartDetailExample();
+        vproCartDetailExample
+                .createCriteria()
+                .andCartParentIdEqualTo(cartDetail.getCartParentId())
+                .andCartCourseIdEqualTo(String.valueOf(cartDetail.getCartCourseId()));
+        Integer res = vproCartDetailMapper.deleteByExample(vproCartDetailExample);
+        if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());
+        return (res > 0);
     }
 }
