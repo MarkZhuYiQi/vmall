@@ -3,10 +3,7 @@ package com.mark.manager.dto;
 import com.mark.common.pojo.CategoryNode;
 import com.mark.common.pojo.User;
 import com.mark.common.util.BeanUtil;
-import com.mark.manager.pojo.VproCourses;
-import com.mark.manager.pojo.VproCoursesContent;
-import com.mark.manager.pojo.VproCoursesImage;
-import com.mark.manager.pojo.VproNavbar;
+import com.mark.manager.pojo.*;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.beans.IntrospectionException;
@@ -79,5 +76,13 @@ public class DtoUtil {
         if (detailImage.getImageAuthor() != null) vproCoursesImage.setImageAuthor(detailImage.getImageAuthor());
         if (detailImage.getImageUsedLocation() != null) vproCoursesImage.setImageUsedLocation(String.valueOf(detailImage.getImageUsedLocation()));
         return vproCoursesImage;
+    }
+    public static VproCartDetail cartDetail2VproCartDetail(CartDetail cartDetail) {
+        VproCartDetail vproCartDetail = new VproCartDetail();
+        vproCartDetail.setCartIsCookie(cartDetail.getCartIsCookie());
+        if (cartDetail.getCartAddTime() != null) vproCartDetail.setCartAddTime(cartDetail.getCartAddTime());
+        if (cartDetail.getCartCourseId() != null) vproCartDetail.setCartCourseId(String.valueOf(cartDetail.getCartCourseId()));
+        if (cartDetail.getCartParentId() != null) vproCartDetail.setCartParentId(cartDetail.getCartParentId());
+        return vproCartDetail;
     }
 }

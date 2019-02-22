@@ -22,7 +22,14 @@ SELECT
 FROM
 	vpro_cart
 LEFT JOIN vpro_cart_detail ON vpro_cart_detail.cart_parent_id = vpro_cart.cart_id
-WHERE
-	vpro_cart.cart_userid = #{userId}
+    <if test="userId != null and cartId == null">
+        WHERE vpro_cart.cart_userid = #{userId}
+    </if>
+    <if test="userId == null and cartId != null">
+        WHERE vpro_cart.cart_id = #{cartId}
+    </if>
+    <if test="userId != null and cartId != null">
+        WHERE vpro_cart.cart_userid = #{userId} and vpro_cart.cart_id = #{cartId}
+    </if>
     </select>
 </mapper>

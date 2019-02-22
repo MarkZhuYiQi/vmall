@@ -137,10 +137,12 @@ public class RabbitMQConfig {
     public Queue topicQueue() {
         return new Queue(topicQueue);
     }
+    // exchange initialize
     @Bean
     public TopicExchange vmallTopicExchange() {
         return new TopicExchange(topicExchange, true, false);
     }
+    // binding topic
     @Bean
     public Binding topicBinding() {
         return BindingBuilder.bind(topicQueue()).to(vmallTopicExchange()).with(topickey);

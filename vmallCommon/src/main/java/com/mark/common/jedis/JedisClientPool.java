@@ -318,4 +318,68 @@ public class JedisClientPool implements JedisClient{
         return transaction;
     }
 
+    @Override
+    public Long sadd(String key, String... members) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.sadd(key, members);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Long scard(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.scard(key);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Set<String> smembers(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Set<String> res = jedis.smembers(key);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Set<String> sdiff(String... keys) {
+        Jedis jedis = jedisPool.getResource();
+        Set<String> res = jedis.sdiff(keys);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Long sdiffstore(String destination, String... keys) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.sdiffstore(destination, keys);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Set<String> sinter(String... keys) {
+        Jedis jedis = jedisPool.getResource();
+        Set<String> res = jedis.sinter(keys);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Long sinterstore(String destination, String... keys) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.sinterstore(destination, keys);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public Long srem(String key, String... members) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.srem(key, members);
+        jedis.close();
+        return res;
+    }
+
 }

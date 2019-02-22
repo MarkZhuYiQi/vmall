@@ -1,13 +1,19 @@
 package com.mark.manager.dao;
 
+import com.mark.common.exception.CartException;
 import com.mark.manager.dto.Cart;
+import com.mark.manager.dto.CartDetail;
 import com.mark.manager.pojo.VproAuth;
+import com.mark.manager.pojo.VproCartDetail;
 
 public interface CartDao {
-    void createUserCart(String cartId, String token);
-    void createUserCart(String cartId, VproAuth auth);
-    Cart loadUserCart(String cartId, VproAuth auth);
-    Cart addItem();
-    String getCartId();
-    VproAuth getLoginInfo(String token);
+    void createUserCart(String cartId, String token) throws CartException;
+    void createUserCart(String cartId, VproAuth auth) throws CartException;
+    Cart loadUserCart(String cartId, String userId) throws CartException;
+    VproCartDetail addItem(CartDetail cartDetail) throws CartException;
+    String getNewCartId();
+    VproAuth getLoginInfo(String token) throws CartException;
+    String getCartIdByUserId(Integer userId) throws CartException;
+    void setCartIdWithUserId(String userId, String cartId);
+    Boolean checkCartExists(String cartId) throws CartException;
 }
