@@ -9,7 +9,6 @@ import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.mapper.VproCartMapper;
 import com.mark.manager.pojo.VproAuth;
-import com.mark.manager.pojo.VproCartExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import com.mark.manager.pojo.VproCartDetail;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +84,9 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
 
     @Override
     public VproCartDetail addItem(CartDetail cartDetail) throws CartException {
+        String key = (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId();
+        if (jedisClient.zcount(key, cartDetail.getCartCourseId().doubleValue(), cartDetail.getCartCourseId().doubleValue()) > 0)
+            throw new CartException("add item to userCart failed! course already existed." + cartDetail.toString());
         VproCartDetail vproCartDetail = DtoUtil.cartDetail2VproCartDetail(cartDetail);
         Long reply = jedisClient.zadd(
                 (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
@@ -137,5 +140,19 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         );
         if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());
         return (res > 0);
+    }
+
+    @Override
+    public Boolean mergeCart(String cookieCartId, String cartId) throws CartException {
+        if (!jedisClient.exists(cookieCartPrefix + cookieCartId)) return true;
+        Set<Tuple> items = jedisClient.zrangeWithScores(cookieCartPrefix + cookieCartId, 0L, -1L);
+        if (items.size() == 0) return true;
+        Long cartItemsCount = jedisClient.zcount(userCartPrefix + cartId, 0d, -1d);
+        for(Tuple tuple : items) {
+            jedisClient.zadd(userCartPrefix + cartId, tuple.getScore(), tuple.getElement());
+        }
+        if (jedisClient.zcount(userCartPrefix + cartId, 0d, -1d) != (cartItemsCount + items.size()))
+            throw new CartException("mergeCart failed! some of cookieItems tranfer to userCart failed");
+        return true;
     }
 }

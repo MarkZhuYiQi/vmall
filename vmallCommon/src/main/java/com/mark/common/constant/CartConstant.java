@@ -8,4 +8,5 @@ public class CartConstant {
     public static final Integer COURSE_NOT_EXIST = 305;
     public static final Integer COURSE_ADD_FAILED = 306;
     public static final Integer ITEM_DEL_FAILED = 307;
+    public static final Integer MERGE_CART_FAILED = 308;
 }

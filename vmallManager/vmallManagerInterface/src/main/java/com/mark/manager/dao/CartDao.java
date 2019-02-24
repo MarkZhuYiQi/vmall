@@ -17,4 +17,5 @@ public interface CartDao {
     void setCartIdWithUserId(String userId, String cartId);
     Boolean checkCartExists(String cartId) throws CartException;
     Boolean delCartItem(CartDetail cartDetail) throws CartException;
+    Boolean mergeCart(String cookieCartId, String cartId) throws CartException;
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.mark.common.exception.CartException;
 import com.mark.manager.mapper.CartMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -54,6 +55,9 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
     @Override
     public VproCartDetail addItem(CartDetail cartDetail) throws CartException {
         VproCartDetail vproCartDetail = DtoUtil.cartDetail2VproCartDetail(cartDetail);
+        VproCartDetailExample vproCartDetailExample = new VproCartDetailExample();
+        vproCartDetailExample.createCriteria().andCartCourseIdEqualTo(String.valueOf(cartDetail.getCartCourseId())).andCartParentIdEqualTo(cartDetail.getCartParentId());
+        if (vproCartDetailMapper.countByExample(vproCartDetailExample) > 0) throw new CartException("add item to userCart in DB failed! course already exists." + cartDetail.toString());
         Integer count = vproCartDetailMapper.insertSelective(vproCartDetail);
         if (count <= 0) throw new CartException("insert into cartDetail failed");
         return vproCartDetail;
@@ -87,5 +91,31 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
         Integer res = vproCartDetailMapper.deleteByExample(vproCartDetailExample);
         if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());
         return (res > 0);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean mergeCart(String cookieCartId, String cartId) throws CartException {
+        try {
+            // 查看是否有重复的商品
+            List<String> repeats = cartMapper.compareCartItemsWithCookieCartAndUserCart(cartId, cookieCartId);
+            if (repeats.size() > 0) {
+                VproCartDetailExample vproCartDetailExample = new VproCartDetailExample();
+                vproCartDetailExample.createCriteria().andCartCourseIdIn(repeats);
+                vproCartDetailMapper.deleteByExample(vproCartDetailExample);
+            } else {
+                return true;
+            }
+            // 将属于该用户的商品更新到他的购物车下。
+            VproCartDetailExample v1 = new VproCartDetailExample();
+            v1.createCriteria().andCartParentIdEqualTo(Long.parseLong(cookieCartId));
+            VproCartDetail vproCartDetail = new VproCartDetail();
+            vproCartDetail.setCartParentId(Long.parseLong(cartId));
+            Integer res = vproCartDetailMapper.updateByExampleSelective(vproCartDetail, v1);
+            return (res > 0);
+        } catch (Exception e) {
+            throw new CartException("update repeat items error!"+e.getMessage());
+        }
+
     }
 }

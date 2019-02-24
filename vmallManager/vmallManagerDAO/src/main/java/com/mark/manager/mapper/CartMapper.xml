@@ -32,4 +32,27 @@ LEFT JOIN vpro_cart_detail ON vpro_cart_detail.cart_parent_id = vpro_cart.cart_i
         WHERE vpro_cart.cart_userid = #{userId} and vpro_cart.cart_id = #{cartId}
     </if>
     </select>
+
+    <select id="compareCartItemsWithCookieCartAndUserCart" resultType="java.lang.String">
+SELECT
+	cart_course_id
+FROM
+	(
+		SELECT
+			cart_course_id
+		FROM
+			vpro_cart_detail
+		WHERE
+			cart_parent_id = #{cartId}
+	) usercart
+WHERE
+	cart_course_id IN (
+		SELECT
+			cart_course_id
+		FROM
+			vpro_cart_detail
+		WHERE
+			cart_parent_id = #{cookieCartId}
+	)
+    </select>
 </mapper>

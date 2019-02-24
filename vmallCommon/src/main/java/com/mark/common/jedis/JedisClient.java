@@ -32,6 +32,8 @@ public interface JedisClient {
 
     Long zadd(String key, Double score, String member);
 
+    Long zcount(String key, Double min, Double max);
+
     Double zscore(String key, String member);
 
     Double zIncrBy(String key, Double increment, String member);
@@ -41,6 +43,8 @@ public interface JedisClient {
     Set<String> zRangeByScore(String key, Double min, Double max);
 
     Set<Tuple> zrangeByScoreWithScores(String key, Double min, Double max);
+
+    Set<Tuple> zrangeWithScores(String key, Long start, Long end);
 
     Long zremrangeByScore(String key, Double start, Double end);
 

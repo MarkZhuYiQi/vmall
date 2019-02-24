@@ -133,4 +133,15 @@ public class CartDaoImpl extends CartDaoAbstract {
             throw new CartException("item delete failed!" + cartDetail.toString(), CartConstant.ITEM_DEL_FAILED);
         }
     }
+
+    @Override
+    public Boolean mergeCart(String cookieCartId, String cartId) throws CartException {
+        try {
+            cartRedis.mergeCart(cookieCartId, cartId);
+            cartDB.mergeCart(cookieCartId, cartId);
+            return true;
+        } catch(CartException e) {
+            throw new CartException(e.getMsg(), CartConstant.MERGE_CART_FAILED);
+        }
+    }
 }

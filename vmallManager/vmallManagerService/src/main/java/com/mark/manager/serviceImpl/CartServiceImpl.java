@@ -116,4 +116,15 @@ public class CartServiceImpl implements CartService {
             throw new CartException(e.getMsg(), e.getCode());
         }
     }
+
+    @Override
+    public Boolean mergeCart(String cookieCartId, String token) throws CartException {
+        try {
+            VproAuth auth = cartDao.getLoginInfo(token);
+            String cartId = cartDao.getCartIdByUserId(auth.getAuthId());
+            return cartDao.mergeCart(cookieCartId, cartId);
+        } catch (CartException e) {
+            throw new CartException(e.getMsg(), e.getCode());
+        }
+    }
 }

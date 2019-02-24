@@ -135,6 +135,15 @@ public class JedisClientPool implements JedisClient{
         jedis.close();
         return result;
     }
+
+    @Override
+    public Long zcount(String key, Double min, Double max) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.zcount(key, min, max);
+        jedis.close();
+        return result;
+    }
+
     @Override
     public Double zscore(String key, String member)
     {
@@ -174,6 +183,14 @@ public class JedisClientPool implements JedisClient{
         Jedis jedis = getResource();
         Set<Tuple> members = jedis.zrangeByScoreWithScores(key, min, max);
 //        Set<Tuple> members = jedis.zrangeByScoreWithScores(key, min, max, offset, count);
+        jedis.close();
+        return members;
+    }
+
+    @Override
+    public Set<Tuple> zrangeWithScores(String key, Long start, Long end) {
+        Jedis jedis = getResource();
+        Set<Tuple> members = jedis.zrangeWithScores(key, start, end);
         jedis.close();
         return members;
     }

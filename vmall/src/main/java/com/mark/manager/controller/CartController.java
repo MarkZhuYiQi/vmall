@@ -48,8 +48,23 @@ public class CartController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
-    @PostMapping
+    @DeleteMapping("")
     public Result delItemInCart(@RequestBody CartDetail cartDetail) {
-
+        try {
+            cartService.delItemFromCart(cartDetail);
+            return new Result(true);
+        } catch (CartException e) {
+            return new Result(e.getCode(), e.getMessage());
+        }
+    }
+    @GetMapping("merge/{cookieCartId:\\d+}")
+    public Result mergeCart(@RequestParam("cookieCartId") String cookieCartId, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("MyToken");
+        try {
+            cartService.mergeCart(cookieCartId, token);
+            return new Result(true);
+        } catch (CartException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
     }
 }
