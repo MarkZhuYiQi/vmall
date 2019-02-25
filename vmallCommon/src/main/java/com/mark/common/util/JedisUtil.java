@@ -14,4 +14,7 @@ public class JedisUtil {
         // 当前时间戳大于timestamp说明过期了，返回true
         return timeStamp < (System.currentTimeMillis() / 1000);
     }
+    public static Long cookieExpireTime() {
+        return System.currentTimeMillis() + (long) (3600 * 24 * 30) * (long)1000;
+    }
 }

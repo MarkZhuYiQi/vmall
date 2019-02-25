@@ -11,7 +11,7 @@ public class Cart implements Serializable {
     private Integer cartUserId;
     private Boolean cartStatus;
     private Boolean cartPayment;
-    private List<VproCartDetail> cartDetails;
+    private List<VproCartDetail> cartDetail;
 
     @Override
     public String toString() {
@@ -21,7 +21,7 @@ public class Cart implements Serializable {
                 ", cartUserId=" + cartUserId +
                 ", cartStatus=" + cartStatus +
                 ", cartPayment=" + cartPayment +
-                ", cartDetails=" + cartDetails +
+                ", cartDetail=" + cartDetail +
                 '}';
     }
 
@@ -68,11 +68,11 @@ public class Cart implements Serializable {
         this.cartPayment = cartPayment;
     }
 
-    public List<VproCartDetail> getCartDetails() {
-        return cartDetails;
+    public List<VproCartDetail> getCartDetail() {
+        return cartDetail;
     }
 
-    public void setCartDetails(List<VproCartDetail> cartDetails) {
-        this.cartDetails = cartDetails;
+    public void setCartDetail(List<VproCartDetail> cartDetail) {
+        this.cartDetail = cartDetail;
     }
 }

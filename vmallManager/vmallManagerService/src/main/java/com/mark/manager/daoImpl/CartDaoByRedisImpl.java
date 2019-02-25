@@ -3,6 +3,7 @@ package com.mark.manager.daoImpl;
 import com.mark.common.exception.CartException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
+import com.mark.common.util.JedisUtil;
 import com.mark.manager.dao.CartDaoAbstract;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
@@ -62,8 +63,8 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
     /**
      * 读取用户购物车信息分2步
      * 首先根据用户id去用户id与购物车id对应表中寻找购物车id
-     * 然后通过购物车id找到购物车条目Set
-     * 最后在Set中取出该用户的商品信息。
+     * 然后通过购物车id找到购物车条目SortedSet
+     * 最后在SortedSet中取出该用户的商品信息。
      * @param cartId
      * @return
      */
@@ -72,13 +73,13 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         Cart cart = new Cart();
         cart.setCartId(Long.parseLong(cartId));
         if (!jedisClient.exists(userCartPrefix + cartId)) throw new CartException("userCart could not be found in redis");
-        Set<String> items = jedisClient.smembers(userCartPrefix + cartId);
+        Set<Tuple> items = jedisClient.zrangeWithScores(cartId, 0L, -1L);;
         if (items.size() == 0) return cart;
         List<VproCartDetail> details = new ArrayList<>();
-        for (String item : items) {
-            details.add(BeanUtil.parseJsonToObj(item, VproCartDetail.class));
+        for (Tuple item : items) {
+            details.add(BeanUtil.parseJsonToObj(item.getElement(), VproCartDetail.class));
         }
-        cart.setCartDetails(details);
+        cart.setCartDetail(details);
         return cart;
     }
 
@@ -89,10 +90,11 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
             throw new CartException("add item to userCart failed! course already existed." + cartDetail.toString());
         VproCartDetail vproCartDetail = DtoUtil.cartDetail2VproCartDetail(cartDetail);
         Long reply = jedisClient.zadd(
-                (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
+                key,
                 cartDetail.getCartCourseId().doubleValue(),
                 BeanUtil.parseObjToJson(vproCartDetail)
         );
+        if (cartDetail.getCartIsCookie()) jedisClient.pexpireAt(key, JedisUtil.cookieExpireTime());
         if (reply > 0) return vproCartDetail;
         throw new CartException("add item to userCart failed! cartId: " + vproCartDetail.getCartParentId() + ", courseId: " + vproCartDetail.getCartCourseId());
     }
@@ -134,7 +136,7 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
     @Override
     public Boolean delCartItem(CartDetail cartDetail) throws CartException {
         Long res = jedisClient.zremrangeByScore(
-                (cartDetail.getCartIsCookie() ? cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
+                (cartDetail.getCartIsCookie() ?  cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
                 cartDetail.getCartCourseId().doubleValue(),
                 cartDetail.getCartCourseId().doubleValue()
         );

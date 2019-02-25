@@ -1,12 +1,11 @@
 package com.mark.manager.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.mark.common.exception.CartException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
-import com.mark.manager.dto.CartNo;
 import com.mark.manager.service.CartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping(value = "cart")
 public class CartController {
-    @Autowired
+    @Reference
     private CartService cartService;
 
-    @PostMapping("")
-    public Result loadUserCart(@RequestBody CartNo cartNo, HttpServletRequest httpServletRequest) {
+    @GetMapping("")
+    public Result loadUserCart(HttpServletRequest httpServletRequest) {
         // 根据这个token去取登陆信息
         String token = httpServletRequest.getHeader("MyToken");
         try {

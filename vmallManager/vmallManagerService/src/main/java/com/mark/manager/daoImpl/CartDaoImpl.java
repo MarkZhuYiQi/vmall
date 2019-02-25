@@ -33,6 +33,8 @@ public class CartDaoImpl extends CartDaoAbstract {
      * 创建用户购物车
      * @param cartId
      * @param token
+     * 从缓存拿到用户登陆信息
+     * 从数据库和缓存分别创建购物车
      */
     @Override
     public void createUserCart(String cartId, String token) throws CartException {
@@ -47,6 +49,13 @@ public class CartDaoImpl extends CartDaoAbstract {
         }
     }
 
+    /**
+     * 读取购物车中的信息
+     * @param cartId
+     * @param userId
+     * @return
+     * @throws CartException
+     */
     @Override
     public Cart loadUserCart(String cartId, String userId) throws CartException {
         try {
@@ -62,6 +71,12 @@ public class CartDaoImpl extends CartDaoAbstract {
         }
     }
 
+    /**
+     * 添加商品到购物车
+     * @param cartDetail
+     * @return
+     * @throws CartException
+     */
     @Override
     public VproCartDetail addItem(CartDetail cartDetail) throws CartException {
         VproCartDetail vproCartDetail = new VproCartDetail();

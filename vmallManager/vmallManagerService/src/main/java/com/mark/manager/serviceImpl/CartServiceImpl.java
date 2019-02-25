@@ -35,9 +35,10 @@ public class CartServiceImpl implements CartService {
      * 取得id下的购物车信息
      * 如果已经登录了，那么会获得user与购物车id对应的id，没有登录会得到cookieid，如果啥都没有就返回空
      * 登陆状态：
-     *      去redis的usercart表寻找对应用户id的购物车id，如果返回false说明还未设置，去数据库查找，如果没找到则设置-1，否则设置查找结果；
-     *      然后将该cart_id: [-1|xxxxxx]返回前台，前台根据该结果决定是否要创建新的cartId
-     *      根据cartId，如果cartId有值，就去寻找购物车信息，塞入结果中
+     * 从登陆信息获得用户id，根据用户id找到购物车id，这里开始分情况：
+     *     拿到购物车id，就去从缓存和数据库中获得购物车信息
+     *     没有拿到购物车id，就去拿一个新的非重复购物车id，传给数据操作层进行创建购物车
+     * 最后返回购物车详细信息
      * 未登录状态：
      *
      * @return
