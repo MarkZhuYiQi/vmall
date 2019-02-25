@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping(value = "cart")
 public class CartController {
-    @Reference
+    @Reference()
     private CartService cartService;
 
     @GetMapping("")
@@ -22,6 +22,7 @@ public class CartController {
         // 根据这个token去取登陆信息
         String token = httpServletRequest.getHeader("MyToken");
         try {
+            System.out.println(cartService);
             Cart cart = cartService.loadUserCartWithLogin(token);
             return new Result(cart);
         } catch (CartException e) {

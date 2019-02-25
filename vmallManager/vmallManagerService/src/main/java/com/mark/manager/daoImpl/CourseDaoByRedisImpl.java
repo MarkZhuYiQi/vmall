@@ -12,6 +12,8 @@ import com.mark.common.util.LogUtil;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dao.CourseDaoAbstract;
 import com.mark.manager.dto.Courses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ import java.util.Set;
 
 @Component("courseByRedis")
 public class CourseDaoByRedisImpl extends CourseDaoAbstract {
+    private static final Logger logger = LoggerFactory.getLogger(CourseDaoByRedisImpl.class);
     @Value("${coursePrefix}")
     private String coursePrefix;
     @Autowired
@@ -141,6 +144,7 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         if (jedisClient.exists(courseKey)) {
             // 课程信息过期不仅设置了set，而且设置了自动过期，所以可以不用这个判断
             Double expiredTime = jedisClient.zscore(coursesDetailPrefix + expiredSuffix, String.valueOf(courseId));
+            logger.info(String.valueOf(expiredTime));
             if (expiredTime != null && JedisUtil.isExpired(expiredTime)) {
                 Map<String, String> course = jedisClient.hgetAll(courseKey);
                 return BeanUtil.mapToBean(course, Courses.class);

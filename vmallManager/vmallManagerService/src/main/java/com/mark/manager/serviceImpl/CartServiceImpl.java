@@ -48,12 +48,16 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         String err = "user cart could not be load! %s";
         try {
+            logger.info(token);
             // 尝试获得现有购物车
             VproAuth auth = cartDao.getLoginInfo(token);
+            logger.info(auth.toString());
             String cartId = cartDao.getCartIdByUserId(auth.getAuthId());
+            logger.info(cartId);
             // 从缓存和数据库获得购物车
             return cartDao.loadUserCart(cartId, String.valueOf(auth.getAuthId()));
         } catch (CartException e) {
+            logger.warn(e.getMsg());
             // 没有拿到用户购物车ID，获得一个新的非重复购物车id
             String cartId = cartDao.getNewCartId();
             try {

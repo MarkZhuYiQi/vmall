@@ -164,6 +164,9 @@
     </selectKey>
     insert into vpro_cart
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cartId != null">
+        cart_id,
+      </if>
       <if test="cartAddtime != null">
         cart_addtime,
       </if>
@@ -178,6 +181,9 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cartId != null">
+        #{cartId,jdbcType=BIGINT},
+      </if>
       <if test="cartAddtime != null">
         #{cartAddtime,jdbcType=VARCHAR},
       </if>

@@ -10,6 +10,8 @@ import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.mapper.VproCartMapper;
 import com.mark.manager.pojo.VproAuth;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,8 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Component("cartDB")
+@Component("cartRedis")
 public class CartDaoByRedisImpl extends CartDaoAbstract {
+
+    private static final Logger logger = LoggerFactory.getLogger(CartDaoByRedisImpl.class);
 
     @Autowired
     private VproCartMapper vproCartMapper;
@@ -103,7 +107,10 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         return String.valueOf(jedisClient.incr(cartIdINCR));
     }
     public VproAuth getLoginInfo(String token) throws CartException {
+        System.out.println("this is the redis area");
+        logger.info(loginInfoPrefix + token);
         Map<String, String> info = jedisClient.hgetAll(loginInfoPrefix + token);
+        logger.info(info.toString());
         if (info == null || info.size() == 0) throw new CartException("user login info could not found in redis!");
         return  BeanUtil.mapToBean(info, VproAuth.class);
     }
@@ -117,7 +124,9 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
     @Override
     public String getCartIdByUserId(Integer userId) throws CartException {
         String cartId = jedisClient.hget(userCartIdHash, String.valueOf(userId));
+        logger.info(cartId);
         if (StringUtils.isEmpty(cartId)) throw new CartException("could not get cartId from redis by userId");
+        System.out.println(StringUtils.isEmpty(cartId));
         return cartId;
     }
 

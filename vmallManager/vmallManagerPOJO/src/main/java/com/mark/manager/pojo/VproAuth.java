@@ -267,4 +267,18 @@ public class VproAuth implements Serializable {
     public void setAuthRolesId(Integer authRolesId) {
         this.authRolesId = authRolesId;
     }
+
+    @Override
+    public String toString() {
+        return "VproAuth{" +
+                "authId=" + authId +
+                ", authAppid='" + authAppid + '\'' +
+                ", authAppkey='" + authAppkey + '\'' +
+                ", authTime='" + authTime + '\'' +
+                ", authToken='" + authToken + '\'' +
+                ", authIp='" + authIp + '\'' +
+                ", authNkname='" + authNkname + '\'' +
+                ", authRolesId=" + authRolesId +
+                '}';
+    }
 }

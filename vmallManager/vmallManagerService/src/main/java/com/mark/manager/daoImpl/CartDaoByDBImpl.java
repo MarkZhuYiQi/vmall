@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component("cartRedis")
+@Component("cartDB")
 public class CartDaoByDBImpl extends CartDaoAbstract {
     private static final Logger logger = LoggerFactory.getLogger(CartDaoByDBImpl.class);
 
@@ -38,6 +38,7 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
             vproCart.setCartUserid(auth.getAuthId());
             vproCart.setCartStatus("1");
             vproCart.setCartAddtime(String.valueOf(System.currentTimeMillis() / 1000));
+            System.out.println(vproCart.toString());
             vproCartMapper.insertSelective(vproCart);
         } catch (Exception e) {
             String err = String.format("create user cart for user %s in DB failed! %s", auth.getAuthAppid(), e.getMessage());
@@ -48,8 +49,11 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
     }
 
     @Override
-    public Cart loadUserCart(String cartId, String userId) {
-        return cartMapper.loadUserCart(cartId, userId);
+    public Cart loadUserCart(String cartId, String userId) throws CartException {
+
+        Cart cart = cartMapper.loadUserCart(cartId, userId);
+        if (cart == null) throw new CartException("user cart does not exist! userId:"+userId);
+        return cart;
     }
 
     @Override
