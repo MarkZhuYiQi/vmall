@@ -101,7 +101,8 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
         vproCartDetailExample
                 .createCriteria()
                 .andCartParentIdEqualTo(cartDetail.getCartParentId())
-                .andCartCourseIdEqualTo(String.valueOf(cartDetail.getCartCourseId()));
+                .andCartCourseIdEqualTo(String.valueOf(cartDetail.getCartCourseId()))
+                .andCartIsCookieEqualTo(cartDetail.getCartIsCookie());
         Integer res = vproCartDetailMapper.deleteByExample(vproCartDetailExample);
         if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());
         return (res > 0);

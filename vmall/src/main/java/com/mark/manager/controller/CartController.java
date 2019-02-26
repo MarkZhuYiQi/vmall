@@ -2,13 +2,12 @@ package com.mark.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.mark.common.constant.CartConstant;
+import com.mark.common.exception.AuthException;
 import com.mark.common.exception.CartException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.Courses;
-import com.mark.manager.pojo.VproAuth;
-import com.mark.manager.pojo.VproCartDetail;
 import com.mark.manager.service.AuthService;
 import com.mark.manager.service.CartService;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +30,6 @@ public class CartController {
         // 根据这个token去取登陆信息
         String token = httpServletRequest.getHeader("MyToken");
         try {
-            System.out.println(cartService);
             Cart cart = cartService.loadUserCartWithLogin(token);
             return new Result(cart);
         } catch (CartException e) {
@@ -58,12 +56,15 @@ public class CartController {
         }
     }
     @DeleteMapping("")
-    public Result delItemInCart(@RequestBody CartDetail cartDetail) {
+    public Result delItemInCart(@RequestBody CartDetail cartDetail, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("MyToken");
         try {
-            cartService.delItemFromCart(cartDetail);
+            cartService.delItemFromCart(cartDetail, token);
             return new Result(true);
         } catch (CartException e) {
-            return new Result(e.getCode(), e.getMessage());
+            return new Result(e.getCode(), e.getMsg());
+        } catch (AuthException e) {
+            return new Result(e.getCode(), e.getMsg());
         }
     }
     @GetMapping("merge/{cookieCartId:\\d+}")

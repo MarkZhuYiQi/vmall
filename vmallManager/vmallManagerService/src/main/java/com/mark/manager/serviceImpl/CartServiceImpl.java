@@ -1,6 +1,7 @@
 package com.mark.manager.serviceImpl;
 
 import com.mark.common.constant.CartConstant;
+import com.mark.common.exception.AuthException;
 import com.mark.common.exception.CartException;
 import com.mark.common.exception.CourseException;
 import com.mark.manager.dao.CartDao;
@@ -10,6 +11,7 @@ import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.pojo.VproCartDetail;
+import com.mark.manager.service.AuthService;
 import com.mark.manager.service.CartService;
 import com.mark.manager.service.CourseService;
 import org.slf4j.Logger;
@@ -40,6 +42,8 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     CourseService courseService;
+    @Autowired
+    AuthService authService;
     /**
      * 取得id下的购物车信息
      * 如果已经登录了，那么会获得user与购物车id对应的id，没有登录会得到cookieid，如果啥都没有就返回空
@@ -114,12 +118,26 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Boolean delItemFromCart(CartDetail cartDetail) throws CartException {
+    public Boolean delItemFromCart(CartDetail cartDetail, String token) throws CartException, AuthException {
+        VproAuth auth = null;
+        /**
+         * 安全检查，确保访问的购物车和访问者用户一致
+         */
         try {
+            if (!token.equals("null")) {
+                auth = authService.getLoginInfo(token);
+                String cartId = cartDao.getCartIdByUserId(auth.getAuthId());
+                if (!String.valueOf(cartDetail.getCartParentId()).equals(cartId)) {
+                    logger.warn("Illegal visit ! cart does not fit with user!");
+                    throw new CartException("Illegal visit! cart does not fit with user!", CartConstant.ILLEGAL_CART_VISIT);
+                }
+            }
             return cartDao.delCartItem(cartDetail);
         } catch (CartException e) {
             logger.warn(e.getMsg());
             throw new CartException(e.getMsg(), e.getCode());
+        } catch (AuthException e) {
+            throw new AuthException(e.getMsg(), e.getCode());
         }
     }
 
