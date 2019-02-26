@@ -30,9 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String tokenHeader = "MyToken";
         String authToken = httpServletRequest.getHeader(tokenHeader);
         final String authTokenStart = "";
-        System.out.println("Token:" + authToken);
         // 不够，需要判断来源，比如ip
-        if (!StringUtils.isEmpty(authToken) && authToken.startsWith(authTokenStart)) {
+        if (!StringUtils.isEmpty(authToken) && !"null".equals(authToken) && authToken.startsWith(authTokenStart)) {
             authToken = authToken.substring(authTokenStart.length());
             // 测试是否有效
             DecodedJWT jwt = JwtUtil.verifyToken(authToken);

@@ -2,7 +2,9 @@ package com.mark.manager.serviceImpl;
 
 import com.mark.common.constant.CartConstant;
 import com.mark.common.exception.CartException;
+import com.mark.common.exception.CourseException;
 import com.mark.manager.dao.CartDao;
+import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
 import com.mark.manager.dto.Courses;
@@ -17,6 +19,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CartServiceImpl implements CartService {
     private static final Logger logger = LoggerFactory.getLogger(CartServiceImpl.class);
@@ -28,6 +33,10 @@ public class CartServiceImpl implements CartService {
     @Autowired
     @Qualifier("cartDao")
     CartDao cartDao;
+
+    @Autowired
+    @Qualifier("courseDao")
+    CourseDao courseDao;
 
     @Autowired
     CourseService courseService;
@@ -48,12 +57,9 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         String err = "user cart could not be load! %s";
         try {
-            logger.info(token);
             // 尝试获得现有购物车
             VproAuth auth = cartDao.getLoginInfo(token);
-            logger.info(auth.toString());
             String cartId = cartDao.getCartIdByUserId(auth.getAuthId());
-            logger.info(cartId);
             // 从缓存和数据库获得购物车
             return cartDao.loadUserCart(cartId, String.valueOf(auth.getAuthId()));
         } catch (CartException e) {
@@ -71,11 +77,6 @@ public class CartServiceImpl implements CartService {
             }
         }
     }
-    @Override
-    public Cart loadUserCartWithoutLogin() {
-        return null;
-    }
-
     @Override
     public Boolean addItemToCart(CartDetail cartDetail, String token) throws CartException {
         try {
@@ -131,5 +132,20 @@ public class CartServiceImpl implements CartService {
         } catch (CartException e) {
             throw new CartException(e.getMsg(), e.getCode());
         }
+    }
+
+    @Override
+    public List<Courses> getCourseDetailInCart(List<String> list) throws CartException {
+        try {
+            List<Courses> courses = new ArrayList<Courses>();
+            for (String courseId : list) {
+                Courses course = courseDao.getCourseForDetail(Integer.parseInt(courseId));
+                courses.add(course);
+            }
+            return courses;
+        } catch (CourseException e) {
+            throw new CartException(e.getMsg(), e.getCode());
+        }
+
     }
 }

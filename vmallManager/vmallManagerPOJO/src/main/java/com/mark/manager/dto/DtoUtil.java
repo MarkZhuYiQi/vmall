@@ -8,6 +8,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.beans.IntrospectionException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 public class DtoUtil {
@@ -84,5 +85,15 @@ public class DtoUtil {
         if (cartDetail.getCartCourseId() != null) vproCartDetail.setCartCourseId(String.valueOf(cartDetail.getCartCourseId()));
         if (cartDetail.getCartParentId() != null) vproCartDetail.setCartParentId(cartDetail.getCartParentId());
         return vproCartDetail;
+    }
+    public static Cart VproCart2Cart(VproCart vproCart, List<VproCartDetail> list) {
+        Cart cart = new Cart();
+        if (vproCart.getCartId() != null) cart.setCartId(vproCart.getCartId());
+        if (vproCart.getCartAddtime() != null) cart.setCartAddTime(Long.parseLong(vproCart.getCartAddtime()));
+        if (vproCart.getCartUserid() != null) cart.setCartUserId(vproCart.getCartUserid());
+        if (vproCart.getCartPayment() != null) cart.setCartPayment(Boolean.parseBoolean(vproCart.getCartPayment()));
+        if (vproCart.getCartStatus() != null) cart.setCartStatus(Boolean.parseBoolean(vproCart.getCartStatus()));
+        if (list != null && list.size() > 0) cart.setCartDetail(list);
+        return cart;
     }
 }

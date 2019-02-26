@@ -1,6 +1,8 @@
 package com.mark.manager.pojo;
 
-public class VproCart {
+import java.io.Serializable;
+
+public class VproCart implements Serializable {
     @Override
     public String toString() {
         return "VproCart{" +

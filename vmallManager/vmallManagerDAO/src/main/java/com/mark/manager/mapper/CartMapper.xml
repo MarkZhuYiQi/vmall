@@ -55,4 +55,5 @@ WHERE
 			cart_parent_id = #{cookieCartId}
 	)
     </select>
+
 </mapper>

@@ -3,8 +3,11 @@ package com.mark.manager.dao;
 import com.mark.common.exception.CartException;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
+import com.mark.manager.dto.Courses;
 import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.pojo.VproCartDetail;
+
+import java.util.List;
 
 public interface CartDao {
     void createUserCart(String cartId, String token) throws CartException;

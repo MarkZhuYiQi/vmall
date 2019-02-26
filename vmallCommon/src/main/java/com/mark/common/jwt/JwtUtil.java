@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class JwtUtil {
     private final static String JWT_KEY = "MarkZhu026";
-    private final static Integer EXPIRE_TIME = 9600;
+    private final static Integer EXPIRE_TIME = 3600 * 24 * 7;
     private static Algorithm algorithmHS()
     {
         return Algorithm.HMAC256(JwtUtil.JWT_KEY);

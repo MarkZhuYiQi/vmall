@@ -1,21 +1,30 @@
 package com.mark.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.mark.common.constant.CartConstant;
 import com.mark.common.exception.CartException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Cart;
 import com.mark.manager.dto.CartDetail;
+import com.mark.manager.dto.Courses;
+import com.mark.manager.pojo.VproAuth;
+import com.mark.manager.pojo.VproCartDetail;
+import com.mark.manager.service.AuthService;
 import com.mark.manager.service.CartService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "cart")
 public class CartController {
     @Reference()
     private CartService cartService;
+
+    @Reference()
+    private AuthService authService;
 
     @GetMapping("")
     public Result loadUserCart(HttpServletRequest httpServletRequest) {
@@ -65,6 +74,16 @@ public class CartController {
             return new Result(true);
         } catch (CartException e) {
             return new Result(e.getCode(), e.getMsg());
+        }
+    }
+    @PostMapping("detail")
+    public Result getCartItemDetail(@RequestBody List<String> list) {
+        if (list == null || list.size() == 0) return new Result(CartConstant.CART_ITEM_NULL, "No Items found in cart!");
+        try {
+            List<Courses> courses = cartService.getCourseDetailInCart(list);
+            return new Result(courses);
+        } catch (CartException ce) {
+            return new Result(ce.getCode(), ce.getMsg());
         }
     }
 }

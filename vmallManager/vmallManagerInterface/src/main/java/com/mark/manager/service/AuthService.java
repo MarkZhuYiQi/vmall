@@ -1,8 +1,10 @@
 package com.mark.manager.service;
 
+import com.mark.common.exception.AuthException;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Login;
 import com.mark.manager.dto.UserRoles;
+import com.mark.manager.pojo.VproAuth;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -16,4 +18,5 @@ public interface AuthService {
     Login decrypt(Login login) throws Exception;
     String getRoleByNameInRedis(String appAuthId);
     Map<String, String> getAuthByAuthIdFromRedis(String appAuthId);
+    VproAuth getLoginInfo(String token) throws AuthException;
 }

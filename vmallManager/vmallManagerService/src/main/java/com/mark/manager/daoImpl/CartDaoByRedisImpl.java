@@ -77,7 +77,7 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         Cart cart = new Cart();
         cart.setCartId(Long.parseLong(cartId));
         if (!jedisClient.exists(userCartPrefix + cartId)) throw new CartException("userCart could not be found in redis");
-        Set<Tuple> items = jedisClient.zrangeWithScores(cartId, 0L, -1L);;
+        Set<Tuple> items = jedisClient.zrangeWithScores(userCartPrefix + cartId, 0L, -1L);;
         if (items.size() == 0) return cart;
         List<VproCartDetail> details = new ArrayList<>();
         for (Tuple item : items) {
@@ -107,10 +107,7 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         return String.valueOf(jedisClient.incr(cartIdINCR));
     }
     public VproAuth getLoginInfo(String token) throws CartException {
-        System.out.println("this is the redis area");
-        logger.info(loginInfoPrefix + token);
         Map<String, String> info = jedisClient.hgetAll(loginInfoPrefix + token);
-        logger.info(info.toString());
         if (info == null || info.size() == 0) throw new CartException("user login info could not found in redis!");
         return  BeanUtil.mapToBean(info, VproAuth.class);
     }
@@ -137,7 +134,7 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
 
     @Override
     public Boolean checkCartExists(String cartId) throws CartException {
-        Boolean isExists = jedisClient.exists(cartId);
+        Boolean isExists = jedisClient.exists(userCartPrefix + cartId);
         if (!isExists) throw new CartException("userCart not exist in redis");
         return isExists;
     }

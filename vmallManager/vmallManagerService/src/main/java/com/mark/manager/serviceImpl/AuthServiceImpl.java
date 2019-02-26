@@ -2,6 +2,7 @@ package com.mark.manager.serviceImpl;
 
 import com.mark.common.constant.LoginConstant;
 import com.mark.common.constant.RSAConstant;
+import com.mark.common.exception.AuthException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.jwt.JwtUtil;
 import com.mark.common.pojo.User;
@@ -9,15 +10,18 @@ import com.mark.common.rsa.RsaUtil;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.bo.TokenResult;
+import com.mark.manager.dao.AuthDao;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.dto.UserRoles;
 import com.mark.manager.mapper.UserRolesPermissionsMapper;
 import com.mark.manager.mapper.VproAuthMapper;
 import com.mark.manager.dto.Login;
+import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -46,6 +50,9 @@ public class AuthServiceImpl implements AuthService {
     JedisClient jedisClient;
     @Autowired
     JedisPool jedisPool;
+    @Autowired
+    @Qualifier("authDao")
+    AuthDao authDao;
 
     @Value("${publicKey}")
     private String publicKey;
@@ -138,6 +145,17 @@ public class AuthServiceImpl implements AuthService {
         logger.info("从redis获取用户信息: " + appAuthId);
         return jedisClient.hgetAll(authPrefix + appAuthId);
     }
+
+    @Override
+    public VproAuth getLoginInfo(String token) throws AuthException {
+        try {
+            return authDao.getLoginInfo(token);
+        } catch (AuthException e) {
+            throw new AuthException(e.getMsg(), e.getCode());
+        }
+
+    }
+
     public String decryptString(String en) throws Exception {
         //将Base64编码后的私钥转换成PrivateKey对象
         PrivateKey privateKey = RsaUtil.string2PrivateKey(RSAConstant.privateKey);

@@ -2,9 +2,11 @@ package com.mark.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.mark.common.constant.LoginConstant;
+import com.mark.common.exception.AuthException;
 import com.mark.common.util.IpUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Login;
+import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.service.AuthService;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,12 +40,20 @@ public class AuthController {
             return new Result(LoginConstant.PASS_MISMATCH, "user or password error!" + e.getMessage());
         }
     }
+    @GetMapping("")
+    public Result getLoginInfo(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("MyToken");
+        try {
+            VproAuth auth = authService.getLoginInfo(token);
+            return new Result(auth);
+        } catch (AuthException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
+    }
+
     @PostMapping("test")
     public Result test(@RequestBody Login login) throws Exception {
         System.out.println(authService.decrypt(login));
         return new Result();
     }
-//    @GetMapping("info")
-//    public Result getInfo() {
-//    }
 }

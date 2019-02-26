@@ -15,6 +15,8 @@ import com.mark.common.exception.CartException;
 import com.mark.manager.mapper.CartMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component("cartDB")
@@ -51,8 +53,16 @@ public class CartDaoByDBImpl extends CartDaoAbstract {
     @Override
     public Cart loadUserCart(String cartId, String userId) throws CartException {
 
-        Cart cart = cartMapper.loadUserCart(cartId, userId);
-        if (cart == null) throw new CartException("user cart does not exist! userId:"+userId);
+//        Cart cart =  cartMapper.loadUserCart(cartId, userId);
+        VproCartExample vproCartExample = new VproCartExample();
+        vproCartExample.createCriteria().andCartIdEqualTo(Long.parseLong(cartId)).andCartUseridEqualTo(Integer.valueOf(userId));
+        List<VproCart> vproCarts = vproCartMapper.selectByExample(vproCartExample);
+        if (vproCarts.size() < 1) throw new CartException("user cart does not exist! userId: " + userId);
+        VproCart vproCart = vproCarts.get(0);
+        VproCartDetailExample vproCartDetailExample = new VproCartDetailExample();
+        vproCartDetailExample.createCriteria().andCartParentIdEqualTo(Long.parseLong(cartId));
+        List<VproCartDetail> detail = vproCartDetailMapper.selectByExample(vproCartDetailExample);
+        Cart cart = DtoUtil.VproCart2Cart(vproCart, detail == null || detail.size() == 0 ? new ArrayList<>() : detail);
         return cart;
     }
 

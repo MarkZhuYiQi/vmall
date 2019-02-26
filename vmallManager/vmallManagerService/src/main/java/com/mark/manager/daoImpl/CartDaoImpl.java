@@ -26,7 +26,6 @@ public class CartDaoImpl extends CartDaoAbstract {
 
     @Override
     public VproAuth getLoginInfo(String token) throws CartException {
-        logger.info("enter the getLoginInfo location");
         return cartRedis.getLoginInfo(token);
     }
 
@@ -114,7 +113,6 @@ public class CartDaoImpl extends CartDaoAbstract {
     @Override
     public String getCartIdByUserId(Integer userId) throws CartException {
         try {
-            logger.info(String.valueOf(userId));
             return cartRedis.getCartIdByUserId(userId);
         } catch (CartException ec) {
             logger.warn(ec.getMsg());
