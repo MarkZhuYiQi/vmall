@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mark.manager.mapper.OrderSubMapper">
+    <insert id="batchInsertSubOrder" parameterType="java.util.List">
+      <selectKey resultType="java.lang.String" keyProperty="orderSubId" order="AFTER">
+        SELECT LAST_INSERT_ID()
+      </selectKey>
+      INSERT INTO vpro_order_sub
+        (order_id, course_id, course_price)
+      VALUES
+        <foreach collection="subs" item="sub" index="index" separator=",">
+            (#{sub.orderId}, #{sub.courseId}, #{sub.coursePrice})
+        </foreach>
+    </insert>
+</mapper>

@@ -62,8 +62,12 @@ public class InitServiceImpl implements InitService {
     private String coursePrefix;
     @Value("${cartInit}")
     String cartInit;
+    @Value("${orderInit}")
+    String orderInit;
     @Value("${cartIdINCR}")
     String cartIdINCR;
+    @Value("${orderIdINCR}")
+    String orderIdINCR;
     @Autowired
     private JedisPool jedisPool;
     @Autowired
@@ -300,16 +304,20 @@ public class InitServiceImpl implements InitService {
     }
 
     /**
-     * 初始化购物车编号
+     * 初始化购物车编号, 订单编号
      * 每天0点的时间戳前面加上3为特殊编号601
      */
     @PostConstruct
     public void cartNoInit() {
         Long current = System.currentTimeMillis();
         long todayAtZero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
-        String dataInRedis = jedisClient.get(cartIdINCR);
-        if (dataInRedis == null || (Long.parseLong(dataInRedis) < todayAtZero)) {
+        String cartDataInRedis = jedisClient.get(cartIdINCR);
+        String orderDataInRedis = jedisClient.get(orderIdINCR);
+        if (cartDataInRedis == null || (Long.parseLong(cartDataInRedis) < todayAtZero)) {
             jedisClient.set(cartIdINCR, cartInit + String.valueOf(todayAtZero / 1000));
+        }
+        if (orderDataInRedis == null || (Long.parseLong(orderDataInRedis) < todayAtZero)) {
+            jedisClient.set(orderIdINCR, orderInit + String.valueOf(todayAtZero / 1000));
         }
     }
 

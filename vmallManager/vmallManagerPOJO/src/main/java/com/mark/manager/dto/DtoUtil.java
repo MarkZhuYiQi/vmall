@@ -96,4 +96,33 @@ public class DtoUtil {
         if (list != null && list.size() > 0) cart.setCartDetail(list);
         return cart;
     }
+    public static VproOrder Order2VproOrder(Order order) {
+        VproOrder vproOrder = new VproOrder();
+        vproOrder.setOrderId(Long.parseLong(order.getOrderId()));
+        if (order.getOrderCouponUsed() == null) {
+            vproOrder.setOrderCouponUsed(0);
+        } else {
+            vproOrder.setOrderCouponUsed(order.getOrderCouponUsed() ? 1 : 0);
+        }
+        if (order.getOrderDiscount() == null) {
+            vproOrder.setOrderDiscount(0);
+        } else {
+            vproOrder.setOrderDiscount(Integer.parseInt(order.getOrderDiscount()));
+        }
+        if (order.getOrderCouponUsed() == null) {
+            vproOrder.setOrderPayment(false);
+        } else {
+            vproOrder.setOrderPayment(order.getOrderPayment());
+        }
+        if (order.getOrderPaymentId() == null) {
+            vproOrder.setOrderPaymentId(null);
+        } else {
+            vproOrder.setOrderPaymentId(order.getOrderPaymentId());
+        }
+        vproOrder.setOrderPaymentPrice(new BigDecimal(0));
+        vproOrder.setOrderPrice(new BigDecimal(order.getOrderPaymentPrice()));
+        vproOrder.setOrderTitle(order.getOrderTitle());
+        vproOrder.setOrderTime(String.valueOf(System.currentTimeMillis() / 1000));
+        return vproOrder;
+    }
 }
