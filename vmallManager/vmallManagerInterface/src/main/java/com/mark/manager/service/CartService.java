@@ -16,4 +16,5 @@ public interface CartService {
     Boolean delItemFromCart(CartDetail cartDetail, String token) throws CartException, AuthException;
     Boolean mergeCart(String cookieCartId, String token) throws CartException;
     List<Courses> getCourseDetailInCart(List<String> list) throws CartException;
+    Boolean verifyCartItem(List<String> list, Long userId) throws CartException;
 }

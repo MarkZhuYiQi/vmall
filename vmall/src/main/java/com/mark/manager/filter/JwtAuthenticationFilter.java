@@ -1,5 +1,7 @@
 package com.mark.manager.filter;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mark.common.jwt.JwtUtil;
 import com.mark.common.pojo.JwtUserDetails;
@@ -34,30 +36,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!StringUtils.isEmpty(authToken) && !"null".equals(authToken) && authToken.startsWith(authTokenStart)) {
             authToken = authToken.substring(authTokenStart.length());
             // 测试是否有效
-            DecodedJWT jwt = JwtUtil.verifyToken(authToken);
-//            Map<String, Claim> claims = jwt.getClaims();
-            String username = jwt.getClaim("appid").asString();
-            System.out.println("getClaim: " + username);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // 用户数据可以从数据库获取或者从token中获取
-                // It is not compelling necessary to load the use details from the database. You could also store the information
-                // in the token and read it from it. It's up to you ;)
-                // UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                JwtUserDetails userDetails = JwtUtil.getUserFromToken(authToken);
+            try {
+                DecodedJWT jwt = JwtUtil.verifyToken(authToken);
+                //            Map<String, Claim> claims = jwt.getClaims();
+                String username = jwt.getClaim("appid").asString();
+                System.out.println("getClaim: " + username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // 用户数据可以从数据库获取或者从token中获取
+                    // It is not compelling necessary to load the use details from the database. You could also store the information
+                    // in the token and read it from it. It's up to you ;)
+                    // UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    JwtUserDetails userDetails = JwtUtil.getUserFromToken(authToken);
 
-                System.out.println(userDetails.toString());
-                // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
-                // the database compellingly. Again it's up to you ;)
-                if (JwtUtil.verifyToken(authToken) != null) {
-                    System.out.println("Gen authentication");
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    System.out.println(userDetails.toString());
+                    // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
+                    // the database compellingly. Again it's up to you ;)
+                    if (JwtUtil.verifyToken(authToken) != null) {
+                        System.out.println("Gen authentication");
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 //                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
-                    // 生成登陆的额外信息
+                        // 生成登陆的额外信息
 //                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                    logger.info(String.format("Authenticated user %s, setting security context", username));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("当前身份：" + SecurityContextHolder.getContext().getAuthentication());
+                        logger.info(String.format("Authenticated user %s, setting security context", username));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        System.out.println("当前身份：" + SecurityContextHolder.getContext().getAuthentication());
+                    }
                 }
+            } catch (JWTVerificationException e) {
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
             }
         } else {
             // 不符合规范，不通过验证

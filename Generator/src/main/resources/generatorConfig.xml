@@ -25,17 +25,14 @@
             <generatedKey column="course_cover_id" sqlStatement="Mysql" identity="true" />
         </table>-->
         <!--<table schema="" tableName="vpro_courses_cover" />-->
-        <table schema="" tableName="vpro_cart">
-            <generatedKey column="cart_id" sqlStatement="Mysql" identity="true" />
+        <table schema="" tableName="vpro_order">
+            <generatedKey column="order_id" sqlStatement="Mysql" identity="true" />
         </table>
-        <table schema="" tableName="vpro_cart_detail">
-            <generatedKey column="cart_detail_id" sqlStatement="Mysql" identity="true" />
+        <table schema="" tableName="vpro_order_sub">
+            <generatedKey column="order_sub_id" sqlStatement="Mysql" identity="true" />
         </table>
-        <table schema="" tableName="vpro_comment">
-            <generatedKey column="vpro_comment_id" sqlStatement="Mysql" identity="true" />
-        </table>
-        <table schema="" tableName="vpro_comment_support_rate">
-            <generatedKey column="comment_id" sqlStatement="Mysql" identity="true" />
+        <table schema="" tableName="vpro_order_logs">
+            <generatedKey column="log_id" sqlStatement="Mysql" identity="true" />
         </table>
     </context>
 </generatorConfiguration>

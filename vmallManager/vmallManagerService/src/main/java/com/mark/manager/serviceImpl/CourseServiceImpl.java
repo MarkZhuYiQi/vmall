@@ -3,6 +3,7 @@ package com.mark.manager.serviceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
+import com.mark.common.exception.CartException;
 import com.mark.common.exception.CourseException;
 import com.mark.common.exception.TestException;
 import com.mark.common.jedis.JedisClient;
@@ -19,6 +20,7 @@ import com.mark.manager.mapper.VproCoursesMapper;
 import com.mark.manager.pojo.VproCourses;
 import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesContentExample;
+import com.mark.manager.service.CartService;
 import com.mark.manager.service.CourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.beans.IntrospectionException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,8 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     @Qualifier("courseDao")
     CourseDao courseDao;
+    @Autowired
+    CartService cartService;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -206,6 +211,20 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Courses getCourseForDetail(Integer courseId) throws CourseException {
         return courseDao.getCourseForDetail(courseId);
+    }
+
+    @Override
+    public List<String> checkCourses(List<String> coursesId) throws CartException {
+        try {
+            List<String> res = new ArrayList<>();
+            List<Courses> list = cartService.getCourseDetailInCart(coursesId);
+            for (Courses c : list) {
+                if (c.getCourseStatus() == 1) res.add(c.getCourseId());
+            }
+            return res;
+        } catch (CartException e) {
+            throw new CartException(e.getMsg(), e.getCode());
+        }
     }
 
     @Override

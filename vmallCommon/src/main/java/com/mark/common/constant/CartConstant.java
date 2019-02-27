@@ -11,4 +11,6 @@ public class CartConstant {
     public static final Integer MERGE_CART_FAILED = 308;
     public static final Integer CART_ITEM_NULL = 309;
     public static final Integer ILLEGAL_CART_VISIT = 310;
+    public static final Integer NO_ITEM_IN_CART = 311;
+    public static final Integer CART_FRONT_ITEM_MISMATCH = 312;
 }

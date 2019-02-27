@@ -34,19 +34,20 @@ public class JwtUtil {
                 .withClaim("rolename", user.getAuthRolesName())
                 .sign(algorithmHS());
     }
-    public static DecodedJWT verifyToken(String token)
+    public static DecodedJWT verifyToken(String token) throws JWTVerificationException
     {
-        try
-        {
-            JWTVerifier verifier = JWT.require(JwtUtil.algorithmHS()).build();
-            return verifier.verify(token);
-        }
-        catch(JWTVerificationException e)
-        {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
+//        try
+//        {
+//            JWTVerifier verifier = JWT.require(JwtUtil.algorithmHS()).build();
+//            return verifier.verify(token);
+//        }
+//        catch(JWTVerificationException e)
+//        {
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+        JWTVerifier verifier = JWT.require(JwtUtil.algorithmHS()).build();
+        return verifier.verify(token);
     }
     public static JwtUserDetails getUserFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);

@@ -101,4 +101,13 @@ public class VproCoursesContent implements Serializable {
     public void setCourseContent(String courseContent) {
         this.courseContent = courseContent;
     }
+
+    @Override
+    public String toString() {
+        return "VproCoursesContent{" +
+                "detailId=" + detailId +
+                ", courseId=" + courseId +
+                ", courseContent='" + courseContent + '\'' +
+                '}';
+    }
 }

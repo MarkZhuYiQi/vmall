@@ -94,11 +94,8 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
             Courses course = coursesMapper.getCourseForDetail(courseId);
             Double clickNum = jedisClient.zscore(coursesClicksSummary, String.valueOf(courseId));
             if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClickNum(clickNum.intValue());
-            Map<String, String> map = BeanUtil.beanToMap(course, Courses.class);
-            System.out.println(map);
-            for(Map.Entry<String, String> m : map.entrySet()) {
-                jedisClient.hset(coursesDetailPrefix + courseId, m.getKey(), String.valueOf(m.getValue()));
-            }
+            // 直接课程转成json了
+            jedisClient.set(coursesDetailPrefix + String.valueOf(courseId), BeanUtil.parseObjToJson(course));
             Double expiredTime = JedisUtil.expiredTimeStamp();
             // 到期自动删除
             jedisClient.expireAt(coursesDetailPrefix + courseId, expiredTime.longValue());

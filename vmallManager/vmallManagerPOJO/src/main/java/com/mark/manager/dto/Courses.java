@@ -12,6 +12,12 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 public class Courses implements Serializable {
+    {
+        setVproCoursesContent(new VproCoursesContent());
+        setVproCoursesCover(new VproCoursesCover());
+        setVproCoursesTempDetail(new VproCoursesTempDetail());
+        setVproAuth(new VproAuth());
+    }
     @NotBlank(message = "课程位置错误（id）", groups = {InsertCourseItems.class})
     @Pattern(regexp = "^[0-9]+$", groups = {InsertCourseItems.class})
     private String courseId;

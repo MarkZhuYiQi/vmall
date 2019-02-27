@@ -229,12 +229,16 @@ select
 	vc.course_title,
 	vc.course_price,
 	vc.course_author,
+	vc.course_time,
+	vc.course_status,
 	vc.course_discount_price,
 	vcc.course_cover_key,
 	vcc.course_cover_address,
 	va.auth_appid,
 	vct.course_score,
-	vct.course_clickNum
+	vct.course_clickNum,
+	vcc2.detail_id,
+	vcc2.course_content
 from
 	vpro_courses as vc
 LEFT JOIN
@@ -243,6 +247,8 @@ LEFT JOIN
 	vpro_auth as va on va.auth_id = vc.course_author
 LEFT JOIN
 	vpro_courses_cover as vcc on vcc.course_cover_id = vc.course_id
+LEFT JOIN
+    vpro_courses_content as vcc2 on vcc2.course_id = vc.course_id
 WHERE
 	vc.course_id = #{courseId}
     </select>

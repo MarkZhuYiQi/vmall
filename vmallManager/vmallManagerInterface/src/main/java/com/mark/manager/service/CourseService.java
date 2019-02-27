@@ -1,6 +1,7 @@
 package com.mark.manager.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mark.common.exception.CartException;
 import com.mark.common.exception.CourseException;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
@@ -19,6 +20,7 @@ public interface CourseService {
     boolean indexCoursesIsExisted(Integer navId);
     PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
     Courses getCourseForDetail(Integer courseId) throws CourseException;
+    List<String> checkCourses(List<String> coursesId) throws CartException;
 
     Long test();
 }

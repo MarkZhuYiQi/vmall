@@ -166,4 +166,24 @@ public class CartServiceImpl implements CartService {
         }
 
     }
+
+    @Override
+    public Boolean verifyCartItem(List<String> list, Long userId) throws CartException {
+        String cartId = null;
+        try {
+            cartId = cartDao.getCartIdByUserId(userId.intValue());
+            Cart cart = cartDao.loadUserCart(cartId, String.valueOf(userId));
+            if (cart.getCartDetail().size() == 0) throw new CartException("cart has no item! refresh the cart and put it again.", CartConstant.NO_ITEM_IN_CART);
+            List<String> cartDetailId = new ArrayList<>();
+            for(VproCartDetail detail : cart.getCartDetail()) {
+                cartDetailId.add(detail.getCartCourseId());
+            }
+            for (String s : list) {
+                if (!cartDetailId.contains(s)) throw new CartException("item does not contains in cart, check cart item and put it again", CartConstant.CART_FRONT_ITEM_MISMATCH);
+            }
+            return true;
+        } catch (CartException e) {
+            throw new CartException(e.getMsg(), e.getCode());
+        }
+    }
 }

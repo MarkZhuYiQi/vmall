@@ -145,9 +145,9 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
             // 课程信息过期不仅设置了set，而且设置了自动过期，所以可以不用这个判断
             Double expiredTime = jedisClient.zscore(coursesDetailPrefix + expiredSuffix, String.valueOf(courseId));
             logger.info(String.valueOf(expiredTime));
-            if (expiredTime != null && JedisUtil.isExpired(expiredTime)) {
-                Map<String, String> course = jedisClient.hgetAll(courseKey);
-                return BeanUtil.mapToBean(course, Courses.class);
+            if (expiredTime != null && !JedisUtil.isExpired(expiredTime)) {
+                String course = jedisClient.get(courseKey);
+                return BeanUtil.parseJsonToObj(course, Courses.class);
             }
         }
         throw new CourseException("course cache does not exist or expired, courseId: " + courseId);
