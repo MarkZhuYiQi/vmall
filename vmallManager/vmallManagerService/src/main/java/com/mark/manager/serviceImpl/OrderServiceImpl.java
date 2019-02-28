@@ -1,5 +1,6 @@
 package com.mark.manager.serviceImpl;
 
+import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.CartException;
 import com.mark.common.exception.OrderException;
@@ -8,8 +9,12 @@ import com.mark.manager.dao.OrderDao;
 import com.mark.manager.dto.*;
 import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.pojo.VproOrderSub;
+import com.mark.manager.pojo.VproOrderSubExample;
 import com.mark.manager.service.CartService;
+import com.mark.manager.service.CourseService;
 import com.mark.manager.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,8 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     @Autowired
     @Qualifier("orderDao")
     OrderDao orderDao;
@@ -32,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    CourseService courseService;
 
     @Override
     public Order checkOrder(PutOrder putOrder, Integer userId) throws OrderException {
@@ -46,28 +56,54 @@ public class OrderServiceImpl implements OrderService {
             // 判断优惠券
 //            if (putOrder.getCouponId() != null)
             List<Courses> courses = cartService.getCourseDetailInCart(putOrder.getCoursesId());
-            Double orderPrice = 0D;
+            BigDecimal orderPrice = new BigDecimal("0");
             StringBuffer courseTitle = new StringBuffer();
             for (Courses c : courses) {
                 VproOrderSub sub = new VproOrderSub();
                 sub.setCourseId(Integer.parseInt(c.getCourseId()));
-                sub.setCoursePrice(BigDecimal.valueOf(c.getCoursePrice()));
+                sub.setCoursePrice(c.getCoursePrice());
                 sub.setOrderId(Long.parseLong(orderId));
                 subs.add(sub);
                 if (courseTitle.length() < 31) courseTitle.append(c.getCourseTitle());
-                orderPrice = orderPrice + c.getCoursePrice();
+                orderPrice = orderPrice.add(c.getCoursePrice());
             }
+            order.setVproOrderSubs(subs);
+            logger.info("orderPrice： " + orderPrice);
+            logger.info("front orderPrice： " + Double.parseDouble(putOrder.getOrderPrice()));
+            logger.info(String.valueOf(new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice)));
+
             order.setOrderTitle(courseTitle.substring(0, 31));
-            if (Double.parseDouble(putOrder.getOrderPrice()) != orderPrice)
+            if (new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice))
                 throw new OrderException("orderPrice does not fit with the price calculated by back side.", OrderConstant.ORDER_PRICE_NOT_FIT_WITH_BACK_SIDE);
             order.setOrderPaymentPrice(String.valueOf(orderPrice));
             order.setOrderPayment(false);
+            order.setUserId(userId);
             return order;
         } catch (CartException e) {
             throw new OrderException(e.getMsg(), e.getCode());
         }
     }
 
+    @Override
+    public List<Long> checkCourseIfExisted(List<String> coursesId, Integer userId) {
+        List<VproOrder> orders = orderDao.getOrdersByUserId(userId);
+        List<Long>  ordersId = new ArrayList<>();
+        for (VproOrder v : orders) {
+            ordersId.add(v.getOrderId());
+        }
+        List<Integer> ids = new ArrayList<>();
+        for (String c : coursesId) {
+            ids.add(Integer.parseInt(c));
+        }
+        List<VproOrderSub> orderSubs = orderDao.getExistCourseByUserOrder(ordersId, ids);
+        List<Long> exists = new ArrayList<>();
+        if (orderSubs.size() > 0) {
+            for (VproOrderSub sub : orderSubs) {
+                exists.add(sub.getOrderId());
+            }
+        }
+        return exists;
+    }
 
     @Override
     @Transactional
@@ -96,7 +132,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrders() {
-        return null;
+    public  getOrdersByCriteria(OrderCriteria orderCriteria) {
+        try {
+            PageInfo<Order> orders = orderDao.getOrdersByCriteria(orderCriteria);
+
+        } catch (OrderException e) {
+            e.printStackTrace();
+        }
+
     }
+
 }

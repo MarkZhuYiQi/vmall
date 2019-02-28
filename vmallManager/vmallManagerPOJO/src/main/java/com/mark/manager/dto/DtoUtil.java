@@ -63,8 +63,8 @@ public class DtoUtil {
         if (courses.getCourseAuthor() != null) vproCourses.setCourseAuthor(courses.getCourseAuthor());
         if (courses.getCourseCover() != null) vproCourses.setCourseCover(courses.getCourseCover());
         if (courses.getCourseStatus() != null) vproCourses.setCourseStatus(Boolean.valueOf(String.valueOf(courses.getCourseStatus())));
-        if (courses.getCoursePrice() != null) vproCourses.setCoursePrice(new BigDecimal(courses.getCoursePrice()));
-        if (courses.getCourseDiscountPrice() != null) vproCourses.setCourseDiscountPrice(new BigDecimal(courses.getCourseDiscountPrice()));
+        if (courses.getCoursePrice() != null) vproCourses.setCoursePrice(courses.getCoursePrice());
+        if (courses.getCourseDiscountPrice() != null) vproCourses.setCourseDiscountPrice(courses.getCourseDiscountPrice());
 
         vproCourses.setCourseTime(String.valueOf(System.currentTimeMillis() / 1000));
         return vproCourses;
@@ -123,6 +123,7 @@ public class DtoUtil {
         vproOrder.setOrderPrice(new BigDecimal(order.getOrderPaymentPrice()));
         vproOrder.setOrderTitle(order.getOrderTitle());
         vproOrder.setOrderTime(String.valueOf(System.currentTimeMillis() / 1000));
+        vproOrder.setUserId(order.getUserId());
         return vproOrder;
     }
 }

@@ -3,6 +3,7 @@ package com.mark.common.jedis;
 import com.mark.common.exception.RedisException;
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.jedis.params.sortedset.ZAddParams;
 
 import java.util.List;
 import java.util.Map;

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class Courses implements Serializable {
     {
@@ -34,11 +35,11 @@ public class Courses implements Serializable {
 
     private Integer courseStatus;
     @DecimalMin(value = "0.00", message = "课程价格不能低于0元", groups = {InsertCourseItems.class})
-    private Float coursePrice;
+    private BigDecimal coursePrice;
 
-    private Float courseDiscountPrice;
+    private BigDecimal courseDiscountPrice;
 
-    private Float courseScore;
+    private BigDecimal courseScore;
 
     private Integer courseClickNum;
 
@@ -130,27 +131,27 @@ public class Courses implements Serializable {
         this.courseStatus = courseStatus;
     }
 
-    public Float getCoursePrice() {
+    public BigDecimal getCoursePrice() {
         return coursePrice;
     }
 
-    public void setCoursePrice(Float coursePrice) {
+    public void setCoursePrice(BigDecimal coursePrice) {
         this.coursePrice = coursePrice;
     }
 
-    public Float getCourseDiscountPrice() {
+    public BigDecimal getCourseDiscountPrice() {
         return courseDiscountPrice;
     }
 
-    public void setCourseDiscountPrice(Float courseDiscountPrice) {
+    public void setCourseDiscountPrice(BigDecimal courseDiscountPrice) {
         this.courseDiscountPrice = courseDiscountPrice;
     }
 
-    public Float getCourseScore() {
+    public BigDecimal getCourseScore() {
         return courseScore;
     }
 
-    public void setCourseScore(Float courseScore) {
+    public void setCourseScore(BigDecimal courseScore) {
         this.courseScore = courseScore;
     }
 

@@ -1,16 +1,11 @@
 package com.mark.manager.threads;
 
-import com.alibaba.fastjson.JSON;
-import com.mark.common.elasticsearch.ElasticsearchUtil;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
 import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesCover;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.beans.IntrospectionException;
 import java.io.*;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mark.manager.mapper.OrderMapper">
+    <resultMap id="orderResultMap" type="com.mark.manager.dto.Order">
+        <id property="orderId" column="order_id" />
+        <result property="orderPrice" column="order_price" />
+        <result property="userId" column="user_id" />
+        <result property="orderCouponUsed" column="order_coupon_used" />
+        <result property="orderDiscount" column="order_discount" />
+        <result property="orderPayment" column="order_payment" />
+        <result property="orderTitle" column="order_title" />
+        <result property="orderPaymentId" column="order_payment_id" />
+        <result property="orderPaymentPrice" column="order_payment_price" />
+        <collection property="vproOrderSub" ofType="com.mark.manager.pojo.VproOrderSub">
+            <id property="orderSubId" column="order_sub_id" />
+            <result property="orderId" column="order_id" />
+            <result property="courseId" column="course_id" />
+            <result property="courseId" column="course_price" />
+        </collection>
+    </resultMap>
+    
+    <select id="getOrders" resultMap="orderResultMap" parameterType="string">
+SELECT
+	o.*,
+	os.*
+FROM
+	vpro_order o
+LEFT JOIN vpro_order_sub os ON o.order_id = os.order_id
+WHERE 
+    o.user_id = #{userId}
+        <if test="orderCriteria.orderPayment != null">
+            AND o.prder_payment = #{orderCriteria.orderPayment}
+        </if>
+    </select>
+</mapper>

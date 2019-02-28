@@ -11,7 +11,7 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
     @Autowired
     JedisClient jedisClient;
 
-    @Value("orderIdINCR")
+    @Value("${orderIdINCR}")
     String orderIdINCR;
 
     @Override

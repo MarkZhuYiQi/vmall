@@ -2,9 +2,10 @@ package com.mark.manager.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
-public class PutOrder {
+public class PutOrder implements Serializable {
     @NotBlank(message = "购物车ID不能为空")
     private String cartId;
     @NotBlank(message = "订单总价不能为空")

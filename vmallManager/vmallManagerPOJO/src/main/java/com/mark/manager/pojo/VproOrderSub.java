@@ -1,8 +1,9 @@
 package com.mark.manager.pojo;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class VproOrderSub {
+public class VproOrderSub implements Serializable {
     @Override
     public String toString() {
         return "VproOrderSub{" +

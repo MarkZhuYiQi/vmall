@@ -4,7 +4,11 @@ import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.OrderException;
 import com.mark.manager.dao.OrderDao;
 import com.mark.manager.dao.OrderDaoAbstract;
+import com.mark.manager.dto.OrderCriteria;
+import com.mark.manager.mapper.VproOrderMapper;
+import com.mark.manager.mapper.VproOrderSubMapper;
 import com.mark.manager.pojo.VproOrder;
+import com.mark.manager.pojo.VproOrderExample;
 import com.mark.manager.pojo.VproOrderSub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,5 +53,20 @@ public class OrderDaoImpl extends OrderDaoAbstract {
             logger.error(e.getMsg());
             throw new OrderException(e.getMsg(), OrderConstant.ORDER_CREATE_FAILED);
         }
+    }
+
+    @Override
+    public List<VproOrder> getOrdersByUserId(Integer userId) {
+        return orderDaoByDB.getOrdersByUserId(userId);
+    }
+
+    @Override
+    public List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId) {
+        return orderDaoByDB.getExistCourseByUserOrder(ordersId, coursesId);
+    }
+
+    @Override
+    public List<VproOrder> getOrdersByCriteria(OrderCriteria orderCriteria) {
+        return super.getOrdersByCriteria(orderCriteria);
     }
 }
