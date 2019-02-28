@@ -144,6 +144,7 @@ public class CartDaoByRedisImpl extends CartDaoAbstract {
         Long res = jedisClient.zremrangeByScore(
                 (cartDetail.getCartIsCookie() ?  cookieCartPrefix : userCartPrefix) + cartDetail.getCartParentId(),
                 cartDetail.getCartCourseId().doubleValue(),
+
                 cartDetail.getCartCourseId().doubleValue()
         );
         if (res <= 0) throw new CartException("delete item from user cart failed!" + cartDetail.toString());

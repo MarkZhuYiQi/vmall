@@ -5,14 +5,10 @@ import com.mark.common.exception.CartException;
 import com.mark.common.exception.OrderException;
 import com.mark.manager.dao.CartDao;
 import com.mark.manager.dao.OrderDao;
-import com.mark.manager.dto.Courses;
-import com.mark.manager.dto.DtoUtil;
-import com.mark.manager.dto.Order;
-import com.mark.manager.dto.PutOrder;
+import com.mark.manager.dto.*;
 import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.pojo.VproOrderSub;
 import com.mark.manager.service.CartService;
-import com.mark.manager.service.CourseService;
 import com.mark.manager.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -72,13 +68,31 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+
     @Override
     @Transactional
-    public String putOrder(Order order, Integer userId) {
-        VproOrder vproOrder = DtoUtil.Order2VproOrder(order);
-        orderDao.insertOrder(vproOrder);
-        orderDao.insertOrderSub(order.getVproOrderSubs());
-
+    public Order putOrder(Order order, Integer userId) throws OrderException {
+        try {
+            VproOrder vproOrder = DtoUtil.Order2VproOrder(order);
+            String cartId = cartDao.getCartIdByUserId(userId);
+            // 插入主订单
+            orderDao.insertOrder(vproOrder);
+            // 插入子订单
+            orderDao.insertOrderSub(order.getVproOrderSubs());
+            // 删除购物车元素
+            for (VproOrderSub sub : order.getVproOrderSubs()) {
+                CartDetail cartDetail = new CartDetail();
+                cartDetail.setCartCourseId(sub.getCourseId().longValue());
+                cartDetail.setCartIsCookie(false);
+                cartDetail.setCartParentId(Long.parseLong(cartId));
+                cartDao.delCartItem(cartDetail);
+            }
+            return order;
+        } catch (OrderException oe) {
+            throw new OrderException(oe.getMsg(), oe.getCode());
+        } catch (CartException e) {
+            throw new OrderException(e.getMsg(), e.getCode());
+        }
     }
 
     @Override

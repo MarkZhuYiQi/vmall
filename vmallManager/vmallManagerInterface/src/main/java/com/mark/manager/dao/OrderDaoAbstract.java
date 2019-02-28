@@ -1,5 +1,6 @@
 package com.mark.manager.dao;
 
+import com.mark.common.exception.OrderException;
 import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.pojo.VproOrderSub;
 
@@ -12,12 +13,12 @@ public abstract class OrderDaoAbstract implements OrderDao {
     }
 
     @Override
-    public Boolean insertOrder(VproOrder vproOrder) {
+    public Boolean insertOrder(VproOrder vproOrder) throws OrderException {
         return null;
     }
 
     @Override
-    public Boolean insertOrderSub(List<VproOrderSub> subs) {
+    public Boolean insertOrderSub(List<VproOrderSub> subs) throws OrderException {
         return null;
     }
 }

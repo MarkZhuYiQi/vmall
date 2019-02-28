@@ -6,6 +6,6 @@ import com.mark.manager.dto.PutOrder;
 
 public interface OrderService {
     Order checkOrder(PutOrder putOrder, Integer userId) throws OrderException;
-    String putOrder(PutOrder order, Integer userId);
+    Order putOrder(Order order, Integer userId) throws OrderException;
     Order getOrders();
 }

@@ -33,6 +33,7 @@
     <dubbo:service interface="com.mark.manager.service.ImageService" ref="imageServiceImpl" timeout="10000" />
     <dubbo:service interface="com.mark.manager.service.ShoppingService" ref="shoppingServiceImpl" timeout="20000" />
     <dubbo:service interface="com.mark.manager.service.CartService" ref="cartServiceImpl" timeout="20000" />
+    <dubbo:service interface="com.mark.manager.service.OrderService" ref="orderServiceImpl" timeout="20000" />
 
     <dubbo:service interface="com.mark.manager.service.TestService" ref="testServiceImpl" timeout="20000" />
 </beans>
