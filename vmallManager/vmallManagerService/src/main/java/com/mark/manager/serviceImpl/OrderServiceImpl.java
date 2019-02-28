@@ -132,14 +132,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public  getOrdersByCriteria(OrderCriteria orderCriteria) {
+    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
-            PageInfo<Order> orders = orderDao.getOrdersByCriteria(orderCriteria);
-
+            List<Order> list = orderDao.getOrdersByCriteria(orderCriteria);
         } catch (OrderException e) {
-            e.printStackTrace();
+            throw new OrderException(e.getMsg(), e.getCode());
         }
-
     }
 
 }

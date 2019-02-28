@@ -69,11 +69,11 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public PageInfo<VproOrder> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         if (orderCriteria.getUserId() == null) throw new OrderException("user id does not exist, could not procceed");
-        PageHelper.startPage(orderCriteria.getCurrentPage(), orderCriteria.getPageSize());
+        PageHelper.startPage(orderCriteria.getpageNum(), orderCriteria.getPageSize());
         List<Order> orders = orderMapper.getOrderByCritria(orderCriteria);
         PageInfo page = new PageInfo(orders);
-        return page;
+        return page.getList();
     }
 }

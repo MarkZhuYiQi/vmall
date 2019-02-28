@@ -31,5 +31,6 @@ WHERE
         <if test="orderCriteria.orderPayment != null">
             AND o.prder_payment = #{orderCriteria.orderPayment}
         </if>
+order BY o.order_id desc
     </select>
 </mapper>

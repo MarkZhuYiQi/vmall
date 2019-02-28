@@ -1,9 +1,11 @@
 package com.mark.manager.daoImpl;
 
+import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.OrderException;
 import com.mark.manager.dao.OrderDao;
 import com.mark.manager.dao.OrderDaoAbstract;
+import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.mapper.VproOrderMapper;
 import com.mark.manager.mapper.VproOrderSubMapper;
@@ -66,7 +68,19 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public List<VproOrder> getOrdersByCriteria(OrderCriteria orderCriteria) {
-        return super.getOrdersByCriteria(orderCriteria);
+    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+        try {
+            return orderDaoByRedis.getOrdersByCriteria(orderCriteria);
+        } catch (OrderException e) {
+            List<Order> orders = null;
+            try {
+                orders = orderDaoByDB.getOrdersByCriteria(orderCriteria);
+                orderDaoByRedis.setUserOrderCache(orders, orderCriteria);
+                return orders;
+            } catch (OrderException e1) {
+                throw new OrderException(e1.getMsg(), OrderConstant.GET_ORDER_FAILED);
+            }
+        }
+
     }
 }

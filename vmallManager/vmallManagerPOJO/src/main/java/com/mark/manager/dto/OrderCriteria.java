@@ -8,7 +8,7 @@ public class OrderCriteria implements Serializable {
     @NotEmpty( message = "未指定任何订单状态信息")
     private Integer orderPayment;
     @NotEmpty( message = "订单页码不能为空")
-    private Integer currentPage;
+    private Integer pageNum;
     @NotEmpty( message = "页面容量不能为空")
     private Integer pageSize;
 
@@ -17,7 +17,7 @@ public class OrderCriteria implements Serializable {
         return "OrderCriteria{" +
                 "userId=" + userId +
                 ", orderPayment=" + orderPayment +
-                ", currentPage=" + currentPage +
+                ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
     }
@@ -41,12 +41,12 @@ public class OrderCriteria implements Serializable {
         this.orderPayment = orderPayment;
     }
 
-    public Integer getCurrentPage() {
-        return currentPage;
+    public Integer getpageNum() {
+        return pageNum;
     }
 
-    public void setCurrentPage(Integer currentPage) {
-        this.currentPage = currentPage;
+    public void setpageNum(Integer pageNum) {
+        this.pageNum = pageNum;
     }
 
     public Integer getPageSize() {

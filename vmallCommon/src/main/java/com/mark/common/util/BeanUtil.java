@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BeanUtil {
@@ -127,5 +128,13 @@ public class BeanUtil {
             System.out.println(e.getMessage());
         }
         return string;
+    }
+    public static <T> List<T> parseObjToList(String json, Class<T> c) {
+        try {
+            List<T> list = JSON.parseArray(json, c);
+            return list;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

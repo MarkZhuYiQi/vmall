@@ -14,6 +14,7 @@ public interface OrderDao {
     Boolean insertOrder(VproOrder vproOrder) throws OrderException;
     Boolean insertOrderSub(List<VproOrderSub> subs) throws OrderException;
     List<VproOrder> getOrdersByUserId(Integer userId);
-    PageInfo<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
+    List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
     List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId);
+    Boolean setUserOrderCache(List<Order> orders, OrderCriteria orderCriteria) throws OrderException;
 }
