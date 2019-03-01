@@ -105,6 +105,7 @@ public class BeanUtil {
         try {
             //两个都是可行的，起码我测试的时候是没问题的。
             //JSONObject jsonObject = JSONObject.parseObject(json);
+            System.out.println("json: " + json);
             JSONObject jsonObject = JSON.parseObject(json);
             return JSON.toJavaObject(jsonObject, c);
         } catch (Exception e) {

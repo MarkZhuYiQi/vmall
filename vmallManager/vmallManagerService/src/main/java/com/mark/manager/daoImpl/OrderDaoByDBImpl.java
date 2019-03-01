@@ -77,6 +77,7 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
         PageHelper.startPage(orderCriteria.getpageNum(), orderCriteria.getPageSize());
         VproOrderExample vproOrderExample = new VproOrderExample();
         VproOrderExample.Criteria criteria = vproOrderExample.createCriteria().andUserIdEqualTo(orderCriteria.getUserId());
+        vproOrderExample.setOrderByClause("order_time desc");
         if (orderCriteria.getOrderPayment() != -1) criteria.andOrderPaymentEqualTo(orderCriteria.getOrderPayment());
         List<VproOrder> list = vproOrderMapper.selectByExample(vproOrderExample);
         PageInfo<VproOrder> page = new PageInfo(list);
