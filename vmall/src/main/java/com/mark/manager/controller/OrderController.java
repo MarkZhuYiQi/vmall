@@ -3,8 +3,10 @@ package com.mark.manager.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.mark.common.exception.OrderException;
 import com.mark.common.pojo.JwtUserDetails;
+import com.mark.manager.bo.OrderResult;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Order;
+import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.PutOrder;
 import com.mark.manager.service.OrderService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "order")
@@ -31,4 +35,14 @@ public class OrderController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
+    @PostMapping("get")
+    public Result getOrders(@RequestBody OrderCriteria orderCriteria) {
+        try {
+            OrderResult orderResult = orderService.getOrdersByCriteria(orderCriteria);
+            return new Result(orderResult);
+        } catch (OrderException oe) {
+            return new Result(oe.getCode(), oe.getMsg());
+        }
+    }
+
 }

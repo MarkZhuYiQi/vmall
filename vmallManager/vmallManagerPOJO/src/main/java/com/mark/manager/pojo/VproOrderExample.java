@@ -575,52 +575,52 @@ public class VproOrderExample {
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentEqualTo(Boolean value) {
+        public Criteria andOrderPaymentEqualTo(Integer value) {
             addCriterion("order_payment =", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentNotEqualTo(Boolean value) {
+        public Criteria andOrderPaymentNotEqualTo(Integer value) {
             addCriterion("order_payment <>", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentGreaterThan(Boolean value) {
+        public Criteria andOrderPaymentGreaterThan(Integer value) {
             addCriterion("order_payment >", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andOrderPaymentGreaterThanOrEqualTo(Integer value) {
             addCriterion("order_payment >=", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentLessThan(Boolean value) {
+        public Criteria andOrderPaymentLessThan(Integer value) {
             addCriterion("order_payment <", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentLessThanOrEqualTo(Boolean value) {
+        public Criteria andOrderPaymentLessThanOrEqualTo(Integer value) {
             addCriterion("order_payment <=", value, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentIn(List<Boolean> values) {
+        public Criteria andOrderPaymentIn(List<Integer> values) {
             addCriterion("order_payment in", values, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentNotIn(List<Boolean> values) {
+        public Criteria andOrderPaymentNotIn(List<Integer> values) {
             addCriterion("order_payment not in", values, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentBetween(Boolean value1, Boolean value2) {
+        public Criteria andOrderPaymentBetween(Integer value1, Integer value2) {
             addCriterion("order_payment between", value1, value2, "orderPayment");
             return (Criteria) this;
         }
 
-        public Criteria andOrderPaymentNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andOrderPaymentNotBetween(Integer value1, Integer value2) {
             addCriterion("order_payment not between", value1, value2, "orderPayment");
             return (Criteria) this;
         }

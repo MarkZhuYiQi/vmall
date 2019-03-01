@@ -108,7 +108,7 @@ public class BeanUtil {
             JSONObject jsonObject = JSON.parseObject(json);
             return JSON.toJavaObject(jsonObject, c);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("parseJsonToObj: " + e.getMessage());
         }
         return null;
     }
@@ -136,5 +136,6 @@ public class BeanUtil {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        return null;
     }
 }

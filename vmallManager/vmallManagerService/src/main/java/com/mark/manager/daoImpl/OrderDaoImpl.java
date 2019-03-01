@@ -1,16 +1,17 @@
 package com.mark.manager.daoImpl;
 
-import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.OrderConstant;
+import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
+import com.mark.manager.bo.OrderResult;
+import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dao.OrderDao;
 import com.mark.manager.dao.OrderDaoAbstract;
+import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
-import com.mark.manager.mapper.VproOrderMapper;
-import com.mark.manager.mapper.VproOrderSubMapper;
+import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
-import com.mark.manager.pojo.VproOrderExample;
 import com.mark.manager.pojo.VproOrderSub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,10 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     @Qualifier("orderRedis")
     OrderDao orderDaoByRedis;
 
+    @Autowired
+    @Qualifier("courseDao")
+    CourseDao courseDao;
+
     @Override
     public String getNewOrderId() {
         return orderDaoByRedis.getNewOrderId();
@@ -48,7 +53,7 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public Boolean insertOrderSub(List<VproOrderSub> subs) throws OrderException {
+    public Boolean insertOrderSub(List<OrderSub> subs) throws OrderException {
         try {
             return orderDaoByDB.insertOrderSub(subs);
         } catch (OrderException e) {
@@ -68,19 +73,28 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+    public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
             return orderDaoByRedis.getOrdersByCriteria(orderCriteria);
         } catch (OrderException e) {
-            List<Order> orders = null;
+            OrderResult orderResult = new OrderResult();
             try {
-                orders = orderDaoByDB.getOrdersByCriteria(orderCriteria);
-                orderDaoByRedis.setUserOrderCache(orders, orderCriteria);
-                return orders;
-            } catch (OrderException e1) {
-                throw new OrderException(e1.getMsg(), OrderConstant.GET_ORDER_FAILED);
+                orderResult = orderDaoByDB.getOrdersByCriteria(orderCriteria);
+                for (Order r : orderResult.getOrders()) {
+                    for (OrderSub os : r.getOrderSubs()) {
+                        Courses course = courseDao.getCourseForDetail(os.getCourseId());
+                        os.setCourseTitle(course.getCourseTitle());
+                        os.setCourseAuthor(course.getCourseAuthor());
+                        os.setCourseCover(course.getVproCoursesCover().getCourseCoverKey());
+                    }
+                }
+                orderDaoByRedis.setUserOrderCache(orderResult, orderCriteria);
+                return orderResult;
+            } catch (OrderException oe) {
+                throw new OrderException(oe.getMsg(), OrderConstant.GET_ORDER_FAILED);
+            } catch (CourseException ce) {
+                throw new OrderException(ce.getMsg(), ce.getCode());
             }
         }
-
     }
 }

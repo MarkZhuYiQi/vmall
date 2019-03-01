@@ -1,9 +1,9 @@
 package com.mark.manager.dao;
 
-import com.github.pagehelper.PageInfo;
 import com.mark.common.exception.OrderException;
-import com.mark.manager.dto.Order;
+import com.mark.manager.bo.OrderResult;
 import com.mark.manager.dto.OrderCriteria;
+import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.pojo.VproOrderSub;
 
@@ -21,7 +21,7 @@ public abstract class OrderDaoAbstract implements OrderDao {
     }
 
     @Override
-    public Boolean insertOrderSub(List<VproOrderSub> subs) throws OrderException {
+    public Boolean insertOrderSub(List<OrderSub> subs) throws OrderException {
         return null;
     }
 
@@ -36,12 +36,12 @@ public abstract class OrderDaoAbstract implements OrderDao {
     }
 
     @Override
-    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+    public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         return null;
     }
 
     @Override
-    public Boolean setUserOrderCache(List<Order> orders, OrderCriteria orderCriteria) throws OrderException {
+    public Boolean setUserOrderCache(OrderResult orderResult, OrderCriteria orderCriteria) throws OrderException {
         return null;
     }
 }

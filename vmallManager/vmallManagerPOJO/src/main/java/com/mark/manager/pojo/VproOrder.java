@@ -81,7 +81,7 @@ public class VproOrder implements Serializable {
      *
      * @mbg.generated Thu Feb 28 12:48:35 CST 2019
      */
-    private Boolean orderPayment;
+    private Integer orderPayment;
 
     /**
      *
@@ -262,7 +262,7 @@ public class VproOrder implements Serializable {
      *
      * @mbg.generated Thu Feb 28 12:48:35 CST 2019
      */
-    public Boolean getOrderPayment() {
+    public Integer getOrderPayment() {
         return orderPayment;
     }
 
@@ -274,7 +274,7 @@ public class VproOrder implements Serializable {
      *
      * @mbg.generated Thu Feb 28 12:48:35 CST 2019
      */
-    public void setOrderPayment(Boolean orderPayment) {
+    public void setOrderPayment(Integer orderPayment) {
         this.orderPayment = orderPayment;
     }
 

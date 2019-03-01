@@ -11,15 +11,15 @@
         <result property="orderTitle" column="order_title" />
         <result property="orderPaymentId" column="order_payment_id" />
         <result property="orderPaymentPrice" column="order_payment_price" />
-        <collection property="vproOrderSub" ofType="com.mark.manager.pojo.VproOrderSub">
+        <collection property="orderSubs" ofType="com.mark.manager.dto.OrderSub">
             <id property="orderSubId" column="order_sub_id" />
             <result property="orderId" column="order_id" />
             <result property="courseId" column="course_id" />
-            <result property="courseId" column="course_price" />
+            <result property="coursePrice" column="course_price" />
         </collection>
     </resultMap>
     
-    <select id="getOrders" resultMap="orderResultMap" parameterType="string">
+    <select id="getOrderByCriteria" resultMap="orderResultMap" parameterType="string">
 SELECT
 	o.*,
 	os.*
@@ -27,9 +27,9 @@ FROM
 	vpro_order o
 LEFT JOIN vpro_order_sub os ON o.order_id = os.order_id
 WHERE 
-    o.user_id = #{userId}
-        <if test="orderCriteria.orderPayment != null">
-            AND o.prder_payment = #{orderCriteria.orderPayment}
+    o.user_id = #{orderCriteria.userId}
+        <if test="orderCriteria.orderPayment != null and orderCriteria.orderPayment != -1">
+            AND o.order_payment = #{orderCriteria.orderPayment}
         </if>
 order BY o.order_id desc
     </select>

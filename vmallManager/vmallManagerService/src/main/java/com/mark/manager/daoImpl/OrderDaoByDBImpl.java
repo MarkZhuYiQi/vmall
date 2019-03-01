@@ -4,9 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.exception.OrderException;
 import com.mark.common.jedis.JedisClient;
+import com.mark.manager.bo.OrderResult;
 import com.mark.manager.dao.OrderDaoAbstract;
+import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
+import com.mark.manager.dto.OrderSub;
 import com.mark.manager.mapper.OrderMapper;
 import com.mark.manager.mapper.OrderSubMapper;
 import com.mark.manager.mapper.VproOrderMapper;
@@ -48,7 +51,7 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public Boolean insertOrderSub(List<VproOrderSub> subs) throws OrderException {
+    public Boolean insertOrderSub(List<OrderSub> subs) throws OrderException {
         Integer res = orderSubMapper.batchInsertSubOrder(subs);
         if (res <= 0) throw new OrderException("insert order sub infomation failed!" + subs.toString());
         return res > 0;
@@ -69,11 +72,36 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
     }
 
     @Override
-    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+    public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         if (orderCriteria.getUserId() == null) throw new OrderException("user id does not exist, could not procceed");
         PageHelper.startPage(orderCriteria.getpageNum(), orderCriteria.getPageSize());
-        List<Order> orders = orderMapper.getOrderByCritria(orderCriteria);
-        PageInfo page = new PageInfo(orders);
-        return page.getList();
+        VproOrderExample vproOrderExample = new VproOrderExample();
+        VproOrderExample.Criteria criteria = vproOrderExample.createCriteria().andUserIdEqualTo(orderCriteria.getUserId());
+        if (orderCriteria.getOrderPayment() != -1) criteria.andOrderPaymentEqualTo(orderCriteria.getOrderPayment());
+        List<VproOrder> list = vproOrderMapper.selectByExample(vproOrderExample);
+        PageInfo<VproOrder> page = new PageInfo(list);
+        List<Order> orders = new ArrayList<>();
+        for (VproOrder vproOrder : page.getList()) {
+            Order order;
+            order = DtoUtil.vproOrder2Order(vproOrder);
+            VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
+            vproOrderSubExample.createCriteria().andOrderIdEqualTo(vproOrder.getOrderId());
+            List<VproOrderSub> vproOrderSub = vproOrderSubMapper.selectByExample(vproOrderSubExample);
+            List<OrderSub> subs = new ArrayList<>();
+            for (VproOrderSub s : vproOrderSub) {
+                subs.add(DtoUtil.vproOrderSub2OrderSub(s));
+            }
+            order.setOrderSubs(subs);
+            orders.add(order);
+        }
+        OrderResult orderResult = new OrderResult();
+        orderResult.setOrders(orders);
+        orderResult.setPageNum(page.getPageNum());
+        orderResult.setPageSize(page.getPageSize());
+        orderResult.setTotal(page.getTotal());
+
+        System.out.println(orderResult);
+//        List<Order> orders = orderMapper.getOrderByCriteria(orderCriteria);
+        return orderResult;
     }
 }

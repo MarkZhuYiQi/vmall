@@ -1,15 +1,14 @@
 package com.mark.manager.serviceImpl;
 
-import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.CartException;
 import com.mark.common.exception.OrderException;
+import com.mark.manager.bo.OrderResult;
 import com.mark.manager.dao.CartDao;
 import com.mark.manager.dao.OrderDao;
 import com.mark.manager.dto.*;
 import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.pojo.VproOrderSub;
-import com.mark.manager.pojo.VproOrderSubExample;
 import com.mark.manager.service.CartService;
 import com.mark.manager.service.CourseService;
 import com.mark.manager.service.OrderService;
@@ -47,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     public Order checkOrder(PutOrder putOrder, Integer userId) throws OrderException {
         try {
             Order order = new Order();
-            List<VproOrderSub> subs = new ArrayList<>();
+            List<OrderSub> subs = new ArrayList<>();
             String cartId = cartDao.getCartIdByUserId(userId);
             if (!cartId.equals(putOrder.getCartId()))
                 throw new OrderException("cartId does not fit with this user!", OrderConstant.CART_ID_NOT_FIT_WITH_USER_ID);
@@ -59,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
             BigDecimal orderPrice = new BigDecimal("0");
             StringBuffer courseTitle = new StringBuffer();
             for (Courses c : courses) {
-                VproOrderSub sub = new VproOrderSub();
+                OrderSub sub = new OrderSub();
                 sub.setCourseId(Integer.parseInt(c.getCourseId()));
                 sub.setCoursePrice(c.getCoursePrice());
                 sub.setOrderId(Long.parseLong(orderId));
@@ -67,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
                 if (courseTitle.length() < 31) courseTitle.append(c.getCourseTitle());
                 orderPrice = orderPrice.add(c.getCoursePrice());
             }
-            order.setVproOrderSubs(subs);
+            order.setOrderSubs(subs);
             logger.info("orderPrice： " + orderPrice);
             logger.info("front orderPrice： " + Double.parseDouble(putOrder.getOrderPrice()));
             logger.info(String.valueOf(new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice)));
@@ -76,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
             if (new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice))
                 throw new OrderException("orderPrice does not fit with the price calculated by back side.", OrderConstant.ORDER_PRICE_NOT_FIT_WITH_BACK_SIDE);
             order.setOrderPaymentPrice(String.valueOf(orderPrice));
-            order.setOrderPayment(false);
+            order.setOrderPayment(0);
             order.setUserId(userId);
             return order;
         } catch (CartException e) {
@@ -114,9 +113,9 @@ public class OrderServiceImpl implements OrderService {
             // 插入主订单
             orderDao.insertOrder(vproOrder);
             // 插入子订单
-            orderDao.insertOrderSub(order.getVproOrderSubs());
+            orderDao.insertOrderSub(order.getOrderSubs());
             // 删除购物车元素
-            for (VproOrderSub sub : order.getVproOrderSubs()) {
+            for (OrderSub sub : order.getOrderSubs()) {
                 CartDetail cartDetail = new CartDetail();
                 cartDetail.setCartCourseId(sub.getCourseId().longValue());
                 cartDetail.setCartIsCookie(false);
@@ -132,9 +131,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
+    public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
-            List<Order> list = orderDao.getOrdersByCriteria(orderCriteria);
+            return orderDao.getOrdersByCriteria(orderCriteria);
         } catch (OrderException e) {
             throw new OrderException(e.getMsg(), e.getCode());
         }

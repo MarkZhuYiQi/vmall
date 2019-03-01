@@ -12,11 +12,28 @@ public class Order implements Serializable {
     private Integer userId;
     private Boolean orderCouponUsed;
     private String orderDiscount;
-    private Boolean orderPayment;
+    private Integer orderPayment;
     private String orderTitle;
     private String orderPaymentId;
     private String orderPaymentPrice;
-    private List<VproOrderSub> vproOrderSubs;
+    private List<OrderSub> orderSubs;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", orderPrice='" + orderPrice + '\'' +
+                ", orderTime='" + orderTime + '\'' +
+                ", userId=" + userId +
+                ", orderCouponUsed=" + orderCouponUsed +
+                ", orderDiscount='" + orderDiscount + '\'' +
+                ", orderPayment=" + orderPayment +
+                ", orderTitle='" + orderTitle + '\'' +
+                ", orderPaymentId='" + orderPaymentId + '\'' +
+                ", orderPaymentPrice='" + orderPaymentPrice + '\'' +
+                ", orderSubs=" + orderSubs +
+                '}';
+    }
 
     public Order() {
     }
@@ -69,11 +86,11 @@ public class Order implements Serializable {
         this.orderDiscount = orderDiscount;
     }
 
-    public Boolean getOrderPayment() {
+    public Integer getOrderPayment() {
         return orderPayment;
     }
 
-    public void setOrderPayment(Boolean orderPayment) {
+    public void setOrderPayment(Integer orderPayment) {
         this.orderPayment = orderPayment;
     }
 
@@ -101,11 +118,11 @@ public class Order implements Serializable {
         this.orderPaymentPrice = orderPaymentPrice;
     }
 
-    public List<VproOrderSub> getVproOrderSubs() {
-        return vproOrderSubs;
+    public List<OrderSub> getOrderSubs() {
+        return orderSubs;
     }
 
-    public void setVproOrderSubs(List<VproOrderSub> vproOrderSubs) {
-        this.vproOrderSubs = vproOrderSubs;
+    public void setOrderSubs(List<OrderSub> orderSubs) {
+        this.orderSubs = orderSubs;
     }
 }

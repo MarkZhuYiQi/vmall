@@ -110,7 +110,7 @@ public class DtoUtil {
             vproOrder.setOrderDiscount(Integer.parseInt(order.getOrderDiscount()));
         }
         if (order.getOrderCouponUsed() == null) {
-            vproOrder.setOrderPayment(false);
+            vproOrder.setOrderPayment(0);
         } else {
             vproOrder.setOrderPayment(order.getOrderPayment());
         }
@@ -125,5 +125,27 @@ public class DtoUtil {
         vproOrder.setOrderTime(String.valueOf(System.currentTimeMillis() / 1000));
         vproOrder.setUserId(order.getUserId());
         return vproOrder;
+    }
+    public static Order vproOrder2Order(VproOrder vproOrder) {
+        Order order = new Order();
+        order.setUserId(vproOrder.getUserId());
+        order.setOrderId(String.valueOf(vproOrder.getOrderId()));
+        order.setOrderPayment(vproOrder.getOrderPayment());
+        order.setOrderPaymentPrice(String.valueOf(vproOrder.getOrderPaymentPrice()));
+        order.setOrderTitle(vproOrder.getOrderTitle());
+        order.setOrderCouponUsed(vproOrder.getOrderCouponUsed() == 1);
+        order.setOrderDiscount(String.valueOf(vproOrder.getOrderDiscount()));
+        order.setOrderPaymentId(vproOrder.getOrderPaymentId());
+        order.setOrderTime(vproOrder.getOrderTime());
+        order.setOrderPrice(vproOrder.getOrderPrice().toString());
+        return order;
+    }
+    public static OrderSub vproOrderSub2OrderSub(VproOrderSub vproOrderSub) {
+        OrderSub orderSub = new OrderSub();
+        orderSub.setOrderId(vproOrderSub.getOrderId());
+        orderSub.setOrderSubId(vproOrderSub.getOrderSubId());
+        orderSub.setCourseId(vproOrderSub.getCourseId());
+        orderSub.setCoursePrice(vproOrderSub.getCoursePrice());
+        return orderSub;
     }
 }
