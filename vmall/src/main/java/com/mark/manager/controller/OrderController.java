@@ -10,10 +10,7 @@ import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.PutOrder;
 import com.mark.manager.service.OrderService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,6 +39,17 @@ public class OrderController {
             return new Result(orderResult);
         } catch (OrderException oe) {
             return new Result(oe.getCode(), oe.getMsg());
+        }
+    }
+    @GetMapping("check/{courseId:\\d+}")
+    public Result checkCourseIfBought(@PathVariable("courseId") String courseId) {
+        JwtUserDetails details = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = details.getUserId().intValue();
+        try {
+            Boolean res = orderService.checkCourseIfBought(courseId, userId);
+            return new Result(res);
+        } catch (OrderException e) {
+            return new Result(e.getCode(), e.getMsg());
         }
     }
 

@@ -44,4 +44,9 @@ public abstract class OrderDaoAbstract implements OrderDao {
     public Boolean setUserOrderCache(OrderResult orderResult, OrderCriteria orderCriteria) throws OrderException {
         return null;
     }
+
+    @Override
+    public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
+        return null;
+    }
 }

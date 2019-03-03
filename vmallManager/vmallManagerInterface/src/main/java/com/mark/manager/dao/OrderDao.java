@@ -17,4 +17,5 @@ public interface OrderDao {
     OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
     List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId);
     Boolean setUserOrderCache(OrderResult orderResult, OrderCriteria orderCriteria) throws OrderException;
+    Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
 }

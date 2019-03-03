@@ -62,6 +62,7 @@ public class OrderServiceImpl implements OrderService {
                 sub.setCourseId(Integer.parseInt(c.getCourseId()));
                 sub.setCoursePrice(c.getCoursePrice());
                 sub.setOrderId(Long.parseLong(orderId));
+                sub.setUserId(userId);
                 subs.add(sub);
                 if (courseTitle.length() < 31) courseTitle.append(c.getCourseTitle());
                 orderPrice = orderPrice.add(c.getCoursePrice());
@@ -134,6 +135,15 @@ public class OrderServiceImpl implements OrderService {
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
             return orderDao.getOrdersByCriteria(orderCriteria);
+        } catch (OrderException e) {
+            throw new OrderException(e.getMsg(), e.getCode());
+        }
+    }
+
+    @Override
+    public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
+        try {
+            return orderDao.checkCourseIfBought(courseId, userId);
         } catch (OrderException e) {
             throw new OrderException(e.getMsg(), e.getCode());
         }

@@ -6,4 +6,5 @@ public class OrderConstant {
     public static final Integer ORDER_CREATE_FAILED = 853;
     public static final Integer COURSE_ALREADY_HAD = 854;
     public static final Integer GET_ORDER_FAILED = 855;
+    public static final Integer COURSE_CHECK_IF_BOUGHT_FAILED = 856;
 }

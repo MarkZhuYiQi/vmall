@@ -25,7 +25,8 @@
             <generatedKey column="course_cover_id" sqlStatement="Mysql" identity="true" />
         </table>-->
         <!--<table schema="" tableName="vpro_courses_cover" />-->
-        <table schema="" tableName="vpro_order">
+        <table schema="" tableName="vpro_order_sub">
+            <generatedKey  column="order_sub_id" sqlStatement="Mysql" identity="true" />
         </table>
     </context>
 </generatorConfiguration>

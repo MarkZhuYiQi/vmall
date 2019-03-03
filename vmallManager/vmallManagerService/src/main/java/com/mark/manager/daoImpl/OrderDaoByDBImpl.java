@@ -105,4 +105,17 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
 //        List<Order> orders = orderMapper.getOrderByCriteria(orderCriteria);
         return orderResult;
     }
+
+    @Override
+    public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
+        try {
+            VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
+            vproOrderSubExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(Integer.parseInt(courseId));
+            Long res = vproOrderSubMapper.countByExample(vproOrderSubExample);
+            if (res > 0) return true;
+            return false;
+        } catch (Exception e) {
+            throw new OrderException("could not check course if is bought." + e.getMessage());
+        }
+    }
 }

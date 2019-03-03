@@ -10,6 +10,8 @@ public class OrderSub implements Serializable {
 
     private Integer courseId;
 
+    private Integer userId;
+
     private BigDecimal coursePrice;
 
     private String courseTitle;
@@ -32,6 +34,14 @@ public class OrderSub implements Serializable {
                 ", courseAuthor='" + courseAuthor + '\'' +
                 ", courseCover='" + courseCover + '\'' +
                 '}';
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getOrderSubId() {

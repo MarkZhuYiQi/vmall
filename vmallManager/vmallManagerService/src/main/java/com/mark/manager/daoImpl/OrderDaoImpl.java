@@ -73,6 +73,19 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     }
 
     @Override
+    public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
+//        try {
+//            return orderDaoByRedis.checkCourseIfBought(courseId, userId);
+//        } catch (OrderException oe) {
+            try {
+                return orderDaoByDB.checkCourseIfBought(courseId, userId);
+            } catch (OrderException e) {
+                throw new OrderException(e.getMsg(), OrderConstant.COURSE_CHECK_IF_BOUGHT_FAILED);
+            }
+//        }
+    }
+
+    @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
             return orderDaoByRedis.getOrdersByCriteria(orderCriteria);

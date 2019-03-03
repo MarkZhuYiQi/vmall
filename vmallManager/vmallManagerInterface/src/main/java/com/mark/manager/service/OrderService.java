@@ -13,4 +13,5 @@ public interface OrderService {
     List<Long> checkCourseIfExisted(List<String> coursesId, Integer userId) throws OrderException;
     Order putOrder(Order order, Integer userId) throws OrderException;
     OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
+    Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
 }
