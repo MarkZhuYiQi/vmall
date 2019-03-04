@@ -2,14 +2,10 @@ package com.mark.manager.dto;
 
 import com.mark.common.pojo.CategoryNode;
 import com.mark.common.pojo.User;
-import com.mark.common.util.BeanUtil;
 import com.mark.manager.pojo.*;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import java.beans.IntrospectionException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 public class DtoUtil {
     public static User userRoles2user(UserRoles userRoles)
@@ -147,5 +143,18 @@ public class DtoUtil {
         orderSub.setCourseId(vproOrderSub.getCourseId());
         orderSub.setCoursePrice(vproOrderSub.getCoursePrice());
         return orderSub;
+    }
+    public static Comment vproComment2Comment(VproComment vproComment) {
+        Comment comment = new Comment();
+        comment.setVproCommentId(vproComment.getVproCommentId());
+        comment.setVproCommentContent(vproComment.getVproCommentContent());
+        comment.setVproCommentCourseId(vproComment.getVproCommentCourseId());
+        comment.setVproCommentLessonId(vproComment.getVproCommentLessonId());
+        comment.setVproCommentReplyMainId(vproComment.getVproCommentReplyMainId());
+        comment.setVproCommentReplyId(vproComment.getVproCommentReplyId());
+        comment.setVproCommentIsPublished(vproComment.getVproCommentIsPublished());
+        comment.setVproCommentTime(vproComment.getVproCommentTime());
+        comment.setVproCommentUserId(vproComment.getVproCommentUserId());
+        return comment;
     }
 }
