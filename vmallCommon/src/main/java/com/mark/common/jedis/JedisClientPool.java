@@ -408,4 +408,19 @@ public class JedisClientPool implements JedisClient{
         return res;
     }
 
+    @Override
+    public Long lpush(String key, String... strings) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.lpush(key, strings);
+        jedis.close();
+        return res;
+    }
+
+    @Override
+    public List<String> lrange(String key, long start, long end) {
+        Jedis jedis = jedisPool.getResource();
+        List<String> list = jedis.lrange(key, start, end);
+        jedis.close();
+        return list;
+    }
 }

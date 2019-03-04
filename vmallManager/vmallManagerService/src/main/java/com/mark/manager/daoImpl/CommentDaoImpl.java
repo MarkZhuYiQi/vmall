@@ -29,4 +29,15 @@ public class CommentDaoImpl extends CommentDaoAbstract {
             throw new CommentException(e.getMsg(), CommentConstant.COMMENTS_GET_FROM_DB_FAILED);
         }
     }
+
+    @Override
+    public VproComment setComment(VproComment vproComment) throws CommentException {
+        try {
+            VproComment v = commentDaoByDB.setComment(vproComment);
+            commentDaoByRedis.setComment(v);
+            return v;
+        } catch (CommentException e) {
+            throw new CommentException(e.getMsg(), CommentConstant.COMMENT_SET_FAILED);
+        }
+    }
 }

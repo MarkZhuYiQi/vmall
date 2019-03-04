@@ -1,5 +1,7 @@
 package com.mark.manager.dto;
 
+import com.mark.manager.pojo.VproComment;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +26,7 @@ public class Comment implements Serializable {
 
     private String vproCommentTime;
 
-    private List<Comment> parents;
+    private List<VproComment> parents;
 
     @Override
     public boolean equals(Object o) {
@@ -127,11 +129,11 @@ public class Comment implements Serializable {
         this.vproCommentTime = vproCommentTime;
     }
 
-    public List<Comment> getParents() {
+    public List<VproComment> getParents() {
         return parents;
     }
 
-    public void setParents(List<Comment> parents) {
+    public void setParents(List<VproComment> parents) {
         this.parents = parents;
     }
 }

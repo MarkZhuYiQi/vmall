@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CommentDao {
     List<VproComment> getCommentsByLessonId(Integer lessonId) throws CommentException;
+    VproComment setComment(VproComment vproComment) throws CommentException;
 }

@@ -99,4 +99,8 @@ public interface JedisClient {
     Long sinterstore(String destination, String... keys);
 
     Long srem(String key, String... members);
+
+    Long lpush(String key, String... strings);
+
+    List<String> lrange(String key, long start, long end);
 }

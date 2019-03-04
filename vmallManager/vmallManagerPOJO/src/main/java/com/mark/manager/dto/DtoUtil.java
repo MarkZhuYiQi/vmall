@@ -157,4 +157,17 @@ public class DtoUtil {
         comment.setVproCommentUserId(vproComment.getVproCommentUserId());
         return comment;
     }
+    public static VproComment comment2VproComment(Comment comment) {
+        VproComment vproComment = new VproComment();
+        vproComment.setVproCommentId(comment.getVproCommentId());
+        vproComment.setVproCommentContent(comment.getVproCommentContent());
+        vproComment.setVproCommentCourseId(comment.getVproCommentCourseId());
+        vproComment.setVproCommentLessonId(comment.getVproCommentLessonId());
+        vproComment.setVproCommentReplyMainId(comment.getVproCommentReplyMainId());
+        vproComment.setVproCommentReplyId(comment.getVproCommentReplyId());
+        vproComment.setVproCommentIsPublished(comment.getVproCommentIsPublished());
+        vproComment.setVproCommentTime(comment.getVproCommentTime());
+        vproComment.setVproCommentUserId(comment.getVproCommentUserId());
+        return vproComment;
+    }
 }

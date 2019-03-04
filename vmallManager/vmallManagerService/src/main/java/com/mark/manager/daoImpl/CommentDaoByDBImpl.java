@@ -26,4 +26,17 @@ public class CommentDaoByDBImpl extends CommentDaoAbstract {
         }
 
     }
+
+    @Override
+    public VproComment setComment(VproComment vproComment) throws CommentException {
+        try {
+            Integer res = vproCommentMapper.insertSelective(vproComment);
+            if (res <= 0) throw new CommentException("insert comment to db failed");
+            VproComment com = vproCommentMapper.selectByPrimaryKey(res);
+            return com;
+        } catch (Exception e) {
+            throw new CommentException("insert comment to db failed" + e.getMessage());
+        }
+    }
+
 }
