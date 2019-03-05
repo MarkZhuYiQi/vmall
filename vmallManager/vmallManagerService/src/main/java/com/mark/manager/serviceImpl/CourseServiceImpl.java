@@ -231,10 +231,39 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Courses> getRecCoursesByNavIds(Integer navId) {
-
+    public List<Courses> getRecCoursesByNavIds(Integer navId) throws CourseException {
+        try {
+            return getRecCourses(navId);
+        } catch (CourseException e) {
+            try {
+                genRecCoursesByNavId(navId);
+                return getRecCourses(navId);
+            } catch (CategoryException eca) {
+                throw new CourseException(eca.getMsg(), eca.getCode());
+            } catch (CourseException eco) {
+                throw new CourseException(eco.getMsg(), eco.getCode());
+            }
+        }
     }
 
+    private List<Courses> getRecCourses(Integer navId) throws CourseException {
+        List<Integer> coursesId = courseDao.getRandomRecCoursesId(navId);
+        List<Courses> list = new ArrayList<>();
+        for (Integer courseId : coursesId) {
+            list.add(getCourseForDetail(courseId));
+        }
+        return list;
+    }
+
+    /**
+     * 生成推荐课程
+     * 首先从导航中获取旗下的导航id
+     * 其次根据子导航id获取这些导航下的点击率排名前12的课程id
+     * 最后将这些id放到redis中
+     * @param navId
+     * @throws CategoryException
+     * @throws CourseException
+     */
     @Override
     public void genRecCoursesByNavId(Integer navId) throws CategoryException, CourseException {
         // 根据navId，获得所有子导航id

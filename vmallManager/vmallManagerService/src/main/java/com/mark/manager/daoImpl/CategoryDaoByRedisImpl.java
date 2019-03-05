@@ -40,7 +40,7 @@ public class CategoryDaoByRedisImpl implements CategoryDao {
     @Override
     public VproNavbar getCategoryById(Integer navId) throws CategoryException {
         Map<String, String> navMap = jedisClient.hgetAll(navbarPrefix + navId);
-        if (navMap.size() == 0) throw new CategoryException("get data from redis failed");
+        if (navMap.size() == 0) throw new CategoryException("get category data from redis failed");
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(navMap, VproNavbar.class);
     }
