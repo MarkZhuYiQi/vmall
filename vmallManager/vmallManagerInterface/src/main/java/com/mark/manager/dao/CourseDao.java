@@ -19,4 +19,7 @@ public interface CourseDao {
     Set<String> checkIndexCourseCache() throws CourseException;
     PageInfo<Courses> getCoursesForCatalog(Integer navId, int currentPage, int pageSize, List<Integer> ids) throws CourseException;
     Courses getCourseForDetail(Integer courseId) throws CourseException;
+    List<Integer> getTopClicksForNavSpecified(List<Integer> ids) throws CourseException;
+    Boolean setRecCoursesIdInRedis(Integer navId, List<Integer> coursesId);
+    List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException;
 }

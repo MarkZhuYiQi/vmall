@@ -1,6 +1,9 @@
 package com.mark.manager.serviceImpl;
 
+import com.mark.common.constant.CommentConstant;
 import com.mark.common.exception.CommentException;
+import com.mark.manager.bo.CommentResult;
+import com.mark.manager.bo.Result;
 import com.mark.manager.dao.CommentDao;
 import com.mark.manager.dto.Comment;
 import com.mark.manager.dto.DtoUtil;
@@ -27,6 +30,22 @@ public class CommentServiceImpl implements CommentService {
     private List<VproComment> data;
 
     /**
+     * 初始化课程的评论列表
+     * @param lessonId
+     * @return
+     * @throws CommentException
+     */
+    public List<Comment> genCommentList(Integer lessonId) throws CommentException {
+        try {
+            List<VproComment> list = getCommentsByLessonId(lessonId);
+            List<Comment> comments = genCommentRelations(list);
+            return comments;
+        } catch (CommentException e) {
+            throw new CommentException(e.getMsg(), e.getCode());
+        }
+    }
+
+    /**
      * 去取得评论，但是评论不一定每篇都有，如果频繁刷新，数据库会崩溃，所以需要放入一个临时值
      * 拿到评论需要迭代每一条评论的关系，迭代他们的关系
      * redis存放评论的格式应该是[hash] VproComment_[lesson_id], [hkey]comment_id: [hvalue]comment_info
@@ -44,6 +63,11 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * [Comment1, Comment2, Comment3, ...]
+     * @param vproComments
+     * @return
+     */
     @Override
     public List<Comment> genCommentRelations(List<VproComment> vproComments) {
         List<Comment> comments = new ArrayList<>();
@@ -57,6 +81,28 @@ public class CommentServiceImpl implements CommentService {
         }
         return comments;
     }
+
+    @Override
+    public CommentResult getCommentsForShowByLessonId(Integer lessonId, Integer pageNum, Integer pageSize) throws CommentException {
+        try {
+            return commentDao.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
+        } catch (CommentException e) {
+            if (e.getCode().equals(CommentConstant.COMMENT_LIST_NOT_EXIST_IN_REDIS)) {
+                genCommentList(lessonId);
+                return commentDao.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
+            }
+            throw new CommentException(e.getMsg(), e.getCode());
+        }
+    }
+
+    /**
+     * 迭代评论
+     * 传入一条要找父系被回复的评论
+     * 找到被回复的评论就塞入到传入评论的parents中
+     * 如果被回复的评论上面还有，那么继续迭代
+     * @param comment
+     * @return Comment {xxxx: xxxx, parents: [{}, {}, {}]}
+     */
     private Comment iterCommentParentRelation(Comment comment) {
         VproComment o = null;
         for (VproComment vproComment : data) {

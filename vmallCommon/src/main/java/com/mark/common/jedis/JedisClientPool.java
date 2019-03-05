@@ -409,6 +409,14 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public List<String> srandmember(String key, int count) {
+        Jedis jedis = jedisPool.getResource();
+        List<String> list = jedis.srandmember(key, count);
+        jedis.close();
+        return list;
+    }
+
+    @Override
     public Long lpush(String key, String... strings) {
         Jedis jedis = jedisPool.getResource();
         Long res = jedis.lpush(key, strings);

@@ -4,10 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CartException;
+import com.mark.common.exception.CategoryException;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.UidUtil;
+import com.mark.manager.bo.Result;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dto.CourseUpdate;
 import com.mark.manager.dto.Courses;
@@ -19,6 +21,7 @@ import com.mark.manager.pojo.VproCourses;
 import com.mark.manager.pojo.VproCoursesContent;
 import com.mark.manager.pojo.VproCoursesContentExample;
 import com.mark.manager.service.CartService;
+import com.mark.manager.service.CategoryService;
 import com.mark.manager.service.CourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +51,8 @@ public class CourseServiceImpl implements CourseService {
     CourseDao courseDao;
     @Autowired
     CartService cartService;
+    @Autowired
+    CategoryService categoryService;
 
     @Override
     public Courses getCourse(Integer courseId) {
@@ -223,6 +228,20 @@ public class CourseServiceImpl implements CourseService {
         } catch (CartException e) {
             throw new CartException(e.getMsg(), e.getCode());
         }
+    }
+
+    @Override
+    public List<Courses> getRecCoursesByNavIds(Integer navId) {
+
+    }
+
+    @Override
+    public void genRecCoursesByNavId(Integer navId) throws CategoryException, CourseException {
+        // 根据navId，获得所有子导航id
+        List<Integer> subNavIds = categoryService.getSubIdFromCategory(navId);
+        // 根据子导航id，去数据库获得子导航中前12名课程id
+        List<Integer> coursesId = courseDao.getTopClicksForNavSpecified(subNavIds);
+        courseDao.setRecCoursesIdInRedis(navId, coursesId);
     }
 
     @Override

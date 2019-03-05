@@ -1,8 +1,10 @@
 package com.mark.manager.daoImpl;
 
+import com.mark.common.constant.CommentConstant;
 import com.mark.common.exception.CommentException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
+import com.mark.manager.bo.CommentResult;
 import com.mark.manager.dao.CommentDaoAbstract;
 import com.mark.manager.dto.Comment;
 import com.mark.manager.dto.DtoUtil;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("commentRedis")
@@ -43,7 +46,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
      * -----------------------------------------------------------------------------------------------------------------
      * 关于评论的分页，思路：
      * 按照每节课的粒度区分：
-     *      1. 按照lesson_id区分
+     *      1. 按照lessonId区分
      *
      * 每节课，按照页的粒度来分缓存
      *      1.  首次生成缓存时，一口气读取某节课下的所有评论
@@ -55,17 +58,47 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
      */
     @Override
     public VproComment setComment(VproComment vproComment) throws CommentException {
-        String c = jedisClient.hget(commentPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentReplyId()));
-        if (c == null) throw new CommentException("reply comment not exist");
-        Comment comment = BeanUtil.parseJsonToObj(c, Comment.class);
-        if (comment == null) throw new CommentException("parse json to Comment failed");
-        VproComment parent = DtoUtil.comment2VproComment(comment);
-        List<VproComment> parents = comment.getParents();
-        parents.add(parent);
         Comment res = DtoUtil.vproComment2Comment(vproComment);
-        res.setParents(parents);
+        if (vproComment.getVproCommentReplyId() > 0) {
+            // 评论是回复：
+            // 从redis获得想要回复的评论实体，从comment.hash.LESSONID中获得这条评论
+            String c = jedisClient.hget(commentPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentReplyId()));
+            if (c == null) throw new CommentException("reply comment not exist");
+            Comment comment = BeanUtil.parseJsonToObj(c, Comment.class);
+            if (comment == null) throw new CommentException("parse json to Comment failed");
+            VproComment parent = DtoUtil.comment2VproComment(comment);
+            // 拿到这条评论回复之前的评论
+            List<VproComment> parents = comment.getParents();
+            // 将这条评论放到父级回复的第一条
+            parents.add(0, parent);
+            res.setParents(parents);
+        }
         jedisClient.hset(commentPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentId()), BeanUtil.parseObjToJson(res));
         jedisClient.lpush(commentListPrefix + String.valueOf(vproComment.getVproCommentLessonId()), BeanUtil.parseObjToJson(res));
         return vproComment;
     }
+
+    @Override
+    public CommentResult getCommentsForShowByLessonId(Integer lessonId, Integer pageNum, Integer pageSize) throws CommentException {
+        CommentResult commentResult = new CommentResult();
+        String listKey = commentListPrefix + String.valueOf(lessonId);
+        // list不存在，两种情况，这文章就没有评论，或者还未生成。
+        if (!jedisClient.exists(listKey)) throw new CommentException("comment has not generate yet", CommentConstant.COMMENT_LIST_NOT_EXIST_IN_REDIS);
+        Integer start = (pageNum - 1) * pageSize;
+        Integer end = pageNum * pageSize;
+        Long total = jedisClient.llen(listKey);
+        // 选择评论范围中起始值比list总长度还要多，页码有问题，无法访问到。（恶意访问）
+        if (total <= start.longValue()) throw new CommentException("comment out of range", CommentConstant.COMMENT_GAIN_OUT_OF_RANGE);
+        commentResult.setTotal(total);
+        List<String> commentsStr = jedisClient.lrange(listKey, start, end);
+        List<Comment> commentList = new ArrayList<>();
+        for (String s : commentsStr) {
+            commentList.add(BeanUtil.parseJsonToObj(s, Comment.class));
+        }
+        commentResult.setCommentList(commentList);
+        commentResult.setPageNum(pageNum);
+        commentResult.setPageSize(pageSize);
+        return commentResult;
+    }
+
 }

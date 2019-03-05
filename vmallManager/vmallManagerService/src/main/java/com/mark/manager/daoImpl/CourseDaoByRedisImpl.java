@@ -19,9 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component("courseByRedis")
 public class CourseDaoByRedisImpl extends CourseDaoAbstract {
@@ -45,6 +43,9 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
 
     @Value("${coursesDetailPrefix}")
     String coursesDetailPrefix;
+
+    @Value("${recCoursePrefix}")
+    String recCoursePrefix;
 
     @Override
     public Courses getCourse(String courseId) {
@@ -151,5 +152,56 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
             }
         }
         throw new CourseException("course cache does not exist or expired, courseId: " + courseId);
+    }
+
+    /**
+     * recCourses是设置到set中的，如果没有，那么这个set就是空的
+     * 程序不知道这个是没有推荐，还是没有其他可推荐内容。
+     * 所以需要一个sortedset，来记录这个set的过期时间，如果过期时间超过现在的时间，说明是被删除了，需要重新生成
+     * 如果过期时间比当前时间晚，说明已经生成过。
+     * @param navId
+     * @param coursesId
+     * @return
+     */
+    @Override
+    public Boolean setRecCoursesIdInRedis(Integer navId, List<Integer> coursesId) {
+        String[] courses;
+        String setKey = recCoursePrefix + String.valueOf(navId);
+        Double expiredTimeStamp = JedisUtil.expiredTimeStamp();
+        if (coursesId.size() > 0) {
+            courses = coursesId.toArray(new String[coursesId.size()]);
+            // 添加到set中
+            jedisClient.sadd(setKey, courses);
+            jedisClient.pexpireAt(recCoursePrefix + expiredSuffix + String.valueOf(navId), expiredTimeStamp.longValue());
+        }
+//        Collections.addAll(courses, coursesId.toArray(new String[coursesId.size()]));
+        // set过期时间通过一个sortedset进行设置
+        jedisClient.zadd(recCoursePrefix + expiredSuffix, expiredTimeStamp, String.valueOf(navId));
+        return true;
+    }
+
+    /**
+     * 根据导航id去redis取rec
+     * @param navId
+     * @return
+     * @throws CourseException
+     */
+    @Override
+    public List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException {
+        String setKey = recCoursePrefix + String.valueOf(navId);
+        Double expiredTime = jedisClient.zscore(setKey, String.valueOf(navId));
+        // 如果过期时间不存在那么说明从未生成过推荐
+        if (expiredTime == null || expiredTime == 0)
+            throw new CourseException("recommend course not generate yet. navId: " + String.valueOf(navId), CourseConstant.REC_COURSE_NOT_GENERATE);
+        // 如果已经过期，则重新生成。
+        if (expiredTime.longValue() < System.currentTimeMillis()) {
+            throw new CourseException("recommend course is expired! navId: " + navId, CourseConstant.REC_COURSE_EXPIRED);
+        }
+        List<Integer> res = new ArrayList<Integer>();
+        List<String> coursesId = jedisClient.srandmember(setKey, 3);
+        // 拿到空就为空
+        if (coursesId.size() == 0 || coursesId == null) return res;
+        res = Arrays.asList(coursesId.toArray(new Integer[coursesId.size()]));
+        return res;
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("course")
@@ -74,6 +75,16 @@ public class CourseController {
             return new Result(res);
         } catch (CartException e) {
             return new Result(e.getCode(), e.getMsg());
+        }
+    }
+    @GetMapping("rec/{navId:\\d+}")
+    @ResponseBody
+    public Result getRecCourses(@RequestParam("navId") Integer navId) {
+        try {
+            List<Integer> ids = categoryService.getSubIdFromCategory(navId);
+            courseService.
+        } catch (CategoryException e) {
+
         }
     }
 }

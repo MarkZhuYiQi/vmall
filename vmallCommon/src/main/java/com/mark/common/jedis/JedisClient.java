@@ -100,6 +100,8 @@ public interface JedisClient {
 
     Long srem(String key, String... members);
 
+    List<String> srandmember(String key, int count);
+
     Long lpush(String key, String... strings);
 
     List<String> lrange(String key, long start, long end);

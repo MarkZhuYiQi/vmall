@@ -98,4 +98,41 @@ public class CourseDaoImpl extends CourseDaoAbstract {
             }
         }
     }
+
+    /**
+     * 2. 根据子导航id，去数据库获得子导航中前12名课程id
+     * @param ids
+     * @return 返回推荐的12个课程的id list
+     */
+    @Override
+    public List<Integer> getTopClicksForNavSpecified(List<Integer> ids) throws CourseException {
+        try {
+            return courseDaoByDB.getTopClicksForNavSpecified(ids);
+        } catch (CourseException e) {
+            throw new CourseException("trying to get courses from DB failed! check DB connection.", CourseConstant.REC_COURSE_GET_ERROR);
+        }
+    }
+
+    /**
+     * 根据navId，去redis获取随机的3个课程id
+     * 抛出2种错误，一种是还未生成过，一种是已经过期，都需要重新生成，报错很明白
+     * @param navId
+     * @return
+     * @throws CourseException
+     */
+    @Override
+    public List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException {
+        return courseDaoByRedis.getRandomRecCoursesId(navId);
+    }
+
+    /**
+     * 3. 课程id放入redis
+     * @param navId
+     * @param coursesId
+     * @return
+     */
+    @Override
+    public Boolean setRecCoursesIdInRedis(Integer navId, List<Integer> coursesId) {
+        return courseDaoByRedis.setRecCoursesIdInRedis(navId, coursesId);
+    }
 }

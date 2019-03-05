@@ -30,8 +30,10 @@ public class CommentDaoByDBImpl extends CommentDaoAbstract {
     @Override
     public VproComment setComment(VproComment vproComment) throws CommentException {
         try {
+            // 插入评论到数据库，返回插入的主键
             Integer res = vproCommentMapper.insertSelective(vproComment);
             if (res <= 0) throw new CommentException("insert comment to db failed");
+            // 获得插入的数据
             VproComment com = vproCommentMapper.selectByPrimaryKey(res);
             return com;
         } catch (Exception e) {
@@ -39,4 +41,11 @@ public class CommentDaoByDBImpl extends CommentDaoAbstract {
         }
     }
 
+    @Override
+    public Boolean checkCommentIfExistInDB(Integer lessonId) {
+        VproCommentExample vproCommentExample = new VproCommentExample();
+        vproCommentExample.createCriteria().andVproCommentLessonIdEqualTo(lessonId);
+        Long res = vproCommentMapper.countByExample(vproCommentExample);
+        return res > 0;
+    }
 }

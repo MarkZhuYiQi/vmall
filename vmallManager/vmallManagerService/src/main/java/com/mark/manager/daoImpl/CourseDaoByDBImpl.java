@@ -11,11 +11,15 @@ import com.mark.manager.dao.CourseDao;
 import com.mark.manager.dao.CourseDaoAbstract;
 import com.mark.manager.dto.Courses;
 import com.mark.manager.mapper.CoursesMapper;
+import com.mark.manager.mapper.VproCoursesTempDetailMapper;
+import com.mark.manager.pojo.VproCoursesTempDetail;
+import com.mark.manager.pojo.VproCoursesTempDetailExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +27,10 @@ import java.util.Map;
 public class CourseDaoByDBImpl extends CourseDaoAbstract {
     @Autowired
     CoursesMapper coursesMapper;
+
+    @Autowired
+    VproCoursesTempDetailMapper vproCoursesTempDetailMapper;
+
     @Autowired
     JedisClient jedisClient;
 
@@ -107,4 +115,29 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
         }
     }
 
+    /**
+     * 通过获得导航id下的所有课程的点击数统计出最受欢迎的课程加入推荐集合。
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<Integer> getTopClicksForNavSpecified(List<Integer> ids) throws CourseException {
+        try {
+            VproCoursesTempDetailExample vproCoursesTempDetailExample = new VproCoursesTempDetailExample();
+            vproCoursesTempDetailExample.createCriteria().andCoursePidIn(ids);
+            vproCoursesTempDetailExample.setOrderByClause("course_clickNum desc");
+            List<VproCoursesTempDetail> list = vproCoursesTempDetailMapper.selectByExample(vproCoursesTempDetailExample);
+            List<Integer> coursesId = new ArrayList<>();
+            // 没有得到，一个课程也没有，就返回空list
+            if (list == null || list.size() == 0) return coursesId;
+            List<VproCoursesTempDetail> topList = new ArrayList<>();
+            System.arraycopy(list.toArray(), 0, topList.toArray(), 0, 12);
+            for (VproCoursesTempDetail v : topList) {
+                coursesId.add(v.getCourseId());
+            }
+            return coursesId;
+        } catch (Exception e) {
+            throw new CourseException(e.getMessage());
+        }
+    }
 }

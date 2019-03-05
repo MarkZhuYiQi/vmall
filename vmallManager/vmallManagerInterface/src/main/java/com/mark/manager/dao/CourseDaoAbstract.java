@@ -46,4 +46,19 @@ public abstract class CourseDaoAbstract implements CourseDao {
 
     @Override
     public abstract Courses getCourseForDetail(Integer courseId) throws CourseException;
+
+    @Override
+    public List<Integer> getTopClicksForNavSpecified(List<Integer> ids) throws CourseException {
+        return null;
+    }
+
+    @Override
+    public Boolean setRecCoursesIdInRedis(Integer navId, List<Integer> coursesId) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException {
+        return null;
+    }
 }
