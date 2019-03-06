@@ -79,12 +79,12 @@ public class CourseController {
     }
     @GetMapping("rec/{navId:\\d+}")
     @ResponseBody
-    public Result getRecCourses(@RequestParam("navId") Integer navId) {
+    public Result getRecCourses(@PathVariable("navId") Integer navId) {
         try {
-            List<Integer> ids = categoryService.getSubIdFromCategory(navId);
-            courseService.
-        } catch (CategoryException e) {
-
+            List<Courses> list = courseService.getRecCoursesByNavIds(navId);
+            return new Result(list);
+        } catch (CourseException e) {
+            return new Result(e.getCode(), e.getMsg());
         }
     }
 }

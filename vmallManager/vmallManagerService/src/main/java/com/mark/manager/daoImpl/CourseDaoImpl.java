@@ -109,7 +109,7 @@ public class CourseDaoImpl extends CourseDaoAbstract {
         try {
             return courseDaoByDB.getTopClicksForNavSpecified(ids);
         } catch (CourseException e) {
-            throw new CourseException("trying to get courses from DB failed! check DB connection.", CourseConstant.REC_COURSE_GET_ERROR);
+            throw new CourseException("trying to get courses from DB failed! check DB connection." + e.getMsg(), CourseConstant.REC_COURSE_GET_ERROR);
         }
     }
 

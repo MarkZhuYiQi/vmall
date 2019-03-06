@@ -169,7 +169,10 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         String setKey = recCoursePrefix + String.valueOf(navId);
         Double expiredTimeStamp = JedisUtil.expiredTimeStamp();
         if (coursesId.size() > 0) {
-            courses = coursesId.toArray(new String[coursesId.size()]);
+            courses = new String[coursesId.size()];
+            for (int c = 0; c < coursesId.size(); c++) {
+                courses[c] = String.valueOf(coursesId.get(c));
+            }
             // 添加到set中
             jedisClient.sadd(setKey, courses);
             jedisClient.pexpireAt(recCoursePrefix + expiredSuffix + String.valueOf(navId), expiredTimeStamp.longValue());
@@ -188,7 +191,7 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
      */
     @Override
     public List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException {
-        String setKey = recCoursePrefix + String.valueOf(navId);
+        String setKey = recCoursePrefix + expiredSuffix;
         Double expiredTime = jedisClient.zscore(setKey, String.valueOf(navId));
         // 如果过期时间不存在那么说明从未生成过推荐
         if (expiredTime == null || expiredTime == 0)
@@ -201,7 +204,10 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
         List<String> coursesId = jedisClient.srandmember(setKey, 3);
         // 拿到空就为空
         if (coursesId.size() == 0 || coursesId == null) return res;
-        res = Arrays.asList(coursesId.toArray(new Integer[coursesId.size()]));
+        for (String c : coursesId) {
+            res.add(Integer.parseInt(c));
+        }
+
         return res;
     }
 }

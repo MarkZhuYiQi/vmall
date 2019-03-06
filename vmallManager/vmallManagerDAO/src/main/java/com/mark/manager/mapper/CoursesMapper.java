@@ -29,4 +29,6 @@ public interface CoursesMapper {
     Courses getCourseForDetail(
             @Param("courseId") Integer courseId
     );
+    Integer batchUpdateClick(@Param("update") List<Map<String, Integer>> update);
+    Integer batchUpdateClickCaseWhen(@Param("update") List<Map<String, Integer>> update);
 }

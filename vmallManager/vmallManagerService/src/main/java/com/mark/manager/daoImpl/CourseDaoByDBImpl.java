@@ -101,7 +101,7 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
         try {
             Courses course = coursesMapper.getCourseForDetail(courseId);
             Double clickNum = jedisClient.zscore(coursesClicksSummary, String.valueOf(courseId));
-            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClickNum(clickNum.intValue());
+            if (clickNum != null && clickNum >= 0) course.getVproCoursesTempDetail().setCourseClicknum(clickNum.intValue());
             // 直接课程转成json了
             jedisClient.set(coursesDetailPrefix + String.valueOf(courseId), BeanUtil.parseObjToJson(course));
             Double expiredTime = JedisUtil.expiredTimeStamp();
@@ -130,13 +130,16 @@ public class CourseDaoByDBImpl extends CourseDaoAbstract {
             List<Integer> coursesId = new ArrayList<>();
             // 没有得到，一个课程也没有，就返回空list
             if (list == null || list.size() == 0) return coursesId;
+            System.out.println(list);
             List<VproCoursesTempDetail> topList = new ArrayList<>();
-            System.arraycopy(list.toArray(), 0, topList.toArray(), 0, 12);
+            topList = list.subList(0, 12);
+            System.out.println(topList);
             for (VproCoursesTempDetail v : topList) {
                 coursesId.add(v.getCourseId());
             }
             return coursesId;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new CourseException(e.getMessage());
         }
     }

@@ -236,6 +236,7 @@ public class CourseServiceImpl implements CourseService {
             return getRecCourses(navId);
         } catch (CourseException e) {
             try {
+                logger.info("trying...");
                 genRecCoursesByNavId(navId);
                 return getRecCourses(navId);
             } catch (CategoryException eca) {

@@ -268,4 +268,30 @@ WHERE
             </trim>
         </where>
     </sql>
+
+    <update id="batchUpdateClick" parameterType="java.util.List">
+        <foreach collection="update" separator=";" item="clicks">
+            update vpro_courses_temp_detail
+            set course_clickNum = #{clicks.click}
+            where course_id = #{clicks.courseId}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateClickCaseWhen" parameterType="java.util.List">
+        update vpro_courses_temp_detail
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="course_id = case " suffix="end, ">
+                <foreach collection="update" item="clicks">
+                    <if test="clicks.click!=null">
+                        when course_id=#{clicks.courseId} then #{clicks.click}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        <where>
+            <foreach collection="update" separator="or" item="clicks">
+                course_id = #{clicks.courseId}
+            </foreach>
+        </where>
+    </update>
 </mapper>
