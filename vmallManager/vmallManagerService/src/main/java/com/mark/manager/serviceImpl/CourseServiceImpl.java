@@ -235,8 +235,8 @@ public class CourseServiceImpl implements CourseService {
         try {
             return getRecCourses(navId);
         } catch (CourseException e) {
+            logger.info("trying...");
             try {
-                logger.info("trying...");
                 genRecCoursesByNavId(navId);
                 return getRecCourses(navId);
             } catch (CategoryException eca) {
@@ -271,6 +271,7 @@ public class CourseServiceImpl implements CourseService {
         List<Integer> subNavIds = categoryService.getSubIdFromCategory(navId);
         // 根据子导航id，去数据库获得子导航中前12名课程id
         List<Integer> coursesId = courseDao.getTopClicksForNavSpecified(subNavIds);
+        logger.info(coursesId.toString());
         courseDao.setRecCoursesIdInRedis(navId, coursesId);
     }
 

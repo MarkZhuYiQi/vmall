@@ -311,41 +311,4 @@ public class InitServiceImpl implements InitService {
             jedisClient.set(orderIdINCR, orderInit + String.valueOf(todayAtZero / 1000));
         }
     }
-
-    /**
-     * 从redis导入clicks
-     */
-//    @PostConstruct
-    public void clicksImport() {
-        Integer splitSize = 5000;
-        Set<Tuple> set = jedisClient.zrangeWithScores(courseClicksSummary, 0L, -1L);
-        List<List<Map<String, Integer>>> list = new ArrayList<>();
-        // 切分成几个list
-        Integer t = set.size() / splitSize;
-        Double threadNum = Math.floor(t.doubleValue());
-        // 如果t个模块正好等于总数，那么就不需要再多一个模块放余下的了，否则需要再加一个模块
-        t = threadNum * splitSize == set.size() ? t : t + 1;
-        // 转换set到list
-        List<Map<String, Integer>> update = new ArrayList<>();
-        for (Tuple tuple : set) {
-            Map<String, Integer> map = new HashMap<>();
-            map.put("courseId", Integer.parseInt(tuple.getElement()));
-            map.put("click", new Double(tuple.getScore()).intValue());
-            update.add(map);
-        }
-        for (int i = 0; i < t; i++) {
-            // 最后一个位置
-            Integer total = ((i + 1) * splitSize - 1) >= set.size() ? set.size() - 1 : (i + 1) * splitSize - 1;
-            list.add(new ArrayList<Map<String, Integer>>(update.subList(i * splitSize, total)));
-        }
-        logger.info("start update clicks info");
-        // 多线程执行
-        final Semaphore semaphore = new Semaphore(t);
-        ExecutorService threadPool = Executors.newCachedThreadPool();
-        for (int j = 0; j < list.size(); j++) {
-            threadPool.execute(new ImportClicksConcurrent(semaphore, update, coursesMapper));
-        }
-        threadPool.shutdown();
-        logger.info("update finished");
-    }
 }

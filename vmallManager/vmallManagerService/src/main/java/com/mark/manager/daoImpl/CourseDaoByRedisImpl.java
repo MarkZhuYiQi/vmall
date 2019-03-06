@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mark.common.constant.CourseConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
+import com.mark.common.jwt.JwtUtil;
 import com.mark.common.util.BeanUtil;
 import com.mark.common.util.JedisUtil;
 import com.mark.common.util.LogUtil;
@@ -173,9 +174,12 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
             for (int c = 0; c < coursesId.size(); c++) {
                 courses[c] = String.valueOf(coursesId.get(c));
             }
+            logger.info("waiting to write: " + courses[0]);
             // 添加到set中
             jedisClient.sadd(setKey, courses);
-            jedisClient.pexpireAt(recCoursePrefix + expiredSuffix + String.valueOf(navId), expiredTimeStamp.longValue());
+            System.out.println(expiredTimeStamp);
+            System.out.println(expiredTimeStamp.longValue());
+            jedisClient.expireAt(recCoursePrefix + String.valueOf(navId), expiredTimeStamp.longValue());
         }
 //        Collections.addAll(courses, coursesId.toArray(new String[coursesId.size()]));
         // set过期时间通过一个sortedset进行设置
@@ -191,17 +195,17 @@ public class CourseDaoByRedisImpl extends CourseDaoAbstract {
      */
     @Override
     public List<Integer> getRandomRecCoursesId(Integer navId) throws CourseException {
-        String setKey = recCoursePrefix + expiredSuffix;
-        Double expiredTime = jedisClient.zscore(setKey, String.valueOf(navId));
+        String expiredKey = recCoursePrefix + expiredSuffix;
+        Double expiredTime = jedisClient.zscore(expiredKey, String.valueOf(navId));
         // 如果过期时间不存在那么说明从未生成过推荐
         if (expiredTime == null || expiredTime == 0)
             throw new CourseException("recommend course not generate yet. navId: " + String.valueOf(navId), CourseConstant.REC_COURSE_NOT_GENERATE);
         // 如果已经过期，则重新生成。
-        if (expiredTime.longValue() < System.currentTimeMillis()) {
+        if (JedisUtil.isExpired(expiredTime)) {
             throw new CourseException("recommend course is expired! navId: " + navId, CourseConstant.REC_COURSE_EXPIRED);
         }
         List<Integer> res = new ArrayList<Integer>();
-        List<String> coursesId = jedisClient.srandmember(setKey, 3);
+        List<String> coursesId = jedisClient.srandmember(recCoursePrefix + String.valueOf(navId), 3);
         // 拿到空就为空
         if (coursesId.size() == 0 || coursesId == null) return res;
         for (String c : coursesId) {
