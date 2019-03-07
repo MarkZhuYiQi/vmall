@@ -42,10 +42,11 @@ public class CommentDaoByDBImpl extends CommentDaoAbstract {
     }
 
     @Override
-    public Boolean checkCommentIfExistInDB(Integer lessonId) {
+    public Boolean checkCommentsIfExistInDB(Integer lessonId) {
         VproCommentExample vproCommentExample = new VproCommentExample();
         vproCommentExample.createCriteria().andVproCommentLessonIdEqualTo(lessonId);
         Long res = vproCommentMapper.countByExample(vproCommentExample);
         return res > 0;
     }
+
 }

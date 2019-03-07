@@ -64,6 +64,8 @@ public interface JedisClient {
 
     Long hdel(String key, String... field);
 
+    Long hincrBy(String key, String field, Long value);
+
     Boolean hexists(String key, String field);
 
     List<String> hvals(String key);

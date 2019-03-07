@@ -384,63 +384,63 @@ public class VproCoursesTempDetailExample {
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumIsNull() {
-            addCriterion("course_clickNum is null");
+        public Criteria andCourseClickNumIsNull() {
+            addCriterion("course_click_num is null");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumIsNotNull() {
-            addCriterion("course_clickNum is not null");
+        public Criteria andCourseClickNumIsNotNull() {
+            addCriterion("course_click_num is not null");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumEqualTo(Integer value) {
-            addCriterion("course_clickNum =", value, "courseClicknum");
+        public Criteria andCourseClickNumEqualTo(Integer value) {
+            addCriterion("course_click_num =", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumNotEqualTo(Integer value) {
-            addCriterion("course_clickNum <>", value, "courseClicknum");
+        public Criteria andCourseClickNumNotEqualTo(Integer value) {
+            addCriterion("course_click_num <>", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumGreaterThan(Integer value) {
-            addCriterion("course_clickNum >", value, "courseClicknum");
+        public Criteria andCourseClickNumGreaterThan(Integer value) {
+            addCriterion("course_click_num >", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumGreaterThanOrEqualTo(Integer value) {
-            addCriterion("course_clickNum >=", value, "courseClicknum");
+        public Criteria andCourseClickNumGreaterThanOrEqualTo(Integer value) {
+            addCriterion("course_click_num >=", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumLessThan(Integer value) {
-            addCriterion("course_clickNum <", value, "courseClicknum");
+        public Criteria andCourseClickNumLessThan(Integer value) {
+            addCriterion("course_click_num <", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumLessThanOrEqualTo(Integer value) {
-            addCriterion("course_clickNum <=", value, "courseClicknum");
+        public Criteria andCourseClickNumLessThanOrEqualTo(Integer value) {
+            addCriterion("course_click_num <=", value, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumIn(List<Integer> values) {
-            addCriterion("course_clickNum in", values, "courseClicknum");
+        public Criteria andCourseClickNumIn(List<Integer> values) {
+            addCriterion("course_click_num in", values, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumNotIn(List<Integer> values) {
-            addCriterion("course_clickNum not in", values, "courseClicknum");
+        public Criteria andCourseClickNumNotIn(List<Integer> values) {
+            addCriterion("course_click_num not in", values, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumBetween(Integer value1, Integer value2) {
-            addCriterion("course_clickNum between", value1, value2, "courseClicknum");
+        public Criteria andCourseClickNumBetween(Integer value1, Integer value2) {
+            addCriterion("course_click_num between", value1, value2, "courseClickNum");
             return (Criteria) this;
         }
 
-        public Criteria andCourseClicknumNotBetween(Integer value1, Integer value2) {
-            addCriterion("course_clickNum not between", value1, value2, "courseClicknum");
+        public Criteria andCourseClickNumNotBetween(Integer value1, Integer value2) {
+            addCriterion("course_click_num not between", value1, value2, "courseClickNum");
             return (Criteria) this;
         }
     }

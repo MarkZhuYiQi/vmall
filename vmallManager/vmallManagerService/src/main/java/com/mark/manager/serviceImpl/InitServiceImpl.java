@@ -284,7 +284,7 @@ public class InitServiceImpl implements InitService {
         Jedis jedis = jedisPool.getResource();
         Pipeline p = jedis.pipelined();
         for(VproCoursesTempDetail vproCoursesTempDetail : list) {
-            Integer courseClickNum  = vproCoursesTempDetail.getCourseClicknum();
+            Integer courseClickNum  = vproCoursesTempDetail.getCourseClickNum();
             Integer courseId = vproCoursesTempDetail.getCourseId();
             // key, score, member
             p.zadd(courseClicksSummary, courseClickNum, String.valueOf(courseId));

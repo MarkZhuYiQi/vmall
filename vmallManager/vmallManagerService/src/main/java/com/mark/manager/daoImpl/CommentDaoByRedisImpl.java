@@ -7,17 +7,24 @@ import com.mark.common.util.BeanUtil;
 import com.mark.manager.bo.CommentResult;
 import com.mark.manager.dao.CommentDaoAbstract;
 import com.mark.manager.dto.Comment;
+import com.mark.manager.dto.CommentRate;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.pojo.VproComment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component("commentRedis")
 public class CommentDaoByRedisImpl extends CommentDaoAbstract {
+    private Logger logger = LoggerFactory.getLogger(CommentDaoByRedisImpl.class);
     @Autowired
     JedisClient jedisClient;
 
@@ -26,6 +33,18 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
 
     @Value("${commentListPrefix}")
     String commentListPrefix;
+
+    @Value("${commentAgreePrefix}")
+    String commentAgreePrefix;
+
+    @Value("${commentOpposePrefix}")
+    String commentOpposePrefix;
+
+    @Value("${commentAgreeListPrefix}")
+    String commentAgreeListPrefix;
+
+    @Value("${commentOpposeListPrefix}")
+    String commentOpposeListPrefix;
 
     /**
      * 将评论数据发给放到redis的VproCommentList中，消息队列处理
@@ -98,7 +117,49 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
         commentResult.setCommentList(commentList);
         commentResult.setPageNum(pageNum);
         commentResult.setPageSize(pageSize);
+        logger.info("generate comments list: " + commentResult.toString());
         return commentResult;
     }
 
+    /**
+     * 仅仅当评论没有需要生成第一次的时候才会调用这个方法
+     * @param comments
+     * @param lessonId
+     * @return
+     */
+    @Override
+    public void setCommentsByLessonId(List<Comment> comments, Integer lessonId) {
+        JedisPool jedisPool = jedisClient.getJedisPool();
+        Jedis jedis = jedisPool.getResource();
+        Pipeline p = jedis.pipelined();
+        String[] commentsStr = new String[comments.size()];
+        for  (int i = 0; i < comments.size(); i++) {
+            p.hset(commentPrefix + String.valueOf(lessonId), String.valueOf(comments.get(i).getVproCommentId()), BeanUtil.parseObjToJson(comments.get(i)));
+            commentsStr[i] = BeanUtil.parseObjToJson(comments.get(i));
+        }
+        p.lpush(commentListPrefix + String.valueOf(lessonId), commentsStr);
+        p.sync();
+        jedis.close();
+    }
+
+    @Override
+    public Boolean checkCommentIfExistInRedis(Integer commentId, Integer lessonId) {
+        logger.info(commentPrefix + String.valueOf(lessonId));
+        return jedisClient.hexists(commentPrefix + String.valueOf(lessonId), String.valueOf(commentId));
+    }
+
+    @Override
+    public void setSupportRateForComment(CommentRate commentRate) {
+        String rateKey;
+        String rateList;
+        if (commentRate.getCommentAgree()) {
+            rateKey = commentAgreePrefix;
+            rateList = commentAgreeListPrefix;
+        } else {
+            rateKey = commentOpposePrefix;
+            rateList = commentAgreeListPrefix;
+        }
+        jedisClient.lpush(rateList, String.valueOf(commentRate.getCommentId()));
+        jedisClient.hincrBy(rateKey, String.valueOf(commentRate.getCommentId()), 1L);
+    }
 }

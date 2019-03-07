@@ -6,6 +6,7 @@ import com.mark.manager.bo.CommentResult;
 import com.mark.manager.dao.CommentDao;
 import com.mark.manager.dao.CommentDaoAbstract;
 import com.mark.manager.dto.Comment;
+import com.mark.manager.dto.CommentRate;
 import com.mark.manager.pojo.VproComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +47,21 @@ public class CommentDaoImpl extends CommentDaoAbstract {
         }
     }
 
+    /**
+     * 首先去redis直接获取评论，有则返回；
+     * 没有就判断报错类型：
+     *      判断数据库有评论，那么抛未生成错误
+     *      判断没有评论，直接返回空对象
+     * @param lessonId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     * @throws CommentException
+     */
     @Override
     public CommentResult getCommentsForShowByLessonId(Integer lessonId, Integer pageNum, Integer pageSize) throws CommentException {
         try {
+            logger.info("CommentDaoImpl.getCommentsForShowByLessonId");
             return commentDaoByRedis.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
         } catch (CommentException e) {
             CommentResult commentResult = new CommentResult();
@@ -58,8 +71,12 @@ public class CommentDaoImpl extends CommentDaoAbstract {
             commentResult.setCommentList(new ArrayList<>());
             if (e.getCode().equals(CommentConstant.COMMENT_LIST_NOT_EXIST_IN_REDIS)) {
                 logger.info("{}, lessonId: {}", e.getMsg(), lessonId);
-                Boolean cInDB = commentDaoByDB.checkCommentIfExistInDB(lessonId);
-                if (!cInDB) throw new CommentException("comment need generate first! lessonId: " + String.valueOf(lessonId), e.getCode());
+                Boolean cInDB = commentDaoByDB.checkCommentsIfExistInDB(lessonId);
+                logger.info("check comment if exist in DB ? {}", cInDB);
+                if (cInDB) {
+                    logger.info("comment need generate first! lessonId: " + String.valueOf(lessonId));
+                    throw new CommentException("comment need generate first! lessonId: " + String.valueOf(lessonId), e.getCode());
+                }
                 return commentResult;
             }
             if (e.getCode().equals(CommentConstant.COMMENT_GAIN_OUT_OF_RANGE)) {
@@ -67,5 +84,20 @@ public class CommentDaoImpl extends CommentDaoAbstract {
             }
             throw new CommentException(e.getMsg(), e.getCode());
         }
+    }
+
+    @Override
+    public void setCommentsByLessonId(List<Comment> comments, Integer lessonId) {
+        commentDaoByRedis.setCommentsByLessonId(comments, lessonId);
+    }
+
+    @Override
+    public Boolean checkCommentIfExistInRedis(Integer commentId, Integer lessonId) {
+        return commentDaoByRedis.checkCommentIfExistInRedis(commentId, lessonId);
+    }
+
+    @Override
+    public void setSupportRateForComment(CommentRate commentRate) {
+        commentDaoByRedis.setSupportRateForComment(commentRate);
     }
 }

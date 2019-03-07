@@ -12,7 +12,7 @@
         <result property="coursePrice" column="course_price" />
         <result property="courseDiscountPrice" column="course_discount_price" />
         <result property="courseScore" column="course_score" />
-        <result property="courseClickNum" column="course_clickNum" />
+        <result property="courseClickNum" column="course_click_num" />
         <collection property="vproCoursesCover" ofType="com.mark.manager.pojo.VproCoursesCover">
             <id property="courseCoverId" column="course_cover_id" />
             <result property="courseCoverKey" column="course_cover_key" />
@@ -33,7 +33,7 @@
             <id property="courseId" column="course_id" />
             <result property="coursePid" column="course_pid" />
             <result property="courseScore" column="course_score" />
-            <result property="courseClickNum" column="course_clickNum" />
+            <result property="courseClickNum" column="course_click_num" />
         </collection>
         <!--<collection property="vproVideo" ofType="com.mark.manager.pojo.VproVideo">-->
             <!--<id property="videoId" column="video_id" />-->
@@ -155,7 +155,7 @@ SELECT
 	course_cover.course_cover_isuploaded,
 	course_cover.course_cover_isused,
 	course_detail.course_score,
-	course_detail.course_clickNum
+	course_detail.course_click_num
 FROM
 	vpro_courses_temp_detail AS course_detail
 LEFT JOIN vpro_courses_cover AS course_cover ON course_detail.course_id = course_cover.course_cover_id
@@ -176,7 +176,7 @@ WHERE
         </where>
 	)
 ORDER BY
-    course_clickNum desc
+    course_click_num desc
     </select>
 
     <select id="getIndexCoursesInfo" resultMap="coursesResultMap">
@@ -191,7 +191,7 @@ SELECT
 	course_cover.course_cover_isuploaded,
 	course_cover.course_cover_isused,
 	course_detail.course_score,
-	course_detail.course_clickNum
+	course_detail.course_click_num
 FROM
 	vpro_courses_temp_detail AS course_detail
 LEFT JOIN vpro_courses_cover AS course_cover ON course_detail.course_id = course_cover.course_cover_id
@@ -214,7 +214,7 @@ WHERE
             </trim>
         </where>
 			ORDER BY
-				course_clickNum
+				course_click_num
 			DESC
 			LIMIT
 				6)
@@ -236,7 +236,7 @@ select
 	vcc.course_cover_address,
 	va.auth_appid,
 	vct.course_score,
-	vct.course_clickNum,
+	vct.course_click_num,
 	vcc2.detail_id,
 	vcc2.course_content
 from
@@ -272,7 +272,7 @@ WHERE
     <update id="batchUpdateClick" parameterType="java.util.List">
         <foreach collection="update" separator=";" item="clicks">
             update vpro_courses_temp_detail
-            set course_clickNum = #{clicks.click}
+            set course_click_num = #{clicks.click}
             where course_id = #{clicks.courseId}
         </foreach>
     </update>

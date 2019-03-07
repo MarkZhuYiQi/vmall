@@ -3,9 +3,9 @@ package com.mark.manager.serviceImpl;
 import com.mark.common.constant.CommentConstant;
 import com.mark.common.exception.CommentException;
 import com.mark.manager.bo.CommentResult;
-import com.mark.manager.bo.Result;
 import com.mark.manager.dao.CommentDao;
 import com.mark.manager.dto.Comment;
+import com.mark.manager.dto.CommentRate;
 import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.pojo.VproComment;
 import com.mark.manager.service.CommentService;
@@ -37,8 +37,11 @@ public class CommentServiceImpl implements CommentService {
      */
     public List<Comment> genCommentList(Integer lessonId) throws CommentException {
         try {
+            // 获得每一条评论
             List<VproComment> list = getCommentsByLessonId(lessonId);
+            // 迭代出各个评论的关系
             List<Comment> comments = genCommentRelations(list);
+            commentDao.setCommentsByLessonId(comments, lessonId);
             return comments;
         } catch (CommentException e) {
             throw new CommentException(e.getMsg(), e.getCode());
@@ -84,11 +87,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResult getCommentsForShowByLessonId(Integer lessonId, Integer pageNum, Integer pageSize) throws CommentException {
+        logger.info("CommentServiceImpl.getCommentsForShowByLessonId");
         try {
             return commentDao.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
         } catch (CommentException e) {
+            logger.warn(e.getMsg(), e.getCode());
             if (e.getCode().equals(CommentConstant.COMMENT_LIST_NOT_EXIST_IN_REDIS)) {
-                genCommentList(lessonId);
+                List<Comment> comments = genCommentList(lessonId);
                 return commentDao.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
             }
             throw new CommentException(e.getMsg(), e.getCode());
@@ -125,5 +130,15 @@ public class CommentServiceImpl implements CommentService {
             }
         }
         return comment;
+    }
+
+    @Override
+    public void commentSupportRate(CommentRate commentRate) {
+        logger.info(commentRate.toString());
+        if (commentRate.getCommentOppose() == commentRate.getCommentAgree()) return;
+        logger.info("CommonOppose check passed...");
+        if (commentDao.checkCommentIfExistInRedis(commentRate.getCommentId(), commentRate.getLessonId())) return;
+        logger.info("comment rate set ready...");
+        commentDao.setSupportRateForComment(commentRate);
     }
 }

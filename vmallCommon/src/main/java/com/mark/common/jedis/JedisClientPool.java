@@ -269,6 +269,14 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public Long hincrBy(String key, String field, Long value) {
+        Jedis jedis = jedisPool.getResource();
+        Long res = jedis.hincrBy(key, field, value);
+        jedis.close();
+        return res;
+    }
+
+    @Override
     public Boolean hexists(String key, String field) {
         Jedis jedis = jedisPool.getResource();
         Boolean result = jedis.hexists(key, field);

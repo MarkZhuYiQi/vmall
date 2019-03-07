@@ -5,8 +5,12 @@ import com.mark.common.exception.CommentException;
 import com.mark.manager.bo.CommentResult;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Comment;
+import com.mark.manager.dto.CommentRate;
 import com.mark.manager.pojo.VproComment;
 import com.mark.manager.service.CommentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +18,8 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "comment")
 public class CommentController {
+    private static final Logger logger = LoggerFactory.getLogger("CommentController");
+
     @Reference()
     private CommentService commentService;
 
@@ -35,9 +41,15 @@ public class CommentController {
             ) {
         try {
             CommentResult commentResult = commentService.getCommentsForShowByLessonId(lessonId, pageNum, pageSize);
+            System.out.println(commentResult.toString());
             return new Result(commentResult);
         } catch (CommentException e) {
             return new Result(e.getCode(), e.getMsg());
         }
+    }
+    @PostMapping("support")
+    public Result commentSupportRate(@RequestBody @Validated CommentRate commentRate) {
+        commentService.commentSupportRate(commentRate);
+        return new Result(true);
     }
 }
