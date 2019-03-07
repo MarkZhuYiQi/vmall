@@ -137,7 +137,7 @@ public class CommentServiceImpl implements CommentService {
         logger.info(commentRate.toString());
         if (commentRate.getCommentOppose() == commentRate.getCommentAgree()) return;
         logger.info("CommonOppose check passed...");
-        if (commentDao.checkCommentIfExistInRedis(commentRate.getCommentId(), commentRate.getLessonId())) return;
+        if (!commentDao.checkCommentIfExistInRedis(commentRate.getCommentId(), commentRate.getLessonId())) return;
         logger.info("comment rate set ready...");
         commentDao.setSupportRateForComment(commentRate);
     }

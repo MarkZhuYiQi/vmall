@@ -4,6 +4,10 @@ import com.mark.common.exception.CourseException;
 import com.mark.common.jedis.JedisClient;
 import com.mark.manager.dao.CourseDao;
 import com.mark.manager.mapper.CoursesMapper;
+import com.mark.manager.mapper.SupportRateMapper;
+import com.mark.manager.mapper.VproCommentSupportRateMapper;
+import com.mark.manager.pojo.VproCommentSupportRate;
+import com.mark.manager.pojo.VproCommentSupportRateExample;
 import com.mark.manager.threads.ImportClicksConcurrent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +20,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Tuple;
 
 import java.util.*;
@@ -118,5 +125,75 @@ public class RoutineTask {
         }
         threadPool.shutdown();
         logger.info("update finished");
+    }
+
+    @Autowired
+    VproCommentSupportRateMapper vproCommentSupportRateMapper;
+
+    @Autowired
+    SupportRateMapper supportRateMapper;
+
+    @Value("${commentAgreePrefix}")
+    String commentAgreePrefix;
+
+    @Value("${commentOpposePrefix}")
+    String commentOpposePrefix;
+    @Scheduled(cron = "0 30 0/2 * * ?")
+    public void importSupportRateFromDB() {
+        if (jedisClient.exists(commentAgreePrefix) && jedisClient.exists(commentOpposePrefix)) return;
+        Integer size = 1000;
+        VproCommentSupportRateExample vproCommentSupportRateExample = new VproCommentSupportRateExample();
+        vproCommentSupportRateExample.createCriteria();
+        Long count = vproCommentSupportRateMapper.countByExample(vproCommentSupportRateExample);
+        Integer split = (int)Math.ceil(count / size);
+        JedisPool jedisPool = jedisClient.getJedisPool();
+        Jedis jedis = jedisPool.getResource();
+        Pipeline p = jedis.pipelined();
+        for (int i = 0; i < split; i++) {
+            Map<String, Integer> splitCriteria = new HashMap<String, Integer>();
+            splitCriteria.put("offset", i * size);
+            splitCriteria.put("limit", size);
+            List<VproCommentSupportRate> rate = supportRateMapper.getSupportRateByLimit(splitCriteria);
+            Map<String, String> agree = new HashMap<String, String>();
+            Map<String, String> oppose = new HashMap<String, String>();
+            for (VproCommentSupportRate vproCommentSupportRate : rate) {
+                agree.put(String.valueOf(vproCommentSupportRate.getCommentId()), String.valueOf(vproCommentSupportRate.getCommentAgree()));
+                oppose.put(String.valueOf(vproCommentSupportRate.getCommentId()), String.valueOf(vproCommentSupportRate.getCommentOppose()));
+            }
+            p.hmset(commentAgreePrefix, agree);
+            p.hmset(commentOpposePrefix, oppose);
+        }
+        p.sync();
+        jedis.close();
+    }
+
+    @Value("${commentAgreeSetPrefix}")
+    String commentAgreeSetPrefix;
+
+    @Value("${commentOpposeSetPrefix}")
+    String commentOpposeSetPrefix;
+
+    public void transferSupportRateFromRedisToDB() {
+        if (!jedisClient.exists(commentAgreeSetPrefix) && !jedisClient.exists(commentOpposeSetPrefix)) return;
+        Set<String> agreeKeyNeedUpdate = jedisClient.smembers(commentAgreeSetPrefix);
+        Set<String> opposeKeyNeedUpdate = jedisClient.smembers(commentOpposeSetPrefix);
+        List<Map<String, Integer>> agreeMap = genCommentSupportRateMapping(agreeKeyNeedUpdate);
+        List<Map<String, Integer>> opposeMap = genCommentSupportRateMapping(opposeKeyNeedUpdate);
+        supportRateMapper.batchUpdateSupportRate(agreeMap, "agree");
+        supportRateMapper.batchUpdateSupportRate(opposeMap, "oppose");
+
+    }
+    private List<Map<String, Integer>> genCommentSupportRateMapping(Set<String> keysNeedUpdate) {
+        List<Map<String, Integer>> rateList = new ArrayList<>();
+        if (keysNeedUpdate.size() == 0) return rateList;
+        String[] keys = keysNeedUpdate.toArray(new String[keysNeedUpdate.size()]);
+        List<String> num = jedisClient.hmget(commentAgreeSetPrefix, keys);
+        for (int i = 0; i < keys.length; i++) {
+            Map<String, Integer> supportRateMapping = new HashMap<>();
+            supportRateMapping.put("key", Integer.parseInt(keys[i]));
+            supportRateMapping.put("rate", Integer.parseInt(num.get(i)));
+            rateList.add(supportRateMapping);
+        }
+        return rateList;
     }
 }

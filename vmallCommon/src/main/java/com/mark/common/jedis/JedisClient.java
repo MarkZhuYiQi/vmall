@@ -60,6 +60,8 @@ public interface JedisClient {
 
     String hget(String key, String field);
 
+    List<String> hmget(String key, String... fields);
+
     Map<String, String> hgetAll(String key);
 
     Long hdel(String key, String... field);

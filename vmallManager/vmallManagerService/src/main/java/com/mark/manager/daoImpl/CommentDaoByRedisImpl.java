@@ -28,8 +28,8 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
     @Autowired
     JedisClient jedisClient;
 
-    @Value("${commentPrefix}")
-    String commentPrefix;
+    @Value("${commentHashPrefix}")
+    String commentHashPrefix;
 
     @Value("${commentListPrefix}")
     String commentListPrefix;
@@ -40,11 +40,11 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
     @Value("${commentOpposePrefix}")
     String commentOpposePrefix;
 
-    @Value("${commentAgreeListPrefix}")
-    String commentAgreeListPrefix;
+    @Value("${commentAgreeSetPrefix}")
+    String commentAgreeSetPrefix;
 
-    @Value("${commentOpposeListPrefix}")
-    String commentOpposeListPrefix;
+    @Value("${commentOpposeSetPrefix}")
+    String commentOpposeSetPrefix;
 
     /**
      * 将评论数据发给放到redis的VproCommentList中，消息队列处理
@@ -81,7 +81,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
         if (vproComment.getVproCommentReplyId() > 0) {
             // 评论是回复：
             // 从redis获得想要回复的评论实体，从comment.hash.LESSONID中获得这条评论
-            String c = jedisClient.hget(commentPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentReplyId()));
+            String c = jedisClient.hget(commentHashPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentReplyId()));
             if (c == null) throw new CommentException("reply comment not exist");
             Comment comment = BeanUtil.parseJsonToObj(c, Comment.class);
             if (comment == null) throw new CommentException("parse json to Comment failed");
@@ -92,7 +92,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
             parents.add(0, parent);
             res.setParents(parents);
         }
-        jedisClient.hset(commentPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentId()), BeanUtil.parseObjToJson(res));
+        jedisClient.hset(commentHashPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentId()), BeanUtil.parseObjToJson(res));
         jedisClient.lpush(commentListPrefix + String.valueOf(vproComment.getVproCommentLessonId()), BeanUtil.parseObjToJson(res));
         return vproComment;
     }
@@ -134,7 +134,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
         Pipeline p = jedis.pipelined();
         String[] commentsStr = new String[comments.size()];
         for  (int i = 0; i < comments.size(); i++) {
-            p.hset(commentPrefix + String.valueOf(lessonId), String.valueOf(comments.get(i).getVproCommentId()), BeanUtil.parseObjToJson(comments.get(i)));
+            p.hset(commentHashPrefix + String.valueOf(lessonId), String.valueOf(comments.get(i).getVproCommentId()), BeanUtil.parseObjToJson(comments.get(i)));
             commentsStr[i] = BeanUtil.parseObjToJson(comments.get(i));
         }
         p.lpush(commentListPrefix + String.valueOf(lessonId), commentsStr);
@@ -144,22 +144,23 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
 
     @Override
     public Boolean checkCommentIfExistInRedis(Integer commentId, Integer lessonId) {
-        logger.info(commentPrefix + String.valueOf(lessonId));
-        return jedisClient.hexists(commentPrefix + String.valueOf(lessonId), String.valueOf(commentId));
+        logger.info(commentHashPrefix + String.valueOf(lessonId));
+        logger.info(jedisClient.hexists(commentHashPrefix + String.valueOf(lessonId), String.valueOf(commentId)).toString());
+        return jedisClient.hexists(commentHashPrefix + String.valueOf(lessonId), String.valueOf(commentId));
     }
 
     @Override
     public void setSupportRateForComment(CommentRate commentRate) {
         String rateKey;
-        String rateList;
+        String rateSet;
         if (commentRate.getCommentAgree()) {
             rateKey = commentAgreePrefix;
-            rateList = commentAgreeListPrefix;
+            rateSet = commentAgreeSetPrefix;
         } else {
             rateKey = commentOpposePrefix;
-            rateList = commentAgreeListPrefix;
+            rateSet = commentOpposeSetPrefix;
         }
-        jedisClient.lpush(rateList, String.valueOf(commentRate.getCommentId()));
+        jedisClient.sadd(rateSet, String.valueOf(commentRate.getCommentId()));
         jedisClient.hincrBy(rateKey, String.valueOf(commentRate.getCommentId()), 1L);
     }
 }

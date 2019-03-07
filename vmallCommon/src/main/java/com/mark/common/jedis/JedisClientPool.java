@@ -253,6 +253,14 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public List<String> hmget(String key, String... fields) {
+        Jedis jedis = jedisPool.getResource();
+        List<String> result = jedis.hmget(key, fields);
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public Map<String, String> hgetAll(String key) {
         Jedis jedis = jedisPool.getResource();
         Map<String, String> result = jedis.hgetAll(key);
