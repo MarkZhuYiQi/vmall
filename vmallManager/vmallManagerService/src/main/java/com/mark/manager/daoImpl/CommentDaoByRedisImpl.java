@@ -18,9 +18,12 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component("commentRedis")
 public class CommentDaoByRedisImpl extends CommentDaoAbstract {
@@ -162,5 +165,23 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
         }
         jedisClient.sadd(rateSet, String.valueOf(commentRate.getCommentId()));
         jedisClient.hincrBy(rateKey, String.valueOf(commentRate.getCommentId()), 1L);
+    }
+
+    @Override
+    public Map<Integer, Map<String, Integer>> getCommentSupportRate(List<String> commentsId) {
+        if (!jedisClient.exists(commentAgreePrefix) || !jedisClient.exists(commentOpposePrefix))
+            logger.error("comments support rate hash does not exist, generate it asap!");
+        Map<Integer, Map<String, Integer>> rates = new HashMap<>();
+        List<String> agree, oppose;
+        String[] ids = commentsId.toArray(new String[commentsId.size()]);
+        agree = jedisClient.hmget(commentAgreePrefix, ids);
+        oppose = jedisClient.hmget(commentOpposePrefix, ids);
+        for (int i = 0; i < commentsId.size(); i++) {
+            Map<String, Integer> rate = new HashMap<>();
+            rate.put("agree", agree.get(i) == null ? 0:Integer.parseInt(agree.get(i)));
+            rate.put("oppose", oppose.get(i) == null ? 0:Integer.parseInt(oppose.get(i)));
+            rates.put(Integer.parseInt(commentsId.get(i)), rate);
+        }
+        return rates;
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -133,12 +134,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void commentSupportRate(CommentRate commentRate) {
+    public Boolean commentSupportRate(CommentRate commentRate) {
         logger.info(commentRate.toString());
-        if (commentRate.getCommentOppose() == commentRate.getCommentAgree()) return;
+        if (commentRate.getCommentOppose() == commentRate.getCommentAgree()) return false;
         logger.info("CommonOppose check passed...");
-        if (!commentDao.checkCommentIfExistInRedis(commentRate.getCommentId(), commentRate.getLessonId())) return;
+        if (!commentDao.checkCommentIfExistInRedis(commentRate.getCommentId(), commentRate.getLessonId())) return false;
         logger.info("comment rate set ready...");
         commentDao.setSupportRateForComment(commentRate);
+        return true;
+    }
+
+    @Override
+    public VproComment setComment(VproComment vproComment) throws CommentException {
+        try {
+            return commentDao.setComment(vproComment);
+        } catch (CommentException e) {
+            throw new CommentException(e.getMsg(), e.getCode());
+        }
+    }
+
+    @Override
+    public Map<Integer, Map<String, Integer>> getCommentSupportRate(List<String> commentsId) {
+        return commentDao.getCommentSupportRate(commentsId);
     }
 }

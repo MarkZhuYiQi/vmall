@@ -77,11 +77,12 @@ public class CourseController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
-    @GetMapping("rec/{navId:\\d+}")
+    @GetMapping("rec/{courseId:\\d+}")
     @ResponseBody
-    public Result getRecCourses(@PathVariable("navId") Integer navId) {
+    public Result getRecCourses(@PathVariable("courseId") Integer courseId) {
         try {
-            List<Courses> list = courseService.getRecCoursesByNavIds(navId);
+            Courses courses = courseService.getCourseForDetail(courseId);
+            List<Courses> list = courseService.getRecCoursesByNavIds(courses.getCoursePid());
             return new Result(list);
         } catch (CourseException e) {
             return new Result(e.getCode(), e.getMsg());

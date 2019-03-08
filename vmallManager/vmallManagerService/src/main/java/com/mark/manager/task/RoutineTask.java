@@ -138,6 +138,10 @@ public class RoutineTask {
 
     @Value("${commentOpposePrefix}")
     String commentOpposePrefix;
+
+    /**
+     * 将数据灌入redis
+     */
     @Scheduled(cron = "0 30 0/2 * * ?")
     public void importSupportRateFromDB() {
         if (jedisClient.exists(commentAgreePrefix) && jedisClient.exists(commentOpposePrefix)) return;
@@ -173,16 +177,35 @@ public class RoutineTask {
     @Value("${commentOpposeSetPrefix}")
     String commentOpposeSetPrefix;
 
+    /**
+     * 将redis中的数据传输到db
+     */
+    @Scheduled(cron = "0 45 0/2 * * ?")
     public void transferSupportRateFromRedisToDB() {
         if (!jedisClient.exists(commentAgreeSetPrefix) && !jedisClient.exists(commentOpposeSetPrefix)) return;
         Set<String> agreeKeyNeedUpdate = jedisClient.smembers(commentAgreeSetPrefix);
         Set<String> opposeKeyNeedUpdate = jedisClient.smembers(commentOpposeSetPrefix);
         List<Map<String, Integer>> agreeMap = genCommentSupportRateMapping(agreeKeyNeedUpdate);
         List<Map<String, Integer>> opposeMap = genCommentSupportRateMapping(opposeKeyNeedUpdate);
-        supportRateMapper.batchUpdateSupportRate(agreeMap, "agree");
-        supportRateMapper.batchUpdateSupportRate(opposeMap, "oppose");
-
+        Long agreeUpdate = supportRateMapper.batchUpdateSupportRate(agreeMap, "agree");
+        if (agreeUpdate > 0) {
+            jedisClient.del(commentAgreeSetPrefix);
+        } else {
+            logger.error("transfer comment support rate 'Agree' from redis to DB failed!");
+        }
+        Long opposeUpdate = supportRateMapper.batchUpdateSupportRate(opposeMap, "oppose");
+        if (opposeUpdate > 0) {
+            jedisClient.del(commentOpposeSetPrefix);
+        } else {
+            logger.error("transfer comment support rate 'Oppose' from redis to DB failed!");
+        }
     }
+
+    /**
+     * 生成对应关系
+     * @param keysNeedUpdate
+     * @return
+     */
     private List<Map<String, Integer>> genCommentSupportRateMapping(Set<String> keysNeedUpdate) {
         List<Map<String, Integer>> rateList = new ArrayList<>();
         if (keysNeedUpdate.size() == 0) return rateList;

@@ -7,6 +7,7 @@ import com.mark.manager.dto.CommentRate;
 import com.mark.manager.pojo.VproComment;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class CommentDaoAbstract implements CommentDao {
     @Override
@@ -35,5 +36,10 @@ public abstract class CommentDaoAbstract implements CommentDao {
 
     @Override
     public void setSupportRateForComment(CommentRate commentRate) {
+    }
+
+    @Override
+    public Map<Integer, Map<String, Integer>> getCommentSupportRate(List<String> commentsId) {
+        return null;
     }
 }

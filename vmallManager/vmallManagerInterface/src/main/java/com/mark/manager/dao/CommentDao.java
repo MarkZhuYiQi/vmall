@@ -7,6 +7,7 @@ import com.mark.manager.dto.CommentRate;
 import com.mark.manager.pojo.VproComment;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CommentDao {
     List<VproComment> getCommentsByLessonId(Integer lessonId) throws CommentException;
@@ -15,5 +16,6 @@ public interface CommentDao {
     Boolean checkCommentsIfExistInDB(Integer lessonId);
     Boolean checkCommentIfExistInRedis(Integer commentId, Integer lessonId);
     void setCommentsByLessonId(List<Comment> comments, Integer lessonId);
-    void setSupportRateForComment(CommentRate commentRate   );
+    void setSupportRateForComment(CommentRate commentRate);
+    Map<Integer, Map<String, Integer>> getCommentSupportRate(List<String> commentsId);
 }

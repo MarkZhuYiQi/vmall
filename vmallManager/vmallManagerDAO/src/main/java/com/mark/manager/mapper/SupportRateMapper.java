@@ -10,7 +10,7 @@ public interface SupportRateMapper {
     List<VproCommentSupportRate> getSupportRateByLimit(
             @Param("limit") Map<String, Integer> limit
     );
-    List<VproCommentSupportRate> batchUpdateSupportRate(
+    Long batchUpdateSupportRate(
             @Param("update") List<Map<String, Integer>> update,
             @Param("updateType") String updateType
     );

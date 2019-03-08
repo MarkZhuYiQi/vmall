@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component("commentDao")
 public class CommentDaoImpl extends CommentDaoAbstract {
@@ -99,5 +101,8 @@ public class CommentDaoImpl extends CommentDaoAbstract {
     @Override
     public void setSupportRateForComment(CommentRate commentRate) {
         commentDaoByRedis.setSupportRateForComment(commentRate);
+    }
+    public Map<Integer, Map<String, Integer>> getCommentSupportRate(List<String> commentsId) {
+        return commentDaoByRedis.getCommentSupportRate(commentsId);
     }
 }
