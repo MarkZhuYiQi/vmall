@@ -5,6 +5,8 @@ import com.mark.manager.dao.CommentDaoAbstract;
 import com.mark.manager.mapper.VproCommentMapper;
 import com.mark.manager.pojo.VproComment;
 import com.mark.manager.pojo.VproCommentExample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Component("commentDB")
 public class CommentDaoByDBImpl extends CommentDaoAbstract {
+    private static final Logger logger = LoggerFactory.getLogger(CommentDaoByDBImpl.class);
     @Autowired
     VproCommentMapper vproCommentMapper;
     @Override
@@ -32,10 +35,10 @@ public class CommentDaoByDBImpl extends CommentDaoAbstract {
         try {
             // 插入评论到数据库，返回插入的主键
             Integer res = vproCommentMapper.insertSelective(vproComment);
+            logger.info("comment insert result: {}, comment: {}", res, vproComment.toString());
             if (res <= 0) throw new CommentException("insert comment to db failed");
             // 获得插入的数据
-            VproComment com = vproCommentMapper.selectByPrimaryKey(res);
-            return com;
+            return vproComment;
         } catch (Exception e) {
             throw new CommentException("insert comment to db failed" + e.getMessage());
         }

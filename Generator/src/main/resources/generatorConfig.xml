@@ -26,6 +26,7 @@
         </table>-->
         <!--<table schema="" tableName="vpro_courses_cover" />-->
         <table schema="" tableName="vpro_comment_support_rate">
+            <!--返回主键id-->
             <generatedKey  column="comment_id" sqlStatement="Mysql" identity="true" />
         </table>
     </context>

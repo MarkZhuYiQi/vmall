@@ -81,7 +81,9 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
     @Override
     public VproComment setComment(VproComment vproComment) throws CommentException {
         Comment res = DtoUtil.vproComment2Comment(vproComment);
+        logger.info("set new comment to redis: " + res.toString());
         if (vproComment.getVproCommentReplyId() > 0) {
+            logger.info("this reply need generate in hash");
             // 评论是回复：
             // 从redis获得想要回复的评论实体，从comment.hash.LESSONID中获得这条评论
             String c = jedisClient.hget(commentHashPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentReplyId()));
@@ -91,9 +93,11 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
             VproComment parent = DtoUtil.comment2VproComment(comment);
             // 拿到这条评论回复之前的评论
             List<VproComment> parents = comment.getParents();
+            if (parents == null) parents = new ArrayList<>();
             // 将这条评论放到父级回复的第一条
             parents.add(0, parent);
             res.setParents(parents);
+            logger.info("generate completed: {}", res.toString());
         }
         jedisClient.hset(commentHashPrefix + String.valueOf(vproComment.getVproCommentLessonId()), String.valueOf(vproComment.getVproCommentId()), BeanUtil.parseObjToJson(res));
         jedisClient.lpush(commentListPrefix + String.valueOf(vproComment.getVproCommentLessonId()), BeanUtil.parseObjToJson(res));
@@ -120,7 +124,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
         commentResult.setCommentList(commentList);
         commentResult.setPageNum(pageNum);
         commentResult.setPageSize(pageSize);
-        logger.info("generate comments list: " + commentResult.toString());
+        logger.info("get comments list stored in redis: " + commentResult.toString());
         return commentResult;
     }
 
@@ -140,7 +144,7 @@ public class CommentDaoByRedisImpl extends CommentDaoAbstract {
             p.hset(commentHashPrefix + String.valueOf(lessonId), String.valueOf(comments.get(i).getVproCommentId()), BeanUtil.parseObjToJson(comments.get(i)));
             commentsStr[i] = BeanUtil.parseObjToJson(comments.get(i));
         }
-        p.lpush(commentListPrefix + String.valueOf(lessonId), commentsStr);
+        p.rpush(commentListPrefix + String.valueOf(lessonId), commentsStr);
         p.sync();
         jedis.close();
     }
