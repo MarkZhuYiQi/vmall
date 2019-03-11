@@ -10,12 +10,19 @@
     <modules>
         <module>vmallManager</module>
         <module>vmallManger-standalone</module>
-        <module>Generator</module>
-        <module>demo</module>
-        <module>test</module>
+        <!--<module>Generator</module>-->
+        <!--<module>demo</module>-->
+        <!--<module>test</module>-->
         <module>vmall</module>
     </modules>
     <packaging>pom</packaging>
+
+    <distributionManagement>
+        <repository>
+            <id>localRepository</id>
+            <url>file:D:\\wamp\\apache-maven-3.5.4\\REPO</url>
+        </repository>
+    </distributionManagement>
 
     <!-- 集中定义管理依赖版本号 -->
     <properties>

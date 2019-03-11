@@ -151,34 +151,24 @@
             <version>1.0</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <finalName>mybatis_generator</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.mybatis.generator</groupId>
-                <artifactId>mybatis-generator-maven-plugin</artifactId>
-                <version>1.3.7</version>
-                <configuration>
-                    <configurationFile>../../Generator/src/main/resources/generatorConfig.xml</configurationFile>
-                    <overwrite>true</overwrite>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>Generate MyBatis Artifacts</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.46</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+    <!--<build>-->
+        <!--<finalName>vmallManagerService</finalName>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-war-plugin</artifactId>-->
+                <!--<version>3.2.0</version>-->
+                <!--<configuration>-->
+                    <!--<webResources>-->
+                        <!--<resource>-->
+                            <!--&lt;!&ndash; 原配置文件的目录，相对于pom.xml文件的路径 &ndash;&gt;-->
+                            <!--<directory>src/main/webapp/WEB-INF</directory>-->
+                            <!--&lt;!&ndash; 目标路径 &ndash;&gt;-->
+                            <!--<targetPath>WEB-INF</targetPath>-->
+                        <!--</resource>-->
+                    <!--</webResources>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
 </project>

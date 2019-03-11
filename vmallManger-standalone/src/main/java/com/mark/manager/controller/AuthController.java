@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.mark.common.constant.LoginConstant;
+import com.mark.common.util.IpUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.bo.TokenResult;
 import com.mark.manager.dto.Login;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.BadPaddingException;
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
@@ -37,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("")
-    public Result login(@RequestBody Login login)
+    public Result login(@RequestBody Login login, HttpServletRequest httpServletRequest)
     {
         try{
             logger.info("开始");
@@ -47,7 +49,8 @@ public class AuthController {
             // 2. 如果传来的信息不合法，抛错返回
             if (errMessage != null) return new Result("user or password mismatch", LoginConstant.LOGIN_INFO_ILLEGAL);
             // 3. 生成token
-            Result result = authService.genToken(login);
+            String ip = IpUtil.getIpAddress(httpServletRequest);
+            Result result = authService.genToken(login, ip);
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             System.out.println("AuthController.login: " + principal);
             return result;
