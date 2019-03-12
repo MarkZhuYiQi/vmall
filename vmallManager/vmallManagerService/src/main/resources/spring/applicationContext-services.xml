@@ -23,18 +23,18 @@
     <!-- 用dubbo协议在20880端口暴露服务 -->
     <dubbo:protocol name="dubbo" port="20881" />
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.mark.manager.service.AuthService" ref="authServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.CategoryService" ref="categoryServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.CourseService" ref="courseServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.SearchService" ref="searchServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.LessonService" ref="lessonServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.TencentService" ref="tencentServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.QcloudService" ref="qcloudServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.ImageService" ref="imageServiceImpl" timeout="10000" />
-    <dubbo:service interface="com.mark.manager.service.ShoppingService" ref="shoppingServiceImpl" timeout="20000" />
-    <dubbo:service interface="com.mark.manager.service.CartService" ref="cartServiceImpl" timeout="20000" />
-    <dubbo:service interface="com.mark.manager.service.OrderService" ref="orderServiceImpl" timeout="20000" />
-    <dubbo:service interface="com.mark.manager.service.CommentService" ref="commentServiceImpl" timeout="20000" />
+    <dubbo:service interface="com.mark.manager.service.AuthService" ref="authServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.CategoryService" ref="categoryServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.CourseService" ref="courseServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.SearchService" ref="searchServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.LessonService" ref="lessonServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.TencentService" ref="tencentServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.QcloudService" ref="qcloudServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.ImageService" ref="imageServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.ShoppingService" ref="shoppingServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.CartService" ref="cartServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.OrderService" ref="orderServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.CommentService" ref="commentServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
 
-    <dubbo:service interface="com.mark.manager.service.TestService" ref="testServiceImpl" timeout="20000" />
+    <dubbo:service interface="com.mark.manager.service.TestService" ref="testServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
 </beans>
