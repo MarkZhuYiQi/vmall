@@ -77,9 +77,16 @@
         <common-pool.version>2.6.0</common-pool.version>
         <qcloud-api.version>2.0.7</qcloud-api.version>
         <qcloud-version>5.4.6</qcloud-version>
+        <alipay-version>3.6.0.ALL</alipay-version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!--支付宝-->
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay-version}</version>
+            </dependency>
             <!--腾讯云对象存储-->
             <dependency>
                 <groupId>com.qcloud</groupId>
