@@ -62,16 +62,34 @@ public class OrderDaoImpl extends OrderDaoAbstract {
         }
     }
 
+    /**
+     * 根据用户id获得其所有订单
+     * @param userId
+     * @return
+     */
     @Override
     public List<VproOrder> getOrdersByUserId(Integer userId) {
         return orderDaoByDB.getOrdersByUserId(userId);
     }
 
+    /**
+     *
+     * @param ordersId
+     * @param coursesId
+     * @return
+     */
     @Override
     public List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId) {
         return orderDaoByDB.getExistCourseByUserOrder(ordersId, coursesId);
     }
 
+    /**
+     * 检查课程是否已经购买（废话当然从订单里看啦）
+     * @param courseId
+     * @param userId
+     * @return
+     * @throws OrderException
+     */
     @Override
     public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
 //        try {
@@ -85,6 +103,12 @@ public class OrderDaoImpl extends OrderDaoAbstract {
 //        }
     }
 
+    /**
+     * 用户订单页面显示订单量，根据条件获得符合的所有订单
+     * @param orderCriteria
+     * @return
+     * @throws OrderException
+     */
     @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {

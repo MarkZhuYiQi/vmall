@@ -42,6 +42,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     CourseService courseService;
 
+    /**
+     * 检查order信息是否正确，正确返回控制器准备创建订单
+     * @param putOrder
+     * @param userId
+     * @return
+     * @throws OrderException
+     */
     @Override
     public Order checkOrder(PutOrder putOrder, Integer userId) throws OrderException {
         try {
@@ -72,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
             logger.info("front orderPrice： " + Double.parseDouble(putOrder.getOrderPrice()));
             logger.info(String.valueOf(new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice)));
 
-            order.setOrderTitle(courseTitle.substring(0, 31));
+            order.setOrderTitle(courseTitle.length() > 31 ? courseTitle.substring(0, 31) : courseTitle.toString());
             if (new BigDecimal(putOrder.getOrderPrice()).equals(orderPrice))
                 throw new OrderException("orderPrice does not fit with the price calculated by back side.", OrderConstant.ORDER_PRICE_NOT_FIT_WITH_BACK_SIDE);
             order.setOrderPaymentPrice(String.valueOf(orderPrice));
@@ -84,6 +91,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 检查课程是否已经购买
+     * @param coursesId
+     * @param userId
+     * @return
+     */
     @Override
     public List<Long> checkCourseIfExisted(List<String> coursesId, Integer userId) {
         List<VproOrder> orders = orderDao.getOrdersByUserId(userId);
@@ -105,6 +118,13 @@ public class OrderServiceImpl implements OrderService {
         return exists;
     }
 
+    /**
+     * 创建订单
+     * @param order
+     * @param userId
+     * @return
+     * @throws OrderException
+     */
     @Override
     @Transactional
     public Order putOrder(Order order, Integer userId) throws OrderException {
@@ -131,6 +151,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 根据条件显示用户的订单
+     * @param orderCriteria
+     * @return
+     * @throws OrderException
+     */
     @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         try {
@@ -140,6 +166,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 检查课程是否已经购买
+     * @param courseId
+     * @param userId
+     * @return
+     * @throws OrderException
+     */
     @Override
     public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
         try {

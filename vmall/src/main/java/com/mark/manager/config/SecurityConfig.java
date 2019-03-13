@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/course/check").authenticated()
                 .antMatchers(HttpMethod.POST, "/comment").authenticated()
                 .antMatchers("/order/**").authenticated()
+//                .antMatchers("/pay/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .csrf().disable()
