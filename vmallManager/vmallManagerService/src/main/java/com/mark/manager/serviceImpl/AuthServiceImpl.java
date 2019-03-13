@@ -189,4 +189,9 @@ public class AuthServiceImpl implements AuthService {
             logger.error("loginCache save failed! {}", e.getMessage());
         }
     }
+
+    @Override
+    public void logOut(String token) {
+        jedisClient.del(loginInfoPrefix + token);
+    }
 }

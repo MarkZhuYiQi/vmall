@@ -111,8 +111,13 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
         try {
             VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
             vproOrderSubExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(Integer.parseInt(courseId));
-            Long res = vproOrderSubMapper.countByExample(vproOrderSubExample);
-            if (res > 0) return true;
+            List<VproOrderSub> orderSub = vproOrderSubMapper.selectByExample(vproOrderSubExample);
+            if (orderSub.size() <= 0) return false;
+            VproOrderExample vproOrderExample = new VproOrderExample();
+            vproOrderExample.createCriteria().andOrderIdEqualTo(orderSub.get(0).getOrderId());
+            List<VproOrder> vproOrders = vproOrderMapper.selectByExample(vproOrderExample);
+            if (vproOrders.size() == 0) return false;
+            if (vproOrders.get(0).getOrderPayment() == 1) return true;
             return false;
         } catch (Exception e) {
             throw new OrderException("could not check course if is bought." + e.getMessage());

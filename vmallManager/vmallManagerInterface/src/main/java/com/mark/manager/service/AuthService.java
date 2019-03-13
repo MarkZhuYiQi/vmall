@@ -19,4 +19,5 @@ public interface AuthService {
     String getRoleByNameInRedis(String appAuthId);
     Map<String, String> getAuthByAuthIdFromRedis(String appAuthId);
     VproAuth getLoginInfo(String token) throws AuthException;
+    void logOut(String token);
 }

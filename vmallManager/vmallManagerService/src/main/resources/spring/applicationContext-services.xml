@@ -35,6 +35,7 @@
     <dubbo:service interface="com.mark.manager.service.CartService" ref="cartServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
     <dubbo:service interface="com.mark.manager.service.OrderService" ref="orderServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
     <dubbo:service interface="com.mark.manager.service.CommentService" ref="commentServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
+    <dubbo:service interface="com.mark.manager.service.PayService" ref="payServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
 
     <dubbo:service interface="com.mark.manager.service.TestService" ref="testServiceImpl" timeout="20000" retries="2" loadbalance="roundrobin" />
 </beans>

@@ -43,6 +43,7 @@ public class OrderController {
     }
     @GetMapping("check/{courseId:\\d+}")
     public Result checkCourseIfBought(@PathVariable("courseId") String courseId) {
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
         JwtUserDetails details = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = details.getUserId().intValue();
         try {

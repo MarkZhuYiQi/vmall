@@ -50,10 +50,16 @@ public class AuthController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
+    @GetMapping("out")
+    public void logOut(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("MyToken");
+        authService.logOut(token);
+    }
 
     @PostMapping("test")
     public Result test(@RequestBody Login login) throws Exception {
         System.out.println(authService.decrypt(login));
         return new Result();
     }
+
 }
