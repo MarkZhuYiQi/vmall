@@ -1,5 +1,6 @@
 package com.mark.manager.daoImpl;
 
+import com.mark.common.constant.CourseConstant;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
@@ -12,7 +13,9 @@ import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
+import com.mark.manager.pojo.VproOrderExample;
 import com.mark.manager.pojo.VproOrderSub;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,5 +136,33 @@ public class OrderDaoImpl extends OrderDaoAbstract {
                 throw new OrderException(ce.getMsg(), ce.getCode());
             }
         }
+    }
+
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        try {
+            return orderDaoByDB.getOrderSpecified(orderId, userId);
+        } catch (OrderException e) {
+            logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
+            throw new OrderException(e.getMsg(), OrderConstant.ORDER_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
+        try {
+            Boolean res = orderDaoByDB.setOrderExpired(orderId, userId);
+            delUserOrderCache("0", userId);
+            delUserOrderCache("2", userId);
+            return res;
+        } catch (OrderException e) {
+            logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
+            throw new OrderException(e.getMsg(), OrderConstant.SET_ORDER_EXPIRED_FAILED);
+        }
+    }
+
+    @Override
+    public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
+        orderDaoByRedis.delUserOrderCache(orderPayment, userId);
     }
 }

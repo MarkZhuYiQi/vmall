@@ -14,4 +14,6 @@ public interface OrderService {
     Order putOrder(Order order, Integer userId) throws OrderException;
     OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
     Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
+    Order getOrderSpecified(Long orderId, Integer userId) throws OrderException;
+    Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException;
 }

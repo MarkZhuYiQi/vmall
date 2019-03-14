@@ -17,4 +17,13 @@ public class JedisUtil {
     public static Long cookieExpireTime() {
         return System.currentTimeMillis() + (long) (3600 * 24 * 30) * (long)1000;
     }
+
+    /**
+     * 默认锁定半小时，时间以毫秒记
+     * @return
+     */
+    public static String payLockExpiredTimeStamp() {
+        long timeStamp = System.currentTimeMillis();
+        return String.valueOf(timeStamp + (long)(1800 * 1000));
+    }
 }

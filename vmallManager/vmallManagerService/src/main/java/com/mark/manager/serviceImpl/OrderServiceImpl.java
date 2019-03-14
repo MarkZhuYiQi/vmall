@@ -182,4 +182,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        return orderDao.getOrderSpecified(orderId, userId);
+    }
+
+    @Override
+    public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
+        return orderDao.setOrderExpired(orderId, userId);
+    }
 }
