@@ -2,6 +2,7 @@ package com.mark.manager.dao;
 
 import com.mark.common.exception.OrderException;
 import com.mark.manager.bo.OrderResult;
+import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
@@ -17,5 +18,8 @@ public interface OrderDao {
     OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException;
     List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId);
     Boolean setUserOrderCache(OrderResult orderResult, OrderCriteria orderCriteria) throws OrderException;
+    void delUserOrderCache(String orderPayment, Integer userId) throws OrderException;
     Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
+    Order getOrderSpecified(Long orderId, Integer userId) throws OrderException;
+    Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException;
 }

@@ -134,4 +134,32 @@ public class OrderDaoImpl extends OrderDaoAbstract {
             }
         }
     }
+
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        try {
+            return orderDaoByDB.getOrderSpecified(orderId, userId);
+        } catch (OrderException e) {
+            logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
+            throw new OrderException(e.getMsg(), OrderConstant.ORDER_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
+        try {
+            Boolean res = orderDaoByDB.setOrderExpired(orderId, userId);
+            delUserOrderCache("0", userId);
+            delUserOrderCache("2", userId);
+            return res;
+        } catch (OrderException e) {
+            logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
+            throw new OrderException(e.getMsg(), OrderConstant.SET_ORDER_EXPIRED_FAILED);
+        }
+    }
+
+    @Override
+    public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
+        orderDaoByRedis.delUserOrderCache(orderPayment, userId);
+    }
 }

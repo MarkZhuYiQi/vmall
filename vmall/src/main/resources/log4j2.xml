@@ -7,10 +7,11 @@
     <appenders>
     <!--这个输出控制台的配置-->
         <console name="Console" target="SYSTEM_OUT">
-         <!--输出日志的格式-->
-             <!--<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>-->
-             <PatternLayout pattern="%-d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%c]-[%p] %m%n"/>
-         </console>
+        <!--输出日志的格式-->
+            <!--<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>-->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%-d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%c]-[%p] %m%n"/>
+        </console>
         <!--文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，这个也挺有用的，适合临时测试用-->
         <File name="log" fileName="log/vmallTest.log" append="false">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>

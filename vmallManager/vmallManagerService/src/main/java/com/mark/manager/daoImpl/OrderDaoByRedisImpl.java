@@ -44,6 +44,7 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
         return res > 0;
     }
 
+
     @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         String orderKey = ordersBelongUserPrefix + String.valueOf(orderCriteria.getOrderPayment()) + String.valueOf(orderCriteria.getUserId());
@@ -53,5 +54,10 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
         List<String> jsonOrder = new ArrayList<String>(cache);
         OrderResult orderResult = BeanUtil.parseJsonToObj(jsonOrder.get(0), OrderResult.class);
         return orderResult;
+    }
+
+    @Override
+    public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
+        jedisClient.del(ordersBelongUserPrefix + orderPayment + String.valueOf(userId));
     }
 }

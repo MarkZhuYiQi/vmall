@@ -123,4 +123,34 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
             throw new OrderException("could not check course if is bought." + e.getMessage());
         }
     }
+
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        VproOrderExample  vproOrderExample = new VproOrderExample();
+        vproOrderExample.createCriteria().andOrderIdEqualTo(orderId).andUserIdEqualTo(userId);
+        List<VproOrder> list = vproOrderMapper.selectByExample(vproOrderExample);
+        if (list == null || list.size() <= 0) throw new OrderException("order could not be found!");
+        VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
+        vproOrderSubExample.createCriteria().andOrderIdEqualTo(orderId);
+        List<VproOrderSub> subs = vproOrderSubMapper.selectByExample(vproOrderSubExample);
+        Order order = DtoUtil.vproOrder2Order(list.get(0));
+        if (subs == null || subs.size() == 0) throw new OrderException("order sub items could not be found!");
+        List<OrderSub> orderSubs = new ArrayList<>();
+        for (VproOrderSub sub : subs) {
+            orderSubs.add(DtoUtil.vproOrderSub2OrderSub(sub));
+        }
+        order.setOrderSubs(orderSubs);
+        return order;
+    }
+
+    @Override
+    public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
+        VproOrderExample vproOrderExample = new VproOrderExample();
+        vproOrderExample.createCriteria().andOrderIdEqualTo(orderId).andUserIdEqualTo(userId);
+        VproOrder vproOrder = new VproOrder();
+        vproOrder.setOrderPayment(2);
+        Integer res = vproOrderMapper.updateByExampleSelective(vproOrder, vproOrderExample);
+        if (res <= 0) throw new OrderException("set order expired failed!");
+        return res > 0;
+    }
 }

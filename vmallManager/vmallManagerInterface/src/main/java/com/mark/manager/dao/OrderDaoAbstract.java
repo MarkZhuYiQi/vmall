@@ -2,6 +2,7 @@ package com.mark.manager.dao;
 
 import com.mark.common.exception.OrderException;
 import com.mark.manager.bo.OrderResult;
+import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
@@ -48,5 +49,19 @@ public abstract class OrderDaoAbstract implements OrderDao {
     @Override
     public Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException {
         return null;
+    }
+
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        return null;
+    }
+
+    @Override
+    public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
+        return null;
+    }
+
+    @Override
+    public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
     }
 }
