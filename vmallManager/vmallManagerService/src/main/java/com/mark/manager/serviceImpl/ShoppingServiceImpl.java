@@ -198,7 +198,8 @@ public class ShoppingServiceImpl implements ShoppingService {
             return map;
         } finally {
             System.out.println("关闭jedis句柄");
-            if (redisLockUtil != null) redisLockUtil.unlock(lock, String.valueOf(time));
+//            if (redisLockUtil != null) redisLockUtil.unlock(lock, String.valueOf(time));
+            if (redisLockUtil != null) redisLockUtil.unlock(lock);
             if (jedis != null) jedis.close();
         }
     }

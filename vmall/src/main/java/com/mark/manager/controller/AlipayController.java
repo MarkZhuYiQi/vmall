@@ -2,14 +2,15 @@ package com.mark.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.OrderException;
 import com.mark.common.exception.PayException;
 import com.mark.common.pojo.JwtUserDetails;
+import com.mark.common.util.BeanUtil;
 import com.mark.common.util.JedisUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Order;
-import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.service.OrderService;
 import com.mark.manager.service.PayService;
 import com.mark.manager.vo.AlipayVo;
@@ -76,8 +77,9 @@ public class AlipayController extends PayBaseController{
                 return new Result(OrderConstant.ORDER_EXPIRED, "this order has been expired, please put order once again.");
             }
             AlipayVo vo = new AlipayVo();
-            vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
-//            vo.setOut_trade_no(order.getOrderId());
+//            vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
+            vo.setOut_trade_no(order.getOrderId());
+            vo.setProduct_code("FAST_INSTANT_TRADE_PAY");
             vo.setProduct_code("FAST_INSTANT_TRADE_PAY");
             vo.setSubject(order.getOrderTitle());
             vo.setTotal_amount(order.getOrderPrice());
@@ -122,11 +124,15 @@ public class AlipayController extends PayBaseController{
     private String alipayAsyncCallback(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
         try {
             Map<String, String> params = getParamsMap(httpServletRequest);
-            payService.alipayAsyncCallback(httpServletRequest, params);
+            logger.info("AsyncCallback-params: {}", params);
+            payService.alipayAsyncCallback(params);
             return "success";
         } catch (AlipayApiException e) {
+            logger.error("verify Signature failed!");
+            e.printStackTrace();
             return "failed";
         } catch (PayException e) {
+            logger.error("{}, {}", e.getMsg(), e.getCode());
             return "failed";
         }
     }
@@ -134,11 +140,12 @@ public class AlipayController extends PayBaseController{
     private String alipaySyncCallback(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
         try {
             Map<String, String> params = getParamsMap(httpServletRequest);
-            boolean verify = payService.alipayVerifySignature(httpServletRequest, params);
+            logger.info("SyncCallback-params: {}", params);
+            boolean verify = payService.alipayVerifySignature(params);
             if (verify) {
                 return "success";
             } else {
-                logger.info("验签失败！params: {}", params);
+                logger.info("verify Signature failed！params: {}", params);
                 return "failed";
             }
         } catch (AlipayApiException e) {
@@ -166,5 +173,17 @@ public class AlipayController extends PayBaseController{
             }
         }
         return params;
+    }
+    @GetMapping("test")
+    public void Test () {
+        String json = "{\"gmt_create\":\"2019-03-15 15:51:16\",\"charset\":\"utf-8\",\"gmt_payment\":\"2019-03-15 15:51:22\",\"notify_time\":\"2019-03-15 15:51:23\",\"subject\":\"testCharset\",\"sign\":\"PXwZOMn1ZqJEGWvZIvLVphoqeBuB7ZnO5LSxyjkGDmxqu+v6kDnh7YRQIAvTXqvI35WyoXbi9JNzU0uPhtYOiYm7g5PWp5D3kYnLVoG/ohVLTwK+VWsj5+X6cjaR+zR7RuTHbaoOdYkzBGgoNpYnf8KvQeg/MmMljGm8+PPAcrXAEJ0O8evC+zz0osbh4ACECr7ZVS5kW7IU5fIOri3btA64U3WvA47T9EMU5bdihENtf1m54648DeaDKqyqfKPf+YbHvCLd188k8w8HVolHk3jVOhjsGjF/TDaF2SjCtMYK6IeOkuqOUvfklw1yjB4g4o1HJ3E6Og/f3rCQZSA+tg==\",\"buyer_id\":\"2088102173082141\",\"invoice_amount\":\"180.00\",\"version\":\"1.0\",\"notify_id\":\"2471d26c73ddf0cad9787ca7f652fa4h31\",\"fund_bill_list\":\"[{\\\"amount\\\":\\\"180.00\\\",\\\"fundChannel\\\":\\\"ALIPAYACCOUNT\\\"}]\",\"notify_type\":\"trade_status_sync\",\"out_trade_no\":\"6406207152511258624\",\"total_amount\":\"180.00\",\"trade_status\":\"TRADE_SUCCESS\",\"trade_no\":\"2019031522001482140509827462\",\"auth_app_id\":\"2016082000290082\",\"receipt_amount\":\"180.00\",\"point_amount\":\"0.00\",\"app_id\":\"2016082000290082\",\"buyer_pay_amount\":\"180.00\",\"sign_type\":\"RSA2\",\"seller_id\":\"2088102172130805\"}";
+        Map<String, String> params = BeanUtil.parseJsonToObj(json, Map.class);
+        logger.info(params.toString());
+        try {
+            boolean res = AlipaySignature.rsaCheckV1(params, alipayPublicKey, charset, signType);
+            System.out.println(res);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
     }
 }

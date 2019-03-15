@@ -100,22 +100,23 @@ public class PayServiceImpl extends PayServiceAbstract {
      * seller_id=2088102172130805}
      */
     @Override
-    public VproOrder alipayAsyncCallback(HttpServletRequest httpServletRequest, Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException, PayException {
+    public VproOrder alipayAsyncCallback(Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException, PayException {
         //——请在这里编写您的程序（以下代码仅作参考）——
-        if(alipayVerifySignature(httpServletRequest, params)) {
+        if(alipayVerifySignature(params)) {
             // 支付宝appid
-            String appId = new String(httpServletRequest.getParameter("app_id").getBytes("ISO-8859-1"),"UTF-8");
+            String appId = new String(params.get("app_id").getBytes("ISO-8859-1"),"UTF-8");
             if(!appId.equals(this.appId)) {
                 logger.error("支付宝appId错误，商户错误！appId: {}", appId);
                 throw new PayException("支付宝appId错误，商户错误！");
             }
-            String sellerId = new String(httpServletRequest.getParameter("seller_id").getBytes("ISO-8859-1"),"UTF-8");
+            String sellerId = new String(params.get("seller_id").getBytes("ISO-8859-1"),"UTF-8");
             if (!sellerId.equals(this.sellerId)) {
                 logger.error("支付宝sellerId错误！sellerId: {}", sellerId);
                 throw new PayException("支付宝sellerId错误！sellerId: {}");
             }
             try {
-                return payDao.updateOrderPayStatus(params);
+                VproOrder vproOrder = payDao.updateOrderPayStatus(params);
+                return vproOrder;
             } catch (PayException e) {
                 logger.error(e.getMsg());
                 throw new PayException(e.getMsg(), e.getCode());
@@ -131,7 +132,7 @@ public class PayServiceImpl extends PayServiceAbstract {
     }
 
     @Override
-    public Boolean alipayVerifySignature(HttpServletRequest httpServletRequest, Map<String, String> params) throws AlipayApiException{
+    public Boolean alipayVerifySignature(Map<String, String> params) throws AlipayApiException{
         Jedis jedis = jedisClient.getJedisPool().getResource();
         RedisLockUtil redisLockUtil = new RedisLockUtil(jedis);
         redisLockUtil.unlock(payLockPrefix + params.get("out_trade_no"));

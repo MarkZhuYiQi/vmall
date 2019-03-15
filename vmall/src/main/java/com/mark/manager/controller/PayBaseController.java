@@ -8,7 +8,7 @@ public class PayBaseController {
     protected String appId;//应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
     @Value("${ALIPAY.PRIVATEKEY}")
     protected String merchantPrivateKey;//商户私钥，您的PKCS8格式RSA2私钥
-    @Value("${ALIPAY.PUBLICKEY}")
+    @Value("${ALIPAY.ALIPAY_PUBLIC_KEY}")
     protected String alipayPublicKey;//支付宝公钥,查看地址：https://openhome.alipay.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
     @Value("${ALIPAY.NOTIFY_URL}")
     protected String notifyUrl;//服务器异步通知页面路径

@@ -25,6 +25,10 @@ import java.util.List;
  * @author mark
  * 目前存在问题：order列表目录需要重新规划，目前使用sorted set，score为页码，member为整页缓存
  * 在状态更新后需要整页重新生成，效率极低
+ * 更改还未进行，思路：orderId存储在List中，order详细信息存储在Hash列表中
+ *      根据页码确定偏移量，获得ID区间。
+ *      hmget这些orderId。
+ *      如果order状态修改直接去hash表里面修改订单状态。
  */
 @Component("orderDao")
 public class OrderDaoImpl extends OrderDaoAbstract {

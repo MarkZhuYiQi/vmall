@@ -12,7 +12,7 @@ import java.util.Map;
 public interface PayService {
     String testPay(AlipayVo alipayVo) throws AlipayApiException;
     String alipayPay(AlipayVo alipayVo) throws AlipayApiException, PayException;
-    VproOrder alipayAsyncCallback(HttpServletRequest httpServletRequest, Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException, PayException;
+    VproOrder alipayAsyncCallback(Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException, PayException;
     void alipaySyncCallback();
-    Boolean alipayVerifySignature(HttpServletRequest httpServletRequest, Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException;
+    Boolean alipayVerifySignature(Map<String, String> params) throws AlipayApiException, UnsupportedEncodingException;
 }
