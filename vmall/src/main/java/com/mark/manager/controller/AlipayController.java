@@ -39,22 +39,21 @@ public class AlipayController {
     private Result alipayPay() {
         // 测试用
         AlipayVo vo = new AlipayVo();
-//        vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
-        vo.setOut_trade_no("20120120120102102");
+        vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
+//        vo.setOut_trade_no("20120120120102102");
         vo.setTotal_amount("0.01");
         vo.setTimeout_express("1d");
         vo.setSubject("testProduct");
         vo.setProduct_code("FAST_INSTANT_TRADE_PAY");    // 固定的
-        logger.info("{}", vo.toString());
+        System.out.println(vo.toString());
+//        logger.info("{}", vo.toString());
         try {
-            String res = payService.alipayPay(vo);
+            String res = payService.testPay(vo);
             logger.info(res);
             return new Result(res);
         } catch (AlipayApiException e) {
             e.printStackTrace();
             return new Result(Integer.parseInt(e.getErrCode()), e.getErrMsg());
-        } catch (PayException e) {
-            return new Result(e.getCode(), e.getMsg());
         }
     }
 
