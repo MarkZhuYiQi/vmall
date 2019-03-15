@@ -1,6 +1,5 @@
 package com.mark.manager.daoImpl;
 
-import com.mark.common.constant.CourseConstant;
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
@@ -13,9 +12,7 @@ import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.OrderSub;
 import com.mark.manager.pojo.VproOrder;
-import com.mark.manager.pojo.VproOrderExample;
 import com.mark.manager.pojo.VproOrderSub;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * @author mark
+ * 目前存在问题：order列表目录需要重新规划，目前使用sorted set，score为页码，member为整页缓存
+ * 在状态更新后需要整页重新生成，效率极低
+ */
 @Component("orderDao")
 public class OrderDaoImpl extends OrderDaoAbstract {
     private static final Logger logger = LoggerFactory.getLogger(OrderDaoImpl.class);
@@ -164,5 +166,20 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     @Override
     public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
         orderDaoByRedis.delUserOrderCache(orderPayment, userId);
+    }
+
+    @Override
+    public VproOrder getOrderByOrderId(Long orderId) {
+        return orderDaoByDB.getOrderByOrderId(orderId);
+    }
+
+    /**
+     * 这里需要同时去更新redis状态
+     * @param vproOrder
+     * @return
+     */
+    @Override
+    public VproOrder updateOrderStatus(VproOrder vproOrder) {
+        return orderDaoByDB.updateOrderStatus(vproOrder);
     }
 }

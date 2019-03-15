@@ -64,4 +64,14 @@ public abstract class OrderDaoAbstract implements OrderDao {
     @Override
     public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
     }
+
+    @Override
+    public VproOrder getOrderByOrderId(Long orderId) {
+        return null;
+    }
+
+    @Override
+    public VproOrder updateOrderStatus(VproOrder vproOrder) {
+        return null;
+    }
 }

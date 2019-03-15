@@ -9,6 +9,7 @@ import com.mark.common.pojo.JwtUserDetails;
 import com.mark.common.util.JedisUtil;
 import com.mark.manager.bo.Result;
 import com.mark.manager.dto.Order;
+import com.mark.manager.pojo.VproOrder;
 import com.mark.manager.service.OrderService;
 import com.mark.manager.service.PayService;
 import com.mark.manager.vo.AlipayVo;
@@ -26,7 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "pay")
-public class AlipayController {
+public class AlipayController extends PayBaseController{
     private Logger logger = LoggerFactory.getLogger(AlipayController.class);
 
     @Reference()
@@ -40,9 +41,9 @@ public class AlipayController {
         // 测试用
         AlipayVo vo = new AlipayVo();
         vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
-//        vo.setOut_trade_no("20120120120102102");
+//        vo.setOut_trade_no("778899445566122323");
         vo.setTotal_amount("0.01");
-        vo.setTimeout_express("1d");
+        vo.setTimeout_express("30m");
         vo.setSubject("testProduct");
         vo.setProduct_code("FAST_INSTANT_TRADE_PAY");    // 固定的
         System.out.println(vo.toString());
@@ -75,14 +76,12 @@ public class AlipayController {
                 return new Result(OrderConstant.ORDER_EXPIRED, "this order has been expired, please put order once again.");
             }
             AlipayVo vo = new AlipayVo();
+            vo.setOut_trade_no(UUID.randomUUID().toString().replace("-", ""));
 //            vo.setOut_trade_no(order.getOrderId());
-            vo.setOut_trade_no("20120120120102102");
             vo.setProduct_code("FAST_INSTANT_TRADE_PAY");
-//            vo.setSubject(order.getOrderTitle());
-            vo.setSubject("testProduct");
-//            vo.setTotal_amount(order.getOrderPrice());
-            vo.setTotal_amount("0.01");
-            vo.setTimeout_express("1d");
+            vo.setSubject(order.getOrderTitle());
+            vo.setTotal_amount(order.getOrderPrice());
+            vo.setTimeout_express("12h");
             logger.info(vo.toString());
             String res = payService.alipayPay(vo);
             return new Result(res);
@@ -94,44 +93,78 @@ public class AlipayController {
             return new Result(ep.getCode(), ep.getMsg());
         }
     }
+    /**
+     * {gmt_create=2019-03-14 23:42:33,
+     * charset=utf-8,
+     * gmt_payment=2019-03-14 23:42:38,
+     * notify_time=2019-03-14 23:42:40,
+     * subject=PowerPoint2010??????????PowerPoint2010??????????,
+     * sign=r6+P5KsYrT1v0r+WmNJLAQClE8GSbr8zU6K3LvWa67iWwCy+MxUYsuYEeOCvjTfp2wzJy075iSdaz+8lXXYmp4QFOufNuKYf/h9bgB3GYVReu8TaGO5IeEVdUs/gNJ0nUh/aOq3I0aZeM/twKDt07tHj4cWmlTA1Y7o/ZlofcuOSo55bDgqadpcmyQmk9No0505DGFCB1hIO6FufmNdcS2udtylfGhuNGpopGjd/FCMoZWzRJny1ftO0BS43JjNHOPO02vyKs1lKOVuYkJzxpQ1A5botdCZTW55LSbWFxYtIjiKtlGDgIgQp3E/uRgBGn9jmySZYcbYBixJquAtaYA==,
+     * buyer_id=2088102173082141,
+     * invoice_amount=69.00,
+     * version=1.0,
+     * notify_id=75c5d5b7a81b05fbf56a791d05d9886h31,
+     * fund_bill_list=[{"amount":"69.00","fundChannel":"ALIPAYACCOUNT"}],
+     * notify_type=trade_status_sync,
+     * out_trade_no=7b518fce95d74b778b8a4f6d19a9b6bf,
+     * total_amount=69.00,
+     * trade_status=TRADE_SUCCESS,
+     * trade_no=2019031422001482140509827103,
+     * auth_app_id=2016082000290082,
+     * receipt_amount=69.00,
+     * point_amount=0.00,
+     * app_id=2016082000290082,
+     * buyer_pay_amount=69.00,
+     * sign_type=RSA2,
+     * seller_id=2088102172130805}
+     */
     @PostMapping("async")
-    private String alipayAsyncCallback(@RequestBody Map<String, String> maps) {
-        logger.error(maps.toString());
-        return "failed";
+    private String alipayAsyncCallback(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
+        try {
+            Map<String, String> params = getParamsMap(httpServletRequest);
+            payService.alipayAsyncCallback(httpServletRequest, params);
+            return "success";
+        } catch (AlipayApiException e) {
+            return "failed";
+        } catch (PayException e) {
+            return "failed";
+        }
     }
     @GetMapping("sync")
     private String alipaySyncCallback(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
-        Map<String, String> params = new HashMap<>();
-        Map<String, String[]> requestParams = httpServletRequest.getParameterMap();
-        for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+        try {
+            Map<String, String> params = getParamsMap(httpServletRequest);
+            boolean verify = payService.alipayVerifySignature(httpServletRequest, params);
+            if (verify) {
+                return "success";
+            } else {
+                logger.info("验签失败！params: {}", params);
+                return "failed";
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            return "failed";
+        }
+    }
+    private Map<String, String> getParamsMap(HttpServletRequest request) {
+        Map<String,String> params = new HashMap<>();
+        Map requestParams = request.getParameterMap();
+        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
             String name = (String) iter.next();
             String[] values = (String[]) requestParams.get(name);
             String valueStr = "";
             for (int i = 0; i < values.length; i++) {
-                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+                valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
             }
             //乱码解决，这段代码在出现乱码时使用
-            valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
-            params.put(name, valueStr);
+            try {
+                valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+                params.put(name, valueStr);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-        logger.error(params.toString());
-        return "";
-//        boolean signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.alipay_public_key, AlipayConfig.charset, AlipayConfig.sign_type); //调用SDK验证签名
-//
-//        //——请在这里编写您的程序（以下代码仅作参考）——
-//        if(signVerified) {
-//            //商户订单号
-//            String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
-//
-//            //支付宝交易号
-//            String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"),"UTF-8");
-//
-//            //付款金额
-//            String total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"),"UTF-8");
-//
-//            out.println("trade_no:"+trade_no+"<br/>out_trade_no:"+out_trade_no+"<br/>total_amount:"+total_amount);
-//        }else {
-//            out.println("验签失败");
-//        }
+        return params;
     }
 }

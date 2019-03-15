@@ -153,4 +153,15 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
         if (res <= 0) throw new OrderException("set order expired failed!");
         return res > 0;
     }
+
+    @Override
+    public VproOrder getOrderByOrderId(Long orderId) {
+        return vproOrderMapper.selectByPrimaryKey(orderId);
+    }
+
+    @Override
+    public VproOrder updateOrderStatus(VproOrder vproOrder) {
+        vproOrderMapper.updateByPrimaryKeySelective(vproOrder);
+        return vproOrderMapper.selectByPrimaryKey(vproOrder.getOrderId());
+    }
 }

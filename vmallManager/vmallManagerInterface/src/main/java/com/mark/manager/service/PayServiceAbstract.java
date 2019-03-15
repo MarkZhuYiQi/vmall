@@ -19,6 +19,11 @@ public abstract class PayServiceAbstract implements PayService{
     protected String charset = "utf-8";//字符编码格式
     @Value("${ALIPAY.GATEWAY_URL}")
     protected String gatewayUrl;//支付宝网关
+    @Value("${ALIPAY.PID}")
+    protected String sellerId; // 支付宝商户id
+
+    @Value("${payLockPrefix}")
+    protected String payLockPrefix;
 
 /*
     // 微信支付参数配置 //

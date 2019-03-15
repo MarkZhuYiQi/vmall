@@ -22,4 +22,6 @@ public interface OrderDao {
     Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
     Order getOrderSpecified(Long orderId, Integer userId) throws OrderException;
     Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException;
+    VproOrder getOrderByOrderId(Long orderId);
+    VproOrder updateOrderStatus(VproOrder vproOrder);
 }

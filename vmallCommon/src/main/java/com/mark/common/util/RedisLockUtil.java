@@ -48,13 +48,13 @@ public class RedisLockUtil {
         }
     }
 
-    public void unlock(String key ,String value){
-        try{
+    public void unlock(String key) {
+        try {
             String currentValue = jedis.get(key);
-            if (currentValue != null && !currentValue.equals("") && !currentValue.isEmpty() && currentValue.equals(value)){
+            if (currentValue != null && !currentValue.equals("") && !currentValue.isEmpty()) {
                 jedis.del(key);
             }
-        }catch(Exception e){
+        }catch(Exception e) {
             System.out.println("redis分布上锁解锁异常, {}");
         } finally {
             jedis.close();
