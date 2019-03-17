@@ -2,10 +2,13 @@ package com.mark.manager.dto;
 
 import com.mark.common.pojo.CategoryNode;
 import com.mark.common.pojo.User;
+import com.mark.common.util.BeanUtil;
 import com.mark.manager.pojo.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DtoUtil {
     public static User userRoles2user(UserRoles userRoles)
@@ -169,5 +172,35 @@ public class DtoUtil {
         vproComment.setVproCommentTime(comment.getVproCommentTime());
         vproComment.setVproCommentUserId(comment.getVproCommentUserId());
         return vproComment;
+    }
+    public static Map<String, String> order2Map(Order order) {
+        Map<String, String> hash = new HashMap<String, String>();
+        hash.put("orderId", order.getOrderId());
+        hash.put("orderPaymentId", order.getOrderPaymentId() == null ? "" : order.getOrderPaymentId());
+        hash.put("orderPayment", String.valueOf(order.getOrderPayment()));
+        hash.put("orderDiscount", order.getOrderDiscount());
+        hash.put("orderCouponUsed", order.getOrderCouponUsed() ? "1" : "0");
+        hash.put("orderPaymentPrice", order.getOrderPaymentPrice());
+        hash.put("orderPrice", order.getOrderPrice());
+        hash.put("orderSubs", BeanUtil.parseObjToJson(order.getOrderSubs()));
+        hash.put("orderTime", order.getOrderTime());
+        hash.put("userId", String.valueOf(order.getUserId()));
+        hash.put("orderTitle", order.getOrderTitle());
+        return hash;
+    }
+    public static Order Map2Order(Map<String, String> hash) {
+        Order order = new Order();
+        order.setOrderId(hash.get("orderId"));
+        order.setOrderPaymentId(hash.get("orderPaymentId"));
+        order.setOrderPayment(Integer.parseInt(hash.get("orderPayment")));
+        order.setOrderDiscount(hash.get("orderDiscount"));
+        order.setOrderCouponUsed(hash.get("orderCouponUsed").equals("1"));
+        order.setOrderPaymentPrice(hash.get("orderPaymentPrice"));
+        order.setOrderPrice(hash.get("orderPrice"));
+        order.setOrderSubs(BeanUtil.parseObjToList(hash.get("orderSubs"), OrderSub.class));
+        order.setOrderTitle(hash.get("orderTitle"));
+        order.setUserId(Integer.parseInt(hash.get("userId")));
+        order.setOrderTime(hash.get("orderTime"));
+        return order;
     }
 }

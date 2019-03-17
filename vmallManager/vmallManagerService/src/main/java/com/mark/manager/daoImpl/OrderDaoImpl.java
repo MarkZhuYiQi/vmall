@@ -152,7 +152,7 @@ public class OrderDaoImpl extends OrderDaoAbstract {
                     }
                 }
                 orderDaoByRedis.setUserOrderCache(orderResult, orderCriteria);
-                return orderResult;
+                return orderDaoByRedis.getOrdersByCriteria(orderCriteria);
             } catch (OrderException oe) {
                 throw new OrderException(oe.getMsg(), OrderConstant.GET_ORDER_FAILED);
             } catch (CourseException ce) {

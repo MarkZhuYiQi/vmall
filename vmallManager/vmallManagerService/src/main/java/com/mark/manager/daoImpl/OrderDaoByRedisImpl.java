@@ -5,9 +5,12 @@ import com.mark.common.jedis.JedisClient;
 import com.mark.common.util.BeanUtil;
 import com.mark.manager.bo.OrderResult;
 import com.mark.manager.dao.OrderDaoAbstract;
+import com.mark.manager.dto.DtoUtil;
 import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.OrderSub;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,8 @@ import java.util.*;
 
 @Component("orderRedis")
 public class OrderDaoByRedisImpl extends OrderDaoAbstract {
+    private static final Logger logger = LoggerFactory.getLogger(OrderDaoByRedisImpl.class);
+
     @Autowired
     JedisClient jedisClient;
 
@@ -38,13 +43,13 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
 
     @Override
     public Long getOrdersCount(OrderCriteria orderCriteria) {
-        String orderPaymentId;
+        String key;
         if (orderCriteria.getOrderPayment() == -1) {
             unionOrders(orderCriteria.getUserId());
-            orderPaymentId = "-1";
+            key = ordersUnionBelongUserPrefix + String.valueOf(orderCriteria.getUserId());
+        } else {
+            key = ordersBelongUserPrefix + String.valueOf(orderCriteria.getOrderPayment()) + String.valueOf(orderCriteria.getUserId());
         }
-        orderPaymentId = String.valueOf(orderCriteria.getOrderPayment());
-        String key = ordersBelongUserPrefix + orderPaymentId + String.valueOf(orderCriteria.getUserId());
         return jedisClient.zcount(key, "-inf", "+inf");
     }
 
@@ -53,7 +58,15 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
                 ordersUnionBelongUserPrefix + String.valueOf(userId),
                 ordersBelongUserPrefix + "0" + String.valueOf(userId),
                 ordersBelongUserPrefix + "1" + String.valueOf(userId),
-                ordersBelongUserPrefix + "2" + String.valueOf(userId)
+                ordersBelongUserPrefix + "2" + String.valueOf(userId),
+                ordersBelongUserPrefix + "3" + String.valueOf(userId)
+        );
+    }
+    private void unionClosedOrders(Integer userId) {
+        jedisClient.zunionstore(
+                ordersUnionBelongUserPrefix + "2" + String.valueOf(userId),
+                ordersBelongUserPrefix + "2" + String.valueOf(userId),
+                ordersBelongUserPrefix + "3" + String.valueOf(userId)
         );
     }
 
@@ -66,26 +79,40 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
      */
     @Override
     public Boolean setUserOrderCache(OrderResult orderResult, OrderCriteria orderCriteria) throws OrderException {
-        String orderKey = ordersBelongUserPrefix + String.valueOf(orderCriteria.getOrderPayment()) + String.valueOf(orderCriteria.getUserId());
-        Map<String, Double> scoreMembers = new HashMap<>();
-        for (Order order : orderResult.getOrders()) {
-            Map<String, String> hash = new HashMap<String, String>();
-            scoreMembers.put(order.getOrderId(), new Double(order.getOrderId()));
-            hash.put("orderId", order.getOrderId());
-            hash.put("orderPaymentId", order.getOrderPaymentId());
-            hash.put("orderPayment", String.valueOf(order.getOrderPayment()));
-            hash.put("orderDiscount", order.getOrderDiscount());
-            hash.put("orderCouponUsed", order.getOrderCouponUsed() ? "1" : "0");
-            hash.put("orderPaymentPrice", order.getOrderPaymentPrice());
-            hash.put("orderPrice", order.getOrderPrice());
-            hash.put("orderSubs", BeanUtil.parseObjToJson(order.getOrderSubs()));
-            hash.put("orderTime", order.getOrderTime());
-            hash.put("userId", String.valueOf(order.getUserId()));
-            hash.put("orderTitle", order.getOrderTitle());
-            jedisClient.hmset(orderPrefix + order.getOrderId(), hash);
+        if (orderCriteria.getOrderPayment() == -1) {
+            Map<String, Double> scoreMembers0 = new HashMap<>();
+            Map<String, Double> scoreMembers1 = new HashMap<>();
+            Map<String, Double> scoreMembers2 = new HashMap<>();
+            for (Order order : orderResult.getOrders()) {
+                String hashKey = orderPrefix + order.getOrderId();
+                if (!jedisClient.exists(hashKey)) {
+                    Map<String, String> hash = DtoUtil.order2Map(order);
+                    jedisClient.hmset(hashKey, hash);
+                }
+                if (order.getOrderPayment() == 0) scoreMembers0.put(order.getOrderId(), new Double(order.getOrderId()));
+                if (order.getOrderPayment() == 1) scoreMembers1.put(order.getOrderId(), new Double(order.getOrderId()));
+                if (order.getOrderPayment() == 2) scoreMembers2.put(order.getOrderId(), new Double(order.getOrderId()));
+            }
+            setUserOrderCacheByOrderPayment(String.valueOf(orderCriteria.getUserId()), "0", scoreMembers0);
+            setUserOrderCacheByOrderPayment(String.valueOf(orderCriteria.getUserId()), "1", scoreMembers1);
+            setUserOrderCacheByOrderPayment(String.valueOf(orderCriteria.getUserId()), "2", scoreMembers2);
+        } else {
+            Map<String, Double> scoreMembers = new HashMap<>();
+            for (Order order : orderResult.getOrders()) {
+                String hashKey = orderPrefix + order.getOrderId();
+                if (!jedisClient.exists(hashKey)) {
+                    Map<String, String> hash = DtoUtil.order2Map(order);
+                    jedisClient.hmset(hashKey, hash);
+                }
+                scoreMembers.put(order.getOrderId(), new Double(order.getOrderId()));
+            }
+            setUserOrderCacheByOrderPayment(String.valueOf(orderCriteria.getUserId()), String.valueOf(orderCriteria.getOrderPayment()), scoreMembers);
         }
-        jedisClient.zadd(orderKey, scoreMembers);
         return true;
+    }
+    private void setUserOrderCacheByOrderPayment(String userId, String orderPayment, Map<String, Double> scoreMembers) {
+        String orderKey = ordersBelongUserPrefix + orderPayment + userId;
+        jedisClient.zadd(orderKey, scoreMembers);
     }
 /*
     @Override
@@ -104,14 +131,43 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
      */
     @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
-        throw new OrderException("order cache temporary out of service.");
-        /*String orderKey = ordersBelongUserPrefix + String.valueOf(orderCriteria.getOrderPayment()) + String.valueOf(orderCriteria.getUserId());
-        Integer offset = (orderCriteria.getpageNum() - 1);
-        Set<String> cache = jedisClient.zRange(orderKey, offset.longValue(), offset.longValue());
-        if (cache.size() != 1) throw new OrderException("get orders cache failed!");
-        List<String> jsonOrder = new ArrayList<String>(cache);
-        OrderResult orderResult = BeanUtil.parseJsonToObj(jsonOrder.get(0), OrderResult.class);
-        return orderResult;*/
+        String orderKey;
+        if (orderCriteria.getOrderPayment() != -1) {
+            orderKey = ordersBelongUserPrefix + String.valueOf(orderCriteria.getOrderPayment()) + String.valueOf(orderCriteria.getUserId());
+        } else {
+            orderKey = ordersUnionBelongUserPrefix + String.valueOf(orderCriteria.getUserId());
+        }
+        Long total = getOrdersCount(orderCriteria);
+        logger.info("order count: {}", total);
+        logger.info("current page : {}, size: {}", orderCriteria.getpageNum(), orderCriteria.getPageSize());
+        if ((orderCriteria.getPageSize() * orderCriteria.getpageNum()) > total.intValue()) {
+            throw new OrderException("get order from cache failed! the orders wanna get are more than total");
+        }
+        // 对应页码的订单起始位置
+        Integer start = (orderCriteria.getpageNum() - 1) * orderCriteria.getPageSize();
+        // 对应订单结束为止
+        Integer offset = (orderCriteria.getpageNum() * orderCriteria.getPageSize() - 1);
+        logger.info("key: {}, start int: {}, end int: {}", orderKey, start, offset);
+        Set<String> cachedOrdersId = jedisClient.zrevrange(orderKey, start.longValue(), offset.longValue());
+        logger.info("cached order id: {}", cachedOrdersId.toString());
+        if (cachedOrdersId.size() <= 0) throw new OrderException("get orders cache failed!");
+        // 该页订单id
+        List<String> ordersId = new ArrayList<>(cachedOrdersId);
+        int size = ordersId.size();
+        // 生成整页的订单详情
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            // 订单对应的hash key
+            Map<String, String> hash = jedisClient.hgetAll(orderPrefix + ordersId.get(i));
+            orders.add(DtoUtil.Map2Order(hash));
+        }
+        // 配置结果
+        OrderResult orderResult = new OrderResult();
+        orderResult.setOrders(orders);
+        orderResult.setPageNum(orderCriteria.getpageNum());
+        orderResult.setPageSize(orderCriteria.getPageSize());
+        orderResult.setTotal(total);
+        return orderResult;
     }
 
     @Override

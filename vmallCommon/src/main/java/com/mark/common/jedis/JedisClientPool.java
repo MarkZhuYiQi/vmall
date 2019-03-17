@@ -222,6 +222,22 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public Set<String> zrevrangeByScore(String key, String max, String min) {
+        Jedis jedis = getResource();
+        Set<String> members = jedis.zrevrangeByScore(key, max, min);
+        jedis.close();
+        return members;
+    }
+
+    @Override
+    public Set<String> zrevrange(String key, Long max, Long min) {
+        Jedis jedis = getResource();
+        Set<String> members = jedis.zrevrange(key, max, min);
+        jedis.close();
+        return members;
+    }
+
+    @Override
     public Long zremrangeByScore(String key, Double start, Double end) {
         Jedis jedis = getResource();
         Long res = jedis.zremrangeByScore(key, start, end);
