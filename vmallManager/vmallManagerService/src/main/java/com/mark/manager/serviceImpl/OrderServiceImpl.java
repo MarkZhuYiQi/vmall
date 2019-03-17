@@ -2,6 +2,7 @@ package com.mark.manager.serviceImpl;
 
 import com.mark.common.constant.OrderConstant;
 import com.mark.common.exception.CartException;
+import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
 import com.mark.manager.bo.OrderResult;
 import com.mark.manager.dao.CartDao;
@@ -21,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -41,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     CourseService courseService;
+
 
     /**
      * 检查order信息是否正确，正确返回控制器准备创建订单
@@ -100,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Long> checkCourseIfExisted(List<String> coursesId, Integer userId) {
         List<VproOrder> orders = orderDao.getOrdersByUserId(userId);
+        // 所有订单号
         List<Long>  ordersId = new ArrayList<>();
         for (VproOrder v : orders) {
             ordersId.add(v.getOrderId());
@@ -165,7 +170,6 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderException(e.getMsg(), e.getCode());
         }
     }
-
     /**
      * 检查课程是否已经购买
      * @param courseId
@@ -190,5 +194,21 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException {
         return orderDao.setOrderExpired(orderId, userId);
+    }
+    @Override
+    public List<Courses> getCoursesBoughtByUser(Integer userId) throws OrderException, CourseException {
+        List<Courses> courses = new ArrayList<>();
+        List<Long> list = orderDao.getOrdersIdByCriteria(userId, 1);
+        Set<String> coursesId = new HashSet<>();
+        for (Long orderId : list) {
+            Order order = orderDao.getOrderSpecified(orderId, userId);
+            for (OrderSub orderSub : order.getOrderSubs()) {
+                coursesId.add(String.valueOf(orderSub.getCourseId()));
+            }
+        }
+        for (String courseId : coursesId) {
+            courses.add(courseService.getCourseForDetail(Integer.parseInt(courseId)));
+        }
+        return courses;
     }
 }

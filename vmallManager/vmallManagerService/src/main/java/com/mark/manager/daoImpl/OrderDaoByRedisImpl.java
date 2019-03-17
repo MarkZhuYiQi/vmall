@@ -140,7 +140,7 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
         Long total = getOrdersCount(orderCriteria);
         logger.info("order count: {}", total);
         logger.info("current page : {}, size: {}", orderCriteria.getpageNum(), orderCriteria.getPageSize());
-        if ((orderCriteria.getPageSize() * orderCriteria.getpageNum()) > total.intValue()) {
+        if ((orderCriteria.getPageSize() * (orderCriteria.getpageNum() - 1)) > total.intValue()) {
             throw new OrderException("get order from cache failed! the orders wanna get are more than total");
         }
         // 对应页码的订单起始位置
@@ -159,7 +159,7 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
         for (int i = 0; i < size; i++) {
             // 订单对应的hash key
             Map<String, String> hash = jedisClient.hgetAll(orderPrefix + ordersId.get(i));
-            orders.add(DtoUtil.Map2Order(hash));
+            orders.add(DtoUtil.map2Order(hash));
         }
         // 配置结果
         OrderResult orderResult = new OrderResult();
@@ -173,5 +173,27 @@ public class OrderDaoByRedisImpl extends OrderDaoAbstract {
     @Override
     public void delUserOrderCache(String orderPayment, Integer userId) throws OrderException {
         jedisClient.del(ordersBelongUserPrefix + orderPayment + String.valueOf(userId));
+    }
+
+    @Override
+    public List<Long> getOrdersIdByCriteria(Integer userId, Integer orderPayment) {
+        if (orderPayment == 2) unionClosedOrders(userId);
+        String key = ordersBelongUserPrefix + String.valueOf(orderPayment) + String.valueOf(userId);
+        Set<String> cachedOrdersId = jedisClient.zrevrange(key, 0L, -1L);
+        List<Long> ordersId = new ArrayList<>();
+        for (String s : cachedOrdersId) {
+            ordersId.add(Long.parseLong(s));
+        }
+        return ordersId;
+    }
+
+    @Override
+    public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
+        String key = orderPrefix + String.valueOf(orderId);
+        if (jedisClient.exists(key)) {
+            Map<String, String> orderMap = jedisClient.hgetAll(key);
+            return DtoUtil.map2Order(orderMap);
+        }
+        throw new OrderException("order cache does not exist");
     }
 }

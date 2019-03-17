@@ -74,4 +74,9 @@ public abstract class OrderDaoAbstract implements OrderDao {
     public VproOrder updateOrderStatus(VproOrder vproOrder) {
         return null;
     }
+
+    @Override
+    public List<Long> getOrdersIdByCriteria(Integer userId, Integer orderPayment) {
+        return null;
+    }
 }

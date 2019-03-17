@@ -164,10 +164,14 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     @Override
     public Order getOrderSpecified(Long orderId, Integer userId) throws OrderException {
         try {
-            return orderDaoByDB.getOrderSpecified(orderId, userId);
-        } catch (OrderException e) {
-            logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
-            throw new OrderException(e.getMsg(), OrderConstant.ORDER_NOT_FOUND);
+            return orderDaoByRedis.getOrderSpecified(orderId, userId);
+        } catch (OrderException eo) {
+            try {
+                return orderDaoByDB.getOrderSpecified(orderId, userId);
+            } catch (OrderException e) {
+                logger.warn("{}, orderId: {}, userId: {}", e.getMsg(), orderId, userId);
+                throw new OrderException(e.getMsg(), OrderConstant.ORDER_NOT_FOUND);
+            }
         }
     }
 
@@ -202,5 +206,9 @@ public class OrderDaoImpl extends OrderDaoAbstract {
     @Override
     public VproOrder updateOrderStatus(VproOrder vproOrder) {
         return orderDaoByDB.updateOrderStatus(vproOrder);
+    }
+
+    public List<Long> getOrdersIdByCriteria(Integer userId, Integer orderPayment) {
+        return orderDaoByRedis.getOrdersIdByCriteria(userId, orderPayment);
     }
 }

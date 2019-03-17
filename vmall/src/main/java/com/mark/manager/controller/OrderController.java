@@ -1,10 +1,12 @@
 package com.mark.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
 import com.mark.common.pojo.JwtUserDetails;
 import com.mark.manager.bo.OrderResult;
 import com.mark.manager.bo.Result;
+import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.PutOrder;
@@ -64,5 +66,18 @@ public class OrderController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
+    @GetMapping("personal")
+    public Result getPersonalCourses() {
+        JwtUserDetails details = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = details.getUserId().intValue();
 
+        try {
+            List<Courses> list = orderService.getCoursesBoughtByUser(userId);
+            return new Result(list);
+        } catch (OrderException e) {
+            return new Result(e.getCode(), e.getMsg());
+        } catch (CourseException e) {
+            return new Result(e.getCode(), e.getMsg());
+        }
+    }
 }

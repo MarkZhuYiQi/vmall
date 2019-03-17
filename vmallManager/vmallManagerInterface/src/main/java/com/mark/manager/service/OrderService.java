@@ -1,7 +1,9 @@
 package com.mark.manager.service;
 
+import com.mark.common.exception.CourseException;
 import com.mark.common.exception.OrderException;
 import com.mark.manager.bo.OrderResult;
+import com.mark.manager.dto.Courses;
 import com.mark.manager.dto.Order;
 import com.mark.manager.dto.OrderCriteria;
 import com.mark.manager.dto.PutOrder;
@@ -16,4 +18,5 @@ public interface OrderService {
     Boolean checkCourseIfBought(String courseId, Integer userId) throws OrderException;
     Order getOrderSpecified(Long orderId, Integer userId) throws OrderException;
     Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException;
+    List<Courses> getCoursesBoughtByUser(Integer userId) throws OrderException, CourseException;
 }

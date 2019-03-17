@@ -25,4 +25,5 @@ public interface OrderDao {
     Boolean setOrderExpired(Long orderId, Integer userId) throws OrderException;
     VproOrder getOrderByOrderId(Long orderId);
     VproOrder updateOrderStatus(VproOrder vproOrder);
+    List<Long> getOrdersIdByCriteria(Integer userId, Integer orderPayment);
 }

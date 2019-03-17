@@ -188,7 +188,7 @@ public class DtoUtil {
         hash.put("orderTitle", order.getOrderTitle());
         return hash;
     }
-    public static Order Map2Order(Map<String, String> hash) {
+    public static Order map2Order(Map<String, String> hash) {
         Order order = new Order();
         order.setOrderId(hash.get("orderId"));
         order.setOrderPaymentId(hash.get("orderPaymentId"));

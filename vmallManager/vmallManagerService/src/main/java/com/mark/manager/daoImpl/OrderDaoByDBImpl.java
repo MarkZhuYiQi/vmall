@@ -98,10 +98,10 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
         VproOrderExample.Criteria criteria = vproOrderExample.createCriteria().andUserIdEqualTo(orderCriteria.getUserId());
         vproOrderExample.setOrderByClause("order_time desc");
         if (orderCriteria.getOrderPayment() != -1) {
-            List<Integer> payments = new ArrayList<>();
-            payments.add(2);
-            payments.add(3);
             if (orderCriteria.getOrderPayment() == 2) {
+                List<Integer> payments = new ArrayList<>();
+                payments.add(2);
+                payments.add(3);
                 criteria.andOrderPaymentIn(payments);
             } else {
                 criteria.andOrderPaymentEqualTo(orderCriteria.getOrderPayment());
