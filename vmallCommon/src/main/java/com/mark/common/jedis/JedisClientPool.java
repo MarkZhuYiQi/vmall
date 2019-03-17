@@ -128,6 +128,15 @@ public class JedisClientPool implements JedisClient{
         jedis.close();
         return value;
     }
+
+    @Override
+    public Long zunionstore(String destKey, String... sets) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.zunionstore(destKey, sets);
+        jedis.close();
+        return result;
+    }
+
     @Override
     public Long zadd(String key, Double score, String member)
     {
@@ -138,7 +147,23 @@ public class JedisClientPool implements JedisClient{
     }
 
     @Override
+    public Long zadd(String key, Map<String, Double> scoreMembers) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.zadd(key, scoreMembers);
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public Long zcount(String key, Double min, Double max) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.zcount(key, min, max);
+        jedis.close();
+        return result;
+    }
+
+    @Override
+    public Long zcount(String key, String min, String max) {
         Jedis jedis = jedisPool.getResource();
         Long result = jedis.zcount(key, min, max);
         jedis.close();
@@ -240,6 +265,13 @@ public class JedisClientPool implements JedisClient{
     public Long hset(String key, String field, String value) {
         Jedis jedis = jedisPool.getResource();
         Long result = jedis.hset(key, field, value);
+        jedis.close();
+        return result;
+    }
+    @Override
+    public String hmset(String key, Map<String, String> hash) {
+        Jedis jedis = jedisPool.getResource();
+        String result = jedis.hmset(key, hash);
         jedis.close();
         return result;
     }

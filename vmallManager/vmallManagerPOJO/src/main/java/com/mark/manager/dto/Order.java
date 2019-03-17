@@ -14,6 +14,7 @@ public class Order implements Serializable {
     private String orderDiscount;
     private Integer orderPayment;
     private String orderTitle;
+    // 支付宝返回的trade_no
     private String orderPaymentId;
     private String orderPaymentPrice;
     private List<OrderSub> orderSubs;

@@ -106,13 +106,13 @@ public class PayServiceImpl extends PayServiceAbstract {
             // 支付宝appid
             String appId = new String(params.get("app_id").getBytes("ISO-8859-1"),"UTF-8");
             if(!appId.equals(this.appId)) {
-                logger.error("支付宝appId错误，商户错误！appId: {}", appId);
-                throw new PayException("支付宝appId错误，商户错误！");
+                logger.error("alipay appId error, appId: {}", appId);
+                throw new PayException("alipay appId error", PayConstant.APP_ID_ERROR);
             }
             String sellerId = new String(params.get("seller_id").getBytes("ISO-8859-1"),"UTF-8");
             if (!sellerId.equals(this.sellerId)) {
-                logger.error("支付宝sellerId错误！sellerId: {}", sellerId);
-                throw new PayException("支付宝sellerId错误！sellerId: {}");
+                logger.error("alipay sellerId error!sellerId: {}", sellerId);
+                throw new PayException("alipay sellerId error!", PayConstant.SELLER_ID_ERROR);
             }
             try {
                 VproOrder vproOrder = payDao.updateOrderPayStatus(params);
@@ -122,8 +122,8 @@ public class PayServiceImpl extends PayServiceAbstract {
                 throw new PayException(e.getMsg(), e.getCode());
             }
         } else {
-            logger.error("验签失败！params: {}" + params);
-            throw new PayException("支付宝验签失败！");
+            logger.error("verify signature failed! params: {}" + params);
+            throw new PayException("alipay signature verify failed!", PayConstant.SIGNATURE_VERIFY_FAILED);
         }
     }
 

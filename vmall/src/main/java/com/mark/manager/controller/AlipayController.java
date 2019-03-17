@@ -119,6 +119,7 @@ public class AlipayController extends PayBaseController{
      * buyer_pay_amount=69.00,
      * sign_type=RSA2,
      * seller_id=2088102172130805}
+     * 验签一直失败的原因：字符集问题！尝试解决方案：1. 在网关后缀加上charset=utf-8；2. 不需要用ISO8859-1转换了
      */
     @PostMapping("async")
     private String alipayAsyncCallback(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
@@ -164,13 +165,14 @@ public class AlipayController extends PayBaseController{
                 valueStr = (i == values.length - 1) ? valueStr + values[i]
                         : valueStr + values[i] + ",";
             }
+            params.put(name, valueStr);
             //乱码解决，这段代码在出现乱码时使用
-            try {
+            /*try {
                 valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
                 params.put(name, valueStr);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
         return params;
     }

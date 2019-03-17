@@ -32,6 +32,17 @@ public class OrderController {
             return new Result(e.getCode(), e.getMsg());
         }
     }
+
+    /**
+     * 分页order缓存思路：
+     * 使用到的redis命令：ZUNIONSTORE(destination, numkeys, key, [key...])组合三种订单状态，
+     *                  ZREVRANGEBYSCORE(key,max,min,[WITHSCORES])按照分数从高到低排序，按照索引取出数据
+     *                  hash表存储每个order的信息
+     * 取订单页面的时候，根据页码，获得索引区间，拿到score（orderId），再hmget所有order信息。
+     * 最后组成结果返回给前台。
+     * @param orderCriteria
+     * @return
+     */
     @PostMapping("get")
     public Result getOrders(@RequestBody OrderCriteria orderCriteria) {
         try {

@@ -30,9 +30,15 @@ public interface JedisClient {
 
     String get(String key);
 
+    Long zunionstore(String destKey, String... sets);
+
     Long zadd(String key, Double score, String member);
 
+    Long zadd(String key, Map<String, Double> scoreMembers);
+
     Long zcount(String key, Double min, Double max);
+
+    Long zcount(String key, String min, String max);
 
     Double zscore(String key, String member);
 
@@ -57,6 +63,8 @@ public interface JedisClient {
     Long incr(String key);
 
     Long hset(String key, String field, String value);
+
+    String hmset(String key, Map<String, String> hash);
 
     String hget(String key, String field);
 

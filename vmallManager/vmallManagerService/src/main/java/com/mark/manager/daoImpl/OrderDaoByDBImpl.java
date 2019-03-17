@@ -65,24 +65,55 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
     }
 
     @Override
+    public Long getOrdersCount(OrderCriteria orderCriteria) {
+        VproOrderExample vproOrderExample = new VproOrderExample();
+        Integer orderPaymentId;
+        if (orderCriteria.getOrderPayment() != -1) {
+            orderPaymentId = orderCriteria.getOrderPayment();
+            vproOrderExample.createCriteria().andOrderPaymentEqualTo(orderPaymentId);
+        }
+        return vproOrderMapper.countByExample(vproOrderExample);
+    }
+
+    @Override
     public List<VproOrderSub> getExistCourseByUserOrder(List<Long> ordersId, List<Integer> coursesId) {
         VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
         vproOrderSubExample.createCriteria().andOrderIdIn(ordersId).andCourseIdIn(coursesId);
         return vproOrderSubMapper.selectByExample(vproOrderSubExample);
     }
 
+    /**
+     * 一口气取出所有该payment分类下的订单
+     * 0，未支付；1：支付成功；2：支付失败/超时(3)
+     * @param orderCriteria
+     * @return
+     * @throws OrderException
+     */
     @Override
     public OrderResult getOrdersByCriteria(OrderCriteria orderCriteria) throws OrderException {
         if (orderCriteria.getUserId() == null) throw new OrderException("user id does not exist, could not procceed");
-        PageHelper.startPage(orderCriteria.getpageNum(), orderCriteria.getPageSize());
+        // 分页范围
+//        PageHelper.startPage(orderCriteria.getpageNum(), orderCriteria.getPageSize());
         VproOrderExample vproOrderExample = new VproOrderExample();
         VproOrderExample.Criteria criteria = vproOrderExample.createCriteria().andUserIdEqualTo(orderCriteria.getUserId());
         vproOrderExample.setOrderByClause("order_time desc");
-        if (orderCriteria.getOrderPayment() != -1) criteria.andOrderPaymentEqualTo(orderCriteria.getOrderPayment());
+        if (orderCriteria.getOrderPayment() != -1) {
+            List<Integer> payments = new ArrayList<>();
+            payments.add(2);
+            payments.add(3);
+            if (orderCriteria.getOrderPayment() == 2) {
+                criteria.andOrderPaymentIn(payments);
+            } else {
+                criteria.andOrderPaymentEqualTo(orderCriteria.getOrderPayment());
+            }
+        }
         List<VproOrder> list = vproOrderMapper.selectByExample(vproOrderExample);
-        PageInfo<VproOrder> page = new PageInfo(list);
+        // 获得分页内容
+//        PageInfo<VproOrder> page = new PageInfo(list);
         List<Order> orders = new ArrayList<>();
-        for (VproOrder vproOrder : page.getList()) {
+        // 转换结果， 得到List<Order>
+//        for (VproOrder vproOrder : page.getList()) {
+        for (VproOrder vproOrder : list) {
             Order order;
             order = DtoUtil.vproOrder2Order(vproOrder);
             VproOrderSubExample vproOrderSubExample = new VproOrderSubExample();
@@ -96,12 +127,16 @@ public class OrderDaoByDBImpl extends OrderDaoAbstract {
             orders.add(order);
         }
         OrderResult orderResult = new OrderResult();
+        // 设置订单显示
         orderResult.setOrders(orders);
-        orderResult.setPageNum(page.getPageNum());
-        orderResult.setPageSize(page.getPageSize());
-        orderResult.setTotal(page.getTotal());
+        // 当前订单页码
+        orderResult.setPageNum(orderCriteria.getpageNum());
+        // 订单页面容量
+        orderResult.setPageSize(orderCriteria.getPageSize());
+        // 订单总数
+        orderResult.setTotal(getOrdersCount(orderCriteria));
 
-        System.out.println(orderResult);
+//        System.out.println(orderResult);
 //        List<Order> orders = orderMapper.getOrderByCriteria(orderCriteria);
         return orderResult;
     }
