@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(characterEncodingFilter, CsrfFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                .antMatchers(HttpMethod.GET, "/login").authenticated()
+//                .antMatchers(HttpMethod.GET, "/login").authenticated()
                 .antMatchers(HttpMethod.GET, "/cart/detail").authenticated()
                 .antMatchers(HttpMethod.POST, "/course/check").authenticated()
                 .antMatchers(HttpMethod.POST, "/comment").authenticated()

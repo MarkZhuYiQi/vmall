@@ -24,6 +24,7 @@ public class AuthDaoByRedisImpl implements AuthDao {
 
     @Override
     public VproAuth getLoginInfo(String token) throws AuthException {
+        System.out.println(loginInfoPrefix + token);
         Map<String, String> info = jedisClient.hgetAll(loginInfoPrefix + token);
         if (info == null || info.size() == 0) throw new AuthException("user login info could not found in redis!");
         return  BeanUtil.mapToBean(info, VproAuth.class);

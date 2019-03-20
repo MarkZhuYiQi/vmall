@@ -1,5 +1,6 @@
 package com.mark.manager.serviceImpl;
 
+import com.mark.common.constant.AuthConstant;
 import com.mark.common.constant.LoginConstant;
 import com.mark.common.constant.RSAConstant;
 import com.mark.common.exception.AuthException;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Validator;
@@ -149,6 +151,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public VproAuth getLoginInfo(String token) throws AuthException {
         try {
+            if (StringUtils.isEmpty(token)) throw new AuthException("TOKEN does not exist", AuthConstant.TOKEN_NOT_EXIST);
             return authDao.getLoginInfo(token);
         } catch (AuthException e) {
             throw new AuthException(e.getMsg(), e.getCode());

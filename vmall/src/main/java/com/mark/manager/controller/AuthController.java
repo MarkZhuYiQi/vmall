@@ -10,6 +10,7 @@ import com.mark.manager.pojo.VproAuth;
 import com.mark.manager.service.AuthService;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,9 +41,10 @@ public class AuthController {
             return new Result(LoginConstant.PASS_MISMATCH, "user or password error!" + e.getMessage());
         }
     }
-    @GetMapping("")
-    public Result getLoginInfo(HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("MyToken");
+    @GetMapping("{token:[\\.\\w]+}")
+    public Result getLoginInfo(HttpServletRequest httpServletRequest, @PathVariable String token) {
+//        String token = httpServletRequest.getHeader("MyToken");
+        System.out.println(token);
         try {
             VproAuth auth = authService.getLoginInfo(token);
             return new Result(auth);
